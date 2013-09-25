@@ -49,6 +49,11 @@ usage() if $help;
 # 	}
 # }
 
+#############################
+### USER INPUT CHECKS #######
+#############################
+
+
 if ($verbose){warn "Checking Input\n";}
 if (!defined $infile){
 	if ($verbose) {warn "\nATTENTION: Input file not provided - dying\n";}
@@ -89,6 +94,10 @@ else{
 	die usage();
 }
 if ($verbose){warn "Validating input file $infile (type $intype) ".(time-$timestart)." sec\n";}
+
+#############################
+### MAIN CODE         #######
+#############################
 
 my %counts;
 my %already_found;
