@@ -1,5 +1,0 @@
-infile	outfile	index	counts	totalcounts	ratio
-../foo/foo.fa	../foo/foo.A	A	151	498	0.303212851405622
-../foo/foo.fa	../foo/foo.C	C	79	498	0.15863453815261
-../foo/foo.fa	../foo/foo.T	T	199	498	0.399598393574297
-../foo/foo.fa	../foo/foo.G	G	69	498	0.13855421686747
