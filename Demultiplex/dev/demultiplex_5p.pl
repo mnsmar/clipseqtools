@@ -115,7 +115,7 @@ while (my $read = $file->next_record) {
 	for (my $i = 0; $i < @outfiles; $i++) {
 		
 		my $seq = $read->sequence;
-		
+		$seq = uc($seq);
 		my $id;
 		if ($intype eq "FQ"){ $id = '@'.$read->name; }
 		elsif ($intype eq "FA"){ $id = '>'.$read->header; }
