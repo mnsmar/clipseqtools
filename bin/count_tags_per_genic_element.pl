@@ -1,4 +1,50 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
+
+=head1 NAME
+
+    count_tags_per_genic_element.pl
+
+=head1 SYNOPSIS
+
+    count_tags_per_genic_element.pl [options/parameters]
+    
+=head1 DESCRIPTION
+
+    Measures the read count for each genic element (ie. transcript, gene, exon, intron)"
+    *Transcript count is measured only for its exons."
+    *Gene count is measured only for its exonic regions."
+
+=head1 OPTIONS AND ARGUMENTS
+
+    Input
+      Database options (DBIC)
+        -driver <Str>        specify driver for database. This can be mysql, SQLite, etc.
+        -database <Str>      database name.
+        -table <Str>         database table with data.
+        -host <Str>          hostname for database connection.
+        -user <Str>          username for database connection.
+        -password <Str>      password for database connection.
+      Gene Models
+        -gtf <Str>           GTF file for transcripts.
+        -transcript_to_gene_file <Str>   a file that maps gene names to transcript ids.
+    
+    Output
+        -ofile_prefix <Str>  prefix for the path used to create output files - path will be created.
+    
+    Input Filters.
+        -min_length <Int>    reads with smaller length than this value are excluded.
+        -max_length <Int>    reads with larger length than this value are excluded.
+        -no_repeat           keep only non-repeat mapping reads.
+        -with_deletion       keep only reads with deletions (HITS-CLIP).
+        -with_TC             keep only reads with T -> C mismatch (PAR-CLIP).
+    
+    Other options.
+        -v                 verbosity. If used progress lines are printed.
+        -h                 print this help;
+
+
+=cut
+
 use Modern::Perl;
 use autodie;
 
@@ -8,7 +54,7 @@ use Getopt::Long;
 use File::Path qw(make_path);
 use File::Spec;
 use List::Util qw(sum max);
-
+use Pod::Usage;
 
 ##############################################
 # Import GenOO
@@ -16,72 +62,97 @@ use GenOO::RegionCollection::Factory;
 use GenOO::TranscriptCollection::Factory;
 use GenOO::GeneCollection::Factory;
 
-
-# count_per_genic_element.pl -driver SQLite -database alignments.db -table sample -transcript_gtf /store/data/UCSC/hg19/annotation/UCSC_gene_parts.gtf -transcript_to_gene_file /store/data/UCSC/hg19/annotation/names.txt -ofile_prefix ../foo/counts_per_genic_element"
-
-
 ##############################################
 # Read command options
-my ($help, $database, $table, $host, $user, $pass, $min_length, $max_length, $transcript_gtf_file, $transcript_to_gene_file, $out_filename_prefix);
-
 my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
 my $driver = "SQLite";
 
-my $verbose;
-my $testmode;
-
 GetOptions(
-        'h'               => \$help,
+        'h'               => \my $help,
+
+        #I/O
+        'database=s'      => \my $database,
+        'table=s'         => \my $table,
+        
         'driver=s'        => \$driver,
-        'host=s'          => \$host,
-        'database=s'      => \$database,
-        'table=s'         => \$table,
-        'user=s'          => \$user,
-        'password=s'      => \$pass,
-        'records_class=s' => \$records_class,
-        'min_length=i'    => \$min_length,
-        'max_length=i'              => \$max_length,
-        'transcript_gtf=s'          => \$transcript_gtf_file,
-        'transcript_to_gene_file=s' => \$transcript_to_gene_file,  # can we get rid of this ???
-        'ofile_prefix=s'            => \$out_filename_prefix,
-        'v'                         => \$verbose,
-        't'                         => \$testmode,
-) or usage();
-usage() if $help;
+        'host=s'          => \my $host, #non sqlite
+        'user=s'          => \my $user, #non sqlite
+        'password=s'      => \my $pass, #non sqlite
 
-if ($testmode){$verbose = 1;}
+        'gtf=s'           => \my $transcript_gtf_file, #
+        'transcript_to_gene_file=s' => \my $transcript_to_gene_file,  # DEV can we get rid of this ???
+        
+        'ofile_prefix=s'  => \my $out_filename_prefix,
+        
+        #filters
+        'min_length=i'    => \my $min_length, #inclusive
+        'max_length=i'    => \my $max_length, #inclusive
+        'no_repeat'       => \my $no_repeat, #keep only non repeat element reads
+        'with_deletion'   => \my $with_deletion, #keep only reads with deletions (HITS-CLIP)
+        'with_TC'         => \my $with_TC, #keep only reads with T -> C mismatch (PAR-CLIP)
+        
+        #flags
+        'v'               => \my $verbose,
+        'dev'             => \my $devmode,
+    
+) or pod2usage({-verbose => 1});
+pod2usage({-verbose => 2}) if $help;
 
-map {defined $_ or usage()} ($transcript_gtf_file, $transcript_to_gene_file, $out_filename_prefix);
+if ($devmode){$verbose = 1;}
+map {defined $_ or pod2usage({-verbose => 1})} ($transcript_gtf_file, $transcript_to_gene_file, $out_filename_prefix);
+my $startime = time;
+my $prevtime = time;
 
 ##############################################
-# Create a transcript collection from a gtf file
-if($verbose){warn "Creating transcript collection\n";}
+warn "Creating transcript collection\n" if $verbose;
 my $transcript_collection = GenOO::TranscriptCollection::Factory->create('GTF', {
 	file => $transcript_gtf_file
 })->read_collection;
 
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
+$prevtime = time;
 
 ##############################################
-# Create a gene collection from the transcript collection and a dictionary (hash) of transcript names to gene names
-if($verbose){warn "Creating gene collection\n";}
+warn "Creating gene collection\n" if $verbose;
 my $transcript_id_to_genename = read_transcript_to_gene_file($transcript_to_gene_file);
 my $gene_collection = GenOO::GeneCollection::Factory->create('FromTranscriptCollection', {
 	transcript_collection => $transcript_collection,
 	annotation_hash       => $transcript_id_to_genename
 })->read_collection;
 
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
+$prevtime = time;
 
 ##############################################
-# Create a collection for sequencing reads from database
-if($verbose){warn "Creating reads collection\n";}
+warn "Creating reads collection\n" if $verbose;
 my $reads_collection = read_collection_from_database( $driver, $database, $table, $records_class, $host, $user, $pass);
-$reads_collection->filter_by_length($min_length, $max_length) if (defined $min_length and defined $max_length);
 
-
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
+$prevtime = time;
 
 ##############################################
-# Calculate counts of functional elements (from database)
-if($verbose){warn "Calculate transcript and exon/intron counts by summing the total number of overlapping reads\n";}
+warn "Filtering reads collection\n" if $verbose;
+my $filtered_rs = $reads_collection->resultset;
+$filtered_rs = $filtered_rs->filter_by_length($min_length, $max_length) if (defined $min_length and defined $max_length);
+$filtered_rs = $filtered_rs->filter_by_min_length($min_length) if (defined $min_length and !defined $max_length);
+$filtered_rs = $filtered_rs->filter_by_max_length($max_length) if (!defined $min_length and defined $max_length);
+$filtered_rs = $filtered_rs->search({rmsk => undef}) if defined $no_repeat;
+$filtered_rs = $filtered_rs->search({with_deletion => {'!=', undef}}) if defined $with_deletion;
+$filtered_rs = $filtered_rs->search({with_tc => {'!=', undef}}) if defined $with_TC;
+
+$reads_collection->resultset($filtered_rs);
+
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
+$prevtime = time;
+
+##############################################
+warn "Calculate transcript and exon/intron counts by summing the total number of overlapping reads\n" if $verbose;
+my $counter = 1;
+
 $transcript_collection->foreach_record_do( sub {
 	my ($transcript) = @_;
 	
@@ -108,12 +179,18 @@ $transcript_collection->foreach_record_do( sub {
 		exonic_count   => $transcript_exonic_count,
 		intronic_count => $transcript_intronic_count
 	});
+	
+	if ($verbose and ($counter % 1000 == 0)){warn $counter."\t".((int(((time-$prevtime)/60)*100))/100)."\n";}
+	$counter++;
+	
 });
 
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
+$prevtime = time;
 
 ##############################################
-# Calculate gene counts
-if($verbose){warn "Define gene counts as the counts of its most expressed transcript\n";}
+warn "Define gene counts as the counts of its most expressed transcript\n" if $verbose;
 $gene_collection->foreach_record_do( sub {
 	my ($gene) = @_;
 	
@@ -129,6 +206,9 @@ $gene_collection->foreach_record_do( sub {
 	});
 });
 
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
+$prevtime = time;
 
 ##############################################
 # Create output path
@@ -138,7 +218,7 @@ make_path($directory);
 
 ##############################################
 # Print results
-if($verbose){warn "Printing gene counts\n";}
+warn "Printing gene counts\n" if $verbose;
 open(my $OUT1, '>', "$out_filename_prefix.counts.gene.tab");
 say $OUT1 join("\t", 'gene_name', 'gene_location', 'gene_length', 'gene_count', 'gene_count_per_nt', 'gene_exonic_count', 'gene_exonic_length', 'gene_exonic_count_per_nt');
 $gene_collection->foreach_record_do( sub {
@@ -148,7 +228,7 @@ $gene_collection->foreach_record_do( sub {
 });
 close $OUT1;
 
-if($verbose){warn "Printing transcript counts\n";}
+warn "Printing transcript counts\n" if $verbose;
 open(my $OUT2, '>', "$out_filename_prefix.counts.transcript.tab");
 say $OUT2 join("\t", 'transcript_id', 'transcript_location', 'transcript_length', 'gene_name', 'transcript_count', 'transcript_count_per_nt', 'transcript_exonic_count', 'transcript_exonic_length', 'transcript_exonic_count_per_nt', 'transcript_intronic_count', 'transcript_intronic_length', 'transcript_intronic_count_per_nt');
 $transcript_collection->foreach_record_do( sub {
@@ -160,7 +240,7 @@ $transcript_collection->foreach_record_do( sub {
 });
 close $OUT2;
 
-if($verbose){warn "Printing exon counts\n";}
+warn "Printing exon counts\n" if $verbose;
 open(my $OUT3, '>', "$out_filename_prefix.counts.exon.tab");
 say $OUT3 join("\t", 'transcript_id', 'exon_location', 'exon_length', 'gene_name', 'exon_count', 'exon_count_per_nt');
 $transcript_collection->foreach_record_do( sub {
@@ -172,7 +252,7 @@ $transcript_collection->foreach_record_do( sub {
 });
 close $OUT3;
 
-if($verbose){warn "Printing intron counts\n";}
+warn "Printing intron counts\n" if $verbose;
 open(my $OUT4, '>', "$out_filename_prefix.counts.intron.tab");
 say $OUT4 join("\t", 'transcript_id', 'intron_location', 'intron_length', 'gene_name', 'intron_count', 'intron_count_per_nt');
 $transcript_collection->foreach_record_do( sub {
@@ -184,33 +264,12 @@ $transcript_collection->foreach_record_do( sub {
 });
 close $OUT4;
 
+if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
+if ($devmode){warn "END TOTAL TIME:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
 
 ###########################################
 # Subroutines used
 ###########################################
-sub usage {
-	print "\nUsage:\n".
-	      "$0 [options] <transcript_gtf_file> <transcript_to_gene_file> <out_filename_prefix>\n\n".
-	      "Description:\n".
-	      "Measures the read count for each genic element (ie. transcript, gene, exon, intron).\n".
-	      "*Transcript count is measured only for its exons.\n".
-	      "*Gene count is measured only for its exonic regions.\n\n".
-	      "Options:\n".
-	      "        -driver=<Str>                  specify driver for the database. This can be mysql, SQLite, etc\n".
-	      "        -database=<Str>                the database name\n".
-	      "        -table=<Str>                   the database table with data\n".
-	      "        -host=<Str>                    the hostname for database connection\n".
-	      "        -user=<Str>                    the username for database connection\n".
-	      "        -password=<Str>                the password for database connection\n".
-	      "        -records_class=<Str>           the class name of the records stored in the database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v1)\n".
-	      "        -min_length=<Int>              reads with smaller length than this value are excluded\n".
-	      "        -max_length=<Int>              reads with larger length than this value are excluded\n".
-	      "        -transcript_gtf=<Str>          the GTF file with the transcript information\n".
-	      "        -transcript_to_gene_file=<Str> a file that maps gene names to transcript ids\n".
-	      "        -ofile_prefix=<Str>            the prefix for the path used to create the output files\n".
-	      "        -h                             print this help\n\n";
-	exit;
-}
 
 sub read_collection_from_database {
 	my ($driver, $database, $table, $records_class, $host, $user, $pass) = @_;
