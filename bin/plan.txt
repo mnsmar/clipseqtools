@@ -4,26 +4,26 @@ Analyses:
 
 counts
 	
-	genomic element totals (repeats, genes, noncoding etc)
-	introns/exons
-	genes/transcripts (total / exons)
-		normalization (quartile, rpkm)
-	UTR,CDS (total / exons)
+	genomic element totals (repeats, genes, noncoding etc) --- DONE --- count_tags_per_genic_element.pl
+	introns/exons  					       --- DONE --- count_tags_per_genic_element.pl
+	genes/transcripts (total / exons) 		       --- DONE --- count_tags_per_genic_element.pl
+		normalization (quartile, rpkm)		       --- DONE --- normalize_tables_with_UQ.pl
+	UTR,CDS (total / exons) 			       --- DONE --- count_tags_per_genic_element.pl
 
 	notes: maybe we can add the option to filter by a list of genes/transcripts
 
 location
 
-	on exons (bins)
-	on genes (bins)
-	on elements / locations (arbirtrary bed file)
-	genome coverage (?)
+	on exons (bins)					       --- _MNS --- distribution_on_genic_parts.pl
+	on genes (bins)					       --- ???? --- 
+	on elements / locations (arbirtrary bed file)	       --- ???? ---
+	genome coverage					       --- _MNS --- genome_coverage.pl
 
 sequence
 
-	number of Nmers on sequence
-	number of Nmers on sequence (on genes / exons etc)
-	filter tags containing Nmer (list of Nmers)
+	number of Nmers on sequence		      	       --- ???? --- 
+	number of Nmers on sequence (on genes / exons etc)     --- ???? --- 
+	filter tags containing Nmer (list of Nmers)            --- ???? --- 
 
 *** 2 samples
 
