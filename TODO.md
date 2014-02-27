@@ -1,5 +1,16 @@
-# Analyses
+# Data management
 
+## Database import
+* DONE - Import SAM to database
+
+## Annotation
+* DONE - Annotate with transcript/genic info
+* DONE - Annotate with RMSK
+* TODO - Annotate with T->C mutations
+* TODO - Annotate with mismatches/deletions
+
+
+# Analyses
 
 ## Per library
 
