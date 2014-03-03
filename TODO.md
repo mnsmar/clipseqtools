@@ -19,13 +19,12 @@
 * DONE - Genomic distribution (percent of reads on genomic elements - 5'UTR, CDS, Exons, Repeats, etc)
 * DONE - Count reads on genic elements (Genes, Transcripts, 5'UTR, CDS, 3'UTR, Introns, Exons)
 * DONE - Normalize counts with Upper Quartile
+* DONE - Nmer counts and enrichment
 
 * ???? - location -> on exons (bins)  --- _MNS --- distribution_on_genic_parts.pl
 * ???? - location -> on genes (bins)  --- ???? --- 
 * ???? - location -> on elements / locations (arbirtrary bed file) --- ???? ---
 
-* TODO - sequence -> number of Nmers on sequence                         --- ???? --- 
-* TODO - sequence -> number of Nmers on sequence (on genes / exons etc)  --- ???? --- 
 * TODO - sequence -> filter tags containing Nmer (list of Nmers)         --- ???? --- 
 
 ## Compare libraries
