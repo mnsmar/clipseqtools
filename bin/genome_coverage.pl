@@ -19,7 +19,7 @@ Measure the percent of the genome that is covered by the reads of a library.
       -host <Str>            hostname for database connection. Only works if type is DBIC.
       -user <Str>            username for database connection. Only works if type is DBIC.
       -password <Str>        password for database connection. Only works if type is DBIC.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
   Other input.
       -rname_sizes <Str>     file with sizes for reference alignment sequences (rnames). Must be tab
@@ -68,7 +68,7 @@ use GenOO::RegionCollection::Factory;
 ##############################################
 # Read command options
 my $type = 'DBIC';
-my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 
 GetOptions(
 # Input options for library.

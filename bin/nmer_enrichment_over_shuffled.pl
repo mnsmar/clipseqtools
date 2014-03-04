@@ -17,7 +17,7 @@ Measure Nmer enrichment over shuffled reads. Suffling is done at the nucleotide 
       -host <Str>            hostname for database connection.
       -user <Str>            username for database connection.
       -password <Str>        password for database connection.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
   Output.
       -o_file <Str>          filename for output file. If path does not exist it will be created.
@@ -68,7 +68,7 @@ use GenOO::RegionCollection::Factory;
 my $P = 1;   # permutations
 my $N = 6;   # length of Nmer
 my $subset_percent = 100;
-my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 
 GetOptions(
 # Input options for library.

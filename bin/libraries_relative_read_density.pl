@@ -19,7 +19,7 @@ For a library A and a reference library B, measure the density of A reads around
         -p_host <Str>          hostname for database connection. Only works if p_type is DBIC.
         -p_user <Str>          username for database connection. Only works if p_type is DBIC.
         -p_password <Str>      password for database connection. Only works if p_type is DBIC.
-        -p_records_class <Str> type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+        -p_records_class <Str> type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
     Input options for reference library.
         -r_type <Str>          input type (eg. DBIC, BED).
@@ -30,7 +30,7 @@ For a library A and a reference library B, measure the density of A reads around
         -r_host <Str>          hostname for database connection. Only works if r_type is DBIC.
         -r_user <Str>          username for database connection. Only works if r_type is DBIC.
         -r_password <Str>      password for database connection. Only works if r_type is DBIC.
-        -r_records_class <Str> type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+        -r_records_class <Str> type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
     Other input.
         -rname_sizes <Str>     file with sizes for reference alignment sequences (rnames). Must be tab delimited (chromosome\tsize) with one line per rname
@@ -82,8 +82,8 @@ use GenOO::RegionCollection::Factory;
 my $span = 25;
 my $p_type = 'DBIC';
 my $r_type = 'DBIC';
-my $p_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
-my $r_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $p_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
+my $r_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 
 GetOptions(
 # Input options for primary library.

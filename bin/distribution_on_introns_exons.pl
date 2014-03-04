@@ -19,7 +19,7 @@ Measure the distribution of reads along idealized introns and exons. Split the i
       -host <Str>            hostname for database connection. Only works if type is DBIC.
       -user <Str>            username for database connection. Only works if type is DBIC.
       -password <Str>        password for database connection. Only works if type is DBIC.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
   Other input.
       -gtf <Str>             GTF file for transcripts.
@@ -69,7 +69,7 @@ use GenOO::TranscriptCollection::Factory;
 my $bins = 10;
 my $min_genic_element_length = 300;
 my $type = 'DBIC';
-my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 
 GetOptions(
 # Input options for library.

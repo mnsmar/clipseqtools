@@ -21,7 +21,7 @@ Measure the number of records of a library A that overlap those of one or more r
         -p_user <Str>          username for database connection. Only works if p_type is DBIC.
         -p_password <Str>      password for database connection. Only works if p_type is DBIC.
         -p_records_class <Str> type of records stored in database (Default:
-                               GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+                               GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
     Input options for reference library.
         -r_type <Str>          input type (eg. DBIC, BED).
@@ -37,7 +37,7 @@ Measure the number of records of a library A that overlap those of one or more r
         -r_user <Str>          username for database connection. Only works if r_type is DBIC.
         -r_password <Str>      password for database connection. Only works if r_type is DBIC.
         -r_records_class <Str> type of records stored in database (Default:
-                               GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+                               GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
     Other input.
         -rname_sizes <Str>     file with sizes for reference alignment sequences (rnames). Must be tab
@@ -88,8 +88,8 @@ use GenOO::RegionCollection::Factory;
 # Defaults and arguments
 my $p_type = 'DBIC';
 my $r_type = 'DBIC';
-my $p_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
-my $r_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $p_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
+my $r_records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 
 GetOptions(
 # Input options for primary library.
