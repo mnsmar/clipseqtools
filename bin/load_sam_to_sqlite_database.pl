@@ -97,7 +97,7 @@ warn "Creating table $table\n" if $verbose;
 	
 	$dbh->do(
 		'CREATE TABLE '.$table.' ('.
-			'id INTEGER PRIMARY KEY AUTOINCREMENT,'
+			'id INTEGER PRIMARY KEY AUTOINCREMENT,'.
 			'strand INT(1) NOT NULL,'.
 			'rname VARCHAR(250) NOT NULL,'.
 			'start UNSIGNED INT(10) NOT NULL,'.

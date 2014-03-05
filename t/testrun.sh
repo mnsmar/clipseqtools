@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Export used perl libraries
-export PERL5LIB=$PERL5LIB:/home/mns/mylib/perl/workspace/v0.1.1/GenOO/ 
+export PERL5LIB=$PERL5LIB:/home/pan.alexiou/mylib/perl/workspace/v0.1.1/GenOO/ 
 
 
 ### FINISHED
@@ -16,5 +16,3 @@ export PERL5LIB=$PERL5LIB:/home/mns/mylib/perl/workspace/v0.1.1/GenOO/
 
 
 # bin/normalize_tables_with_UQ.pl -key transcript_id -key transcript_location -key transcript_length -key gene_name -key transcript_exonic_length -val transcript_exonic_count_per_nt -ifile foo/sample1_counts_per_genic_element.counts.transcript.tab -ifile foo/sample2_counts_per_genic_element.counts.transcript.tab -ofile foo/sample1_counts_per_genic_element.counts.transcript.uq.tab -ofile foo/sample2_counts_per_genic_element.counts.transcript.uq.tab
-
-../bin/annotate_db_sample_with_deletions.pl -driver SQLite -database data/alignments.db -table sample
