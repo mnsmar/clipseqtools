@@ -2,13 +2,13 @@
 
 =head1 NAME
 
-annotate_db_sample_with_deletion.pl
+annotate_db_sample_with_deletions.pl
 
 =head1 SYNOPSIS
 
-annotate_db_sample_with_deletion.pl [options/parameters]
+annotate_db_sample_with_deletions.pl [options/parameters]
 
-Annotate a database table that contains alignments with Repeat Masker info. Add a column named deletion which will be null if the alignment is not contained in a repeat region and not null otherwise..
+Annotate the alignments in a database table with deletion information (Useful for HITS-CLIP analysis). Add a column named deletion which will be null if the alignment does not have a deletion and not null otherwise.
 
   Input options for library.
       -driver <Str>          driver for database connection (eg. mysql, SQLite).
@@ -30,7 +30,7 @@ Annotate a database table that contains alignments with Repeat Masker info. Add 
 
 =head1 DESCRIPTION
 
-Annotate a database table that contains alignments with Repeat Masker info. Add a column named deletion which will be null if the alignment is not contained in a repeat region and not null otherwise..
+Annotate the alignments in a database table with deletion information (Useful for HITS-CLIP analysis). Add a column named deletion which will be null if the alignment does not have a deletion and not null otherwise.
 
 =cut
 
@@ -43,9 +43,11 @@ use Getopt::Long;
 use Pod::Usage;
 use Try::Tiny;
 
+
 ##############################################
 # Import GenOO
 use GenOO::RegionCollection::Factory;
+
 
 ##############################################
 # Read command options
@@ -70,7 +72,7 @@ GetOptions(
 
 pod2usage(-verbose => 1)  if $help;
 pod2usage(-verbose => 2)  if $man;
-my $time = time;
+
 
 ##############################################
 warn "Checking the input\n" if $verbose;
@@ -80,7 +82,8 @@ check_options_and_arguments();
 ##############################################
 warn "Creating reads collection\n" if $verbose;
 my $reads_collection = read_collection('DBIC', undef, $driver, $database, $table, $records_class, $host, $user, $pass);
-# $reads_collection->schema->storage->debug(1);
+$reads_collection->schema->storage->debug(1);
+
 
 ##############################################
 if ($drop_column) {
@@ -101,25 +104,33 @@ try {
 	});
 };
 
-$reads_collection->resultset->result_source->add_column('deletion' => {
+
+##############################################
+# Make DBIx::Class aware of the new column
+warn "Making GenOO aware of the new column\n" if $verbose;
+my $deletion_params = {
 	data_type => 'integer',
 	extra => { unsigned => 1 },
 	is_nullable => 1,
 	is_numeric => 1
-});
+};
+$reads_collection->resultset->result_source->add_columns('deletion' => $deletion_params);
+$reads_collection->resultset->result_class->add_columns('deletion' => $deletion_params);
+$reads_collection->resultset->result_class->register_column('deletion');
+
 
 ##############################################
 warn "Annotating records in table $table\n" if $verbose;
-$reads_collection->foreach_record_do( sub {
-my ($record) = @_;
-	if ($record->deletion_count > 0){
-		$record->{"_column_data"}->{"deletion"} = 1;
-		$record->make_column_dirty('deletion');
-		$record->update();
-	}
-	return 0;
+$reads_collection->schema->txn_do(sub {
+	$reads_collection->foreach_record_do( sub {
+	my ($record) = @_;
+		if ($record->deletion_count > 0){
+			$record->deletion(1);
+			$record->update();
+		}
+		return 0;
+	});
 });
-warn "Elapsed time: ".((time-$time)/60)." min\n" if $verbose;
 
 
 ##############################################
