@@ -97,6 +97,7 @@ warn "Creating table $table\n" if $verbose;
 	
 	$dbh->do(
 		'CREATE TABLE '.$table.' ('.
+			'id INTEGER PRIMARY KEY AUTOINCREMENT,'.
 			'strand INT(1) NOT NULL,'.
 			'rname VARCHAR(250) NOT NULL,'.
 			'start UNSIGNED INT(10) NOT NULL,'.
@@ -128,14 +129,14 @@ my $sam = GenOO::Data::File::SAM->new(
 ##############################################
 warn "Loading data to table $table\n" if $verbose;
 $dbh->begin_work;
-my $insert_statement = $dbh->prepare(qq{INSERT INTO $table (strand, rname, start, stop, copy_number, sequence, cigar, mdz, number_of_mappings, query_length, alignment_length) VALUES(?,?,?,?,?,?,?,?,?,?,?)});
+my $insert_statement = $dbh->prepare(qq{INSERT INTO $table (id, strand, rname, start, stop, copy_number, sequence, cigar, mdz, number_of_mappings, query_length, alignment_length) VALUES(?,?,?,?,?,?,?,?,?,?,?,?)});
 while (my $record = $sam->next_record) {
 	my $copy_number = $record->copy_number;
 	if (defined $record->tag('XC:i')) {
 		$copy_number = $record->tag('XC:i');
 	}
 	
-	$insert_statement->execute($record->strand, $record->rname, $record->start, $record->stop, $copy_number, $record->query_seq, $record->cigar, $record->mdz, $record->number_of_mappings, $record->query_length, $record->alignment_length);
+	$insert_statement->execute(undef,$record->strand, $record->rname, $record->start, $record->stop, $copy_number, $record->query_seq, $record->cigar, $record->mdz, $record->number_of_mappings, $record->query_length, $record->alignment_length);
 	
 	if ($sam->records_read_count % 100000 == 0) {
 		$dbh->commit;

@@ -17,7 +17,7 @@ Annotate a database table that contains alignments with gene transcript info. Ad
       -host <Str>            hostname for database connection.
       -user <Str>            username for database connection.
       -password <Str>        password for database connection.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2).
+      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
 
   Other Input.
       -gtf <Str>             GTF file for transcripts.
@@ -55,7 +55,7 @@ use GenOO::TranscriptCollection::Factory;
 
 ##############################################
 # Read command options
-my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 
 GetOptions(
 # Input options for library.
