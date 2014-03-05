@@ -64,7 +64,7 @@ use GenOO::GeneCollection::Factory;
 
 ##############################################
 # Read command options
-my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v2';
+my $records_class = 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3';
 my $driver = "SQLite";
 
 GetOptions(
