@@ -1,8 +1,8 @@
-# CLIP-Seq-Tools
+# CLIPSeqTools
 
 
 ## Summary
-CLIP-Seq-Tools is a collection of scripts that can be used for the analysis of CLIP-Seq data.
+CLIPSeqTools is a collection of scripts that can be used for the analysis of CLIP-Seq data.
 The toolbox is primarily oriented for bioinfromaticians but we try to make it a simple as possible so that even biologists with a little bit of command line background could run most of the analysis.
 
 ## Installation
