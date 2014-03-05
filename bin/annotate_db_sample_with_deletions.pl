@@ -122,14 +122,13 @@ $reads_collection->resultset->result_class->register_column('deletion');
 ##############################################
 warn "Annotating records in table $table\n" if $verbose;
 $reads_collection->schema->txn_do(sub {
-	$reads_collection->foreach_record_do( sub {
-	my ($record) = @_;
-		if ($record->deletion_count > 0){
-			$record->deletion(1);
-			$record->update();
-		}
-		return 0;
+	my $rs = $reads_collection->resultset->search({
+		cigar => { like => '%D%' },
 	});
+		
+	$rs->update({deletion => 1});
+	
+	return 0;
 });
 
 
