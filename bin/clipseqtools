@@ -1,0 +1,20 @@
+#!/usr/bin/env perl
+
+
+package clipseqtools;
+
+
+##############################################
+# Import external libraries
+use Modern::Perl;
+use autodie;
+
+
+##############################################
+# Import CLIPSeqTools
+use CLIPSeqTools::App;
+
+
+##############################################
+# Run the application
+CLIPSeqTools::App->run;
