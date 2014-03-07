@@ -26,7 +26,6 @@
         -password <Str>      password for database connection.
       Gene Models
         -gtf <Str>           GTF file for transcripts.
-        -transcript_to_gene_file <Str>   a file that maps gene names to transcript ids.
     
     Output
         -ofile_prefix <Str>  prefix for the path used to create output files - path will be created.
@@ -80,7 +79,7 @@ GetOptions(
         'password=s'      => \my $pass, #non sqlite
 
         'gtf=s'           => \my $transcript_gtf_file, #
-        'transcript_to_gene_file=s' => \my $transcript_to_gene_file,  # DEV can we get rid of this ???
+#         'transcript_to_gene_file=s' => \my $transcript_to_gene_file,  # DEV can we get rid of this ???
         
         'ofile_prefix=s'  => \my $out_filename_prefix,
         
@@ -99,7 +98,7 @@ GetOptions(
 pod2usage({-verbose => 2}) if $help;
 
 if ($devmode){$verbose = 1;}
-map {defined $_ or pod2usage({-verbose => 1})} ($transcript_gtf_file, $transcript_to_gene_file, $out_filename_prefix);
+map {defined $_ or pod2usage({-verbose => 1})} ($transcript_gtf_file, $out_filename_prefix);
 my $startime = time;
 my $prevtime = time;
 
@@ -115,10 +114,8 @@ $prevtime = time;
 
 ##############################################
 warn "Creating gene collection\n" if $verbose;
-my $transcript_id_to_genename = read_transcript_to_gene_file($transcript_to_gene_file);
-my $gene_collection = GenOO::GeneCollection::Factory->create('FromTranscriptCollection', {
-	transcript_collection => $transcript_collection,
-	annotation_hash       => $transcript_id_to_genename
+my $gene_collection = GenOO::GeneCollection::Factory->create('GTF', {
+	file => $transcript_gtf_file
 })->read_collection;
 
 if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}
