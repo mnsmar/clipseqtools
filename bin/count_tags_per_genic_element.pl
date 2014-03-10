@@ -103,8 +103,8 @@ my $startime = time;
 my $prevtime = time;
 
 ##############################################
-warn "Creating transcript collection\n" if $verbose;
-my $transcript_collection = GenOO::TranscriptCollection::Factory->create('GTF', {
+warn "Creating gene collection\n" if $verbose;
+my $gene_collection = GenOO::GeneCollection::Factory->create('GTF', {
 	file => $transcript_gtf_file
 })->read_collection;
 
@@ -113,9 +113,9 @@ if ($devmode){warn "Time:\t".((int(((time-$startime)/60)*100))/100)." min\n";}
 $prevtime = time;
 
 ##############################################
-warn "Creating gene collection\n" if $verbose;
-my $gene_collection = GenOO::GeneCollection::Factory->create('GTF', {
-	file => $transcript_gtf_file
+warn "Creating transcript collection\n" if $verbose;
+my $transcript_collection = GenOO::TranscriptCollection::Factory->create('FromGeneCollection', {
+	gene_collection => $gene_collection
 })->read_collection;
 
 if ($devmode){warn "Step:\t".((int(((time-$prevtime)/60)*100))/100)." min\n";}

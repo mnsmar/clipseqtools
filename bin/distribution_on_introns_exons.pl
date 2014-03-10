@@ -2,11 +2,11 @@
 
 =head1 NAME
 
-distribution_on_genic_elements.pl
+distribution_on_intron_exons.pl
 
 =head1 SYNOPSIS
 
-distribution_on_genic_elements.pl [options/parameters]
+distribution_on_intron_exons.pl [options/parameters]
 
 Measure the distribution of reads along idealized introns and exons. Split the introns and exons of coding transcripts in bins and measure the read density in each bin.
 
