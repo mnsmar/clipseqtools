@@ -4,42 +4,42 @@ CLIPSeqTools::App::Command::count_reads_on_genic_elements - Counts library reads
 
 =head1 SYNOPSIS
 
-    count_tags_per_genic_element.pl [options/parameters]
+count_tags_per_genic_element.pl [options/parameters]
 
-=head1 DESCRIPTION
+Counts library reads on transcripts, genes, exons, introns.
 
-    Counts library reads on transcripts, genes, exons, introns.
-    
-    * Transcript counts are measured only on their exons.
-    * Gene counts are measured only for exonic regions.
-
-=head1 OPTIONS AND ARGUMENTS
-
-    Input options for library.
-      -type <Str>            input type (eg. DBIC, BED).
-      -file <Str>            input file. Only works if type specifies a file type.
-      -driver <Str>          driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.
-      -database <Str>        database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.
-      -table <Str>           database table. Only works if type is DBIC.
-      -host <Str>            hostname for database connection. Only works if type is DBIC.
-      -user <Str>            username for database connection. Only works if type is DBIC.
-      -password <Str>        password for database connection. Only works if type is DBIC.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
-      -filter <Filter>       filter library. Option can be given multiple times.
+  Input options for library.
+    -type <Str>            input type (eg. DBIC, BED).
+    -file <Str>            input file. Only works if type specifies a file type.
+    -driver <Str>          driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.
+    -database <Str>        database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.
+    -table <Str>           database table. Only works if type is DBIC.
+    -host <Str>            hostname for database connection. Only works if type is DBIC.
+    -user <Str>            username for database connection. Only works if type is DBIC.
+    -password <Str>        password for database connection. Only works if type is DBIC.
+    -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
+    -filter <Filter>       filter library. Option can be given multiple times.
                              Filter syntax: column_name="pattern"
                                e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
                                e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
                              Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
 
-    Other input
-        -gtf <Str>           GTF file with genes/transcripts.
+  Other input
+    -gtf <Str>             GTF file with genes/transcripts.
 
-    Output
-        -o_prefix <Str>      output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
+  Output
+    -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
 
-    Other options.
-        -v                   verbosity. If used progress lines are printed.
-        -h                   print this help;
+  Other options.
+    -v --verbose           print progress lines and extra information.
+    -h -? --usage --help   print help message
+
+=head1 DESCRIPTION
+
+Counts library reads on transcripts, genes, exons, introns.
+
+* Transcript counts are measured only on their exons.
+* Gene counts are measured only for exonic regions.
 
 =cut
 
@@ -73,15 +73,15 @@ with
 		-alias    => { validate_args => '_validate_args_for_genecollection_input' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::OutputPrefix" => {
-		-alias    => { validate_args => '_validate_args_for_output_prefix' },
+	"CLIPSeqTools::Role::OutputPrefixOption" => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::Verbose" => {
-		-alias    => { validate_args => '_validate_args_for_verbose' },
+	"CLIPSeqTools::Role::VerbosityOption" => {
+		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::Help" => {
+	"CLIPSeqTools::Role::HelpOption" => {
 		-alias    => { validate_args => '_check_help_flag' },
 		-excludes => 'validate_args',
 	};
@@ -100,7 +100,8 @@ sub validate_args {
 	$self->_check_help_flag;
 	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_genecollection_input;
-	$self->_validate_args_for_output_prefix;
+	$self->_validate_args_for_output_prefix_option;
+	$self->_validate_args_for_verbosity_option;
 }
 
 sub execute {

@@ -9,33 +9,31 @@ genome_coverage.pl [options/parameters]
 Measure the percent of the genome that is covered by the reads of a library.
 
   Input options for library.
-      -type <Str>            input type (eg. DBIC, BED).
-      -file <Str>            input file. Only works if type specifies a file type.
-      -driver <Str>          driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.
-      -database <Str>        database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.
-      -table <Str>           database table. Only works if type is DBIC.
-      -host <Str>            hostname for database connection. Only works if type is DBIC.
-      -user <Str>            username for database connection. Only works if type is DBIC.
-      -password <Str>        password for database connection. Only works if type is DBIC.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
-      -filter <Filter>       filter library. Option can be given multiple times.
-                             Filter syntax: column_name="pattern"
-                               e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
-                               e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
-                             Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
+    -type <Str>            input type (eg. DBIC, BED).
+    -file <Str>            input file. Only works if type specifies a file type.
+    -driver <Str>          driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.
+    -database <Str>        database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.
+    -table <Str>           database table. Only works if type is DBIC.
+    -host <Str>            hostname for database connection. Only works if type is DBIC.
+    -user <Str>            username for database connection. Only works if type is DBIC.
+    -password <Str>        password for database connection. Only works if type is DBIC.
+    -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
+    -filter <Filter>       filter library. Option can be given multiple times.
+                           Filter syntax: column_name="pattern"
+                             e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
+                             e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
+                           Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
 
   Other input.
-      -rname_sizes <Str>     file with sizes for reference alignment sequences (rnames). Must be tab
-                             delimited (chromosome\tsize) with one line per rname.
+    -rname_sizes <Str>     file with sizes for reference alignment sequences (rnames). Must be tab
+                           delimited (chromosome\tsize) with one line per rname.
 
   Output.
-      -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
+    -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
 
   Other options.
-      -v                     verbosity. If used progress lines are printed.
-      -h                     print help message
-      -man                   show man page
-
+    -v --verbose           print progress lines and extra information.
+    -h -? --usage --help   print help message
 
 =head1 DESCRIPTION
 
@@ -58,10 +56,7 @@ use File::Spec;
 use PDL::Lite;
 
 
-#######################################################################
-##################   Declare that class is a command   ################
-#######################################################################
-extends 'MooseX::App::Cmd::Command';
+extends 'MooseX::App::Cmd::Command'; # Declare that class is a command
 
 
 #######################################################################
@@ -79,19 +74,20 @@ has 'rname_sizes' => (
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 'CLIPSeqTools::Role::ReadsCollectionInput' => {
+with 
+	"CLIPSeqTools::Role::ReadsCollectionInput" => {
 		-alias    => { validate_args => '_validate_args_for_reads_collection_input' },
 		-excludes => 'validate_args',
 	},
-	'CLIPSeqTools::Role::OutputPrefix' => {
-		-alias    => { validate_args => '_validate_args_for_output_prefix' },
+	"CLIPSeqTools::Role::OutputPrefixOption" => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
 		-excludes => 'validate_args',
 	},
-	'CLIPSeqTools::Role::Verbose' => {
-		-alias    => { validate_args => '_validate_args_for_verbose' },
+	"CLIPSeqTools::Role::VerbosityOption" => {
+		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
 		-excludes => 'validate_args',
 	},
-	'CLIPSeqTools::Role::Help' => {
+	"CLIPSeqTools::Role::HelpOption" => {
 		-alias    => { validate_args => '_check_help_flag' },
 		-excludes => 'validate_args',
 	};
@@ -109,7 +105,8 @@ sub validate_args {
 	
 	$self->_check_help_flag;
 	$self->_validate_args_for_reads_collection_input;
-	$self->_validate_args_for_output_prefix;
+	$self->_validate_args_for_output_prefix_option;
+	$self->_validate_args_for_verbosity_option;
 	$self->usage_error('File with sizes for reference alignment sequences is required') if !$self->rname_sizes;
 }
 
@@ -167,8 +164,6 @@ sub read_rname_sizes {
 	close $CHRSIZE;
 	return %rname_size;
 }
-
-
 
 
 1;
