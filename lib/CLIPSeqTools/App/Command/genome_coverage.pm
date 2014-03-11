@@ -18,6 +18,11 @@ Measure the percent of the genome that is covered by the reads of a library.
       -user <Str>            username for database connection. Only works if type is DBIC.
       -password <Str>        password for database connection. Only works if type is DBIC.
       -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
+      -filter <Filter>       filter library. Option can be given multiple times.
+                             Filter syntax: column_name="pattern"
+                               e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
+                               e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
+                             Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
 
   Other input.
       -rname_sizes <Str>     file with sizes for reference alignment sequences (rnames). Must be tab
@@ -25,13 +30,6 @@ Measure the percent of the genome that is covered by the reads of a library.
 
   Output.
       -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
-
-  Input Filters (only for DBIC input type).
-      -filter <Filter>       filter library. Option can be given multiple times.
-                             Filter syntax: column_name="pattern"
-                               e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
-                               e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
-                             Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
 
   Other options.
       -v                     verbosity. If used progress lines are printed.
@@ -77,15 +75,12 @@ has 'rname_sizes' => (
 	                 'Must be tab delimited (chromosome\tsize) with one line per rname.',
 );
 
+
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 'CLIPSeqTools::Role::CollectionReader' => {
-		-alias    => { validate_args => '_validate_args_for_collection_reader' },
-		-excludes => 'validate_args',
-	},
-	'CLIPSeqTools::Role::CollectionFilter' => {
-		-alias    => { validate_args => '_validate_args_for_collection_filter' },
+with 'CLIPSeqTools::Role::ReadsCollectionInput' => {
+		-alias    => { validate_args => '_validate_args_for_reads_collection_input' },
 		-excludes => 'validate_args',
 	},
 	'CLIPSeqTools::Role::OutputPrefix' => {
@@ -113,8 +108,7 @@ sub validate_args {
 	my ($self, $opt, $args) = @_;
 	
 	$self->_check_help_flag;
-	$self->_validate_args_for_collection_reader;
-	$self->_validate_args_for_collection_filter;
+	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_output_prefix;
 	$self->usage_error('File with sizes for reference alignment sequences is required') if !$self->rname_sizes;
 }
@@ -124,12 +118,11 @@ sub execute {
 	
 	
 	warn "Reading sizes for reference alignment sequences\n" if $self->verbose;
-	my %rname_sizes = $self->read_rname_sizes();
+	my %rname_sizes = $self->read_rname_sizes;
 	
 	
 	warn "Creating reads collection\n" if $self->verbose;
-	my $reads_collection = $self->read_collection;
-	$self->apply_simple_filters_on_collection($reads_collection) if $self->type eq 'DBIC';
+	my $reads_collection = $self->reads_collection;
 	my @rnames = $reads_collection->rnames_for_all_strands;
 	
 	
