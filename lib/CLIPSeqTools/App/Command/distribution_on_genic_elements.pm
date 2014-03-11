@@ -1,0 +1,230 @@
+=head1 NAME
+
+CLIPSeqTools::App::Command::distribution_on_genic_elements - Measure read distribution on 5'UTR, CDS and 3'UTR.
+
+=head1 SYNOPSIS
+
+distribution_on_genic_elements.pl [options/parameters]
+
+Measure the distribution of reads along idealized transcript elements. 
+Split the 5'UTR, CDS and 3'UTR of coding transcripts in bins and measure the read density in each bin.
+
+  Input options for library.
+    -type <Str>            input type (eg. DBIC, BED).
+    -file <Str>            input file. Only works if type specifies a file type.
+    -driver <Str>          driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.
+    -database <Str>        database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.
+    -table <Str>           database table. Only works if type is DBIC.
+    -host <Str>            hostname for database connection. Only works if type is DBIC.
+    -user <Str>            username for database connection. Only works if type is DBIC.
+    -password <Str>        password for database connection. Only works if type is DBIC.
+    -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
+    -filter <Filter>       filter library. Option can be given multiple times.
+                           Filter syntax: column_name="pattern"
+                             e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
+                             e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
+                           Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
+
+  Other input
+    -gtf <Str>             GTF file with genes/transcripts.
+
+  Output
+    -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
+
+  Other options.
+    -bins <Int>            the number of bins to divide the length of each element. Default: 10
+    -length_thres <Int>    genic elements shorter than this are skipped. Default: 300
+    -v --verbose           print progress lines and extra information.
+    -h -? --usage --help   print help message
+
+=head1 DESCRIPTION
+
+Measure the distribution of reads along idealized transcript elements. 
+Split the 5'UTR, CDS and 3'UTR of coding transcripts in bins and measure the read density in each bin.
+
+=cut
+
+package CLIPSeqTools::App::Command::distribution_on_genic_elements;
+
+
+#######################################################################
+#######################   Load External modules   #####################
+#######################################################################
+use Modern::Perl;
+use autodie;
+use Moose;
+use namespace::autoclean;
+use File::Spec;
+use List::Util qw(sum max);
+use Pod::Usage;
+
+
+extends 'MooseX::App::Cmd::Command'; # Declare that class is a command
+
+
+#######################################################################
+#######################   Command line options   ######################
+#######################################################################
+has 'bins' => (
+	is            => 'rw',
+	isa           => 'Int',
+	traits        => ['Getopt'],
+	default       => 10,
+	documentation => 'the number of bins to divide the length of each element. Default: 10',
+);
+
+has 'length_thres' => (
+	is            => 'rw',
+	isa           => 'Int',
+	traits        => ['Getopt'],
+	default       => 300,
+	documentation => 'genic elements shorter than this are skipped. Default: 300',
+);
+
+
+#######################################################################
+##########################   Consume Roles   ##########################
+#######################################################################
+with 
+	"CLIPSeqTools::Role::ReadsCollectionInput" => {
+		-alias    => { validate_args => '_validate_args_for_reads_collection_input' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::TranscriptCollectionInput" => {
+		-alias    => { validate_args => '_validate_args_for_transcriptcollection_input' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::OutputPrefixOption" => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::VerbosityOption" => {
+		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::HelpOption" => {
+		-alias    => { validate_args => '_check_help_flag' },
+		-excludes => 'validate_args',
+	};
+
+	
+#######################################################################
+########################   Interface Methods   ########################
+#######################################################################
+sub description {
+	q(Measure the distribution of reads along idealized transcript elements.)."\n". 
+	q(Split the 5'UTR, CDS and 3'UTR of coding transcripts in bins and measure the read density in each bin.);
+}
+
+sub validate_args {
+	my ($self, $opt, $args) = @_;
+	
+	$self->_check_help_flag;
+	$self->_validate_args_for_reads_collection_input;
+	$self->_validate_args_for_transcriptcollection_input;
+	$self->_validate_args_for_output_prefix_option;
+	$self->_validate_args_for_verbosity_option;
+}
+
+sub execute {
+	my ($self, $opt, $args) = @_;
+	
+	warn "Creating transcript collection\n" if $self->verbose;
+	my $transcript_collection = $self->transcript_collection;
+	my @coding_transcripts = grep{$_->is_coding} $transcript_collection->all_records;
+	
+	warn "Creating reads collection\n" if $self->verbose;
+	my $reads_collection = $self->reads_collection;
+	
+	warn "Calculating counts in bins of genic elements per transcript\n" if $self->verbose;
+	my (@utr5_binned_reads,
+		@cds_binned_reads,
+		@utr3_binned_reads,
+		@utr5_binned_reads_per_nt,
+		@cds_binned_reads_per_nt,
+		@utr3_binned_reads_per_nt);
+	my ($counted_utr5s,
+		$counted_cdss,
+		$counted_utr3s) = (0, 0, 0);
+	foreach my $transcript (@coding_transcripts) {
+		if (defined $transcript->utr5 and $transcript->utr5->exonic_length > $self->length_thres) {
+			my $utr5_counts = count_copy_number_in_percent_of_length_of_element($transcript->utr5, $reads_collection, $self->bins);
+			map{ $utr5_binned_reads[$_] += $utr5_counts->[$_] } 0..$self->bins-1;
+			map{ $utr5_binned_reads_per_nt[$_] += $utr5_counts->[$_] / ($transcript->utr5->exonic_length || 1) } 0..$self->bins-1;
+			$counted_utr5s++;
+		}
+		
+		if (defined $transcript->cds and $transcript->cds->exonic_length > $self->length_thres) {
+			my $cds_counts = count_copy_number_in_percent_of_length_of_element($transcript->cds, $reads_collection, $self->bins);
+			map{ $cds_binned_reads[$_]  += $cds_counts->[$_]  } 0..$self->bins-1;
+			map{ $cds_binned_reads_per_nt[$_]  += $cds_counts->[$_]  / ($transcript->cds->exonic_length  || 1)  } 0..$self->bins-1;
+			$counted_cdss++;
+		}
+		
+		if (defined $transcript->utr3 and $transcript->utr3->exonic_length > $self->length_thres) {
+			my $utr3_counts = count_copy_number_in_percent_of_length_of_element($transcript->utr3, $reads_collection, $self->bins);
+			map{ $utr3_binned_reads[$_] += $utr3_counts->[$_] } 0..$self->bins-1;
+			map{ $utr3_binned_reads_per_nt[$_] += $utr3_counts->[$_] / ($transcript->utr3->exonic_length || 1) } 0..$self->bins-1;
+			$counted_utr3s++;
+		}
+	};
+	warn "Counted UTR5s: $counted_utr5s\n" if $self->verbose;
+	warn "Counted CDSs:  $counted_cdss\n"  if $self->verbose;
+	warn "Counted UTR3s: $counted_utr3s\n" if $self->verbose;
+	
+	warn "Averaging the counts into element arrays\n" if $self->verbose;
+	my @utr5_binned_mean_reads = map{$_/$counted_utr5s} @utr5_binned_reads;
+	my @cds_binned_mean_reads = map{$_/$counted_cdss} @cds_binned_reads;
+	my @utr3_binned_mean_reads = map{$_/$counted_utr3s} @utr3_binned_reads;
+	my @utr5_binned_mean_reads_per_nt = map{$_/$counted_utr5s} @utr5_binned_reads_per_nt;
+	my @cds_binned_mean_reads_per_nt = map{$_/$counted_cdss} @cds_binned_reads_per_nt;
+	my @utr3_binned_mean_reads_per_nt = map{$_/$counted_utr3s} @utr3_binned_reads_per_nt;
+	
+	warn "Normalizing by library size (RPKM)\n" if $self->verbose;
+	my $total_copy_number = $reads_collection->total_copy_number;
+	my @utr5_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @utr5_binned_mean_reads_per_nt;
+	my @cds_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @cds_binned_mean_reads_per_nt;
+	my @utr3_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @utr3_binned_mean_reads_per_nt;
+
+	warn "Creating output path\n" if $self->verbose;
+	$self->make_path_for_output_prefix();
+	
+	warn "Printing results\n" if $self->verbose;
+	open (my $OUT, '>', $self->o_prefix.'distribution_on_genic_elements.tab');
+	say $OUT join("\t", 'bin', 'element', 'avg_counts', 'avg_counts_per_nt', 'avg_rpkm');
+	foreach my $bin (0..$self->bins-1) {
+		say $OUT join("\t", $bin, 'utr5', $utr5_binned_mean_reads[$bin], $utr5_binned_mean_reads_per_nt[$bin], $utr5_binned_mean_percent_reads_per_nt[$bin]);
+	}
+	foreach my $bin (0..$self->bins-1) {
+		say $OUT join("\t", $bin, 'cds', $cds_binned_mean_reads[$bin], $cds_binned_mean_reads_per_nt[$bin], $cds_binned_mean_percent_reads_per_nt[$bin]);
+	}
+	foreach my $bin (0..$self->bins-1) {
+		say $OUT join("\t", $bin, 'utr3', $utr3_binned_mean_reads[$bin], $utr3_binned_mean_reads_per_nt[$bin], $utr3_binned_mean_percent_reads_per_nt[$bin]);
+	}
+}
+
+
+#######################################################################
+############################   Functions   ############################
+#######################################################################
+sub count_copy_number_in_percent_of_length_of_element {
+	my ($part, $reads_collection, $bins) = @_;
+	
+	my @counts = map{0} 0..$bins-1;
+	my $longest_record_length = $reads_collection->longest_record->length;
+	my $part_exonic_length = $part->exonic_length;
+	my $margin = int($longest_record_length/2);
+	$reads_collection->foreach_contained_record_do($part->strand, $part->chromosome, $part->start-$margin, $part->stop+$margin, sub {
+		my ($record) = @_;
+		
+		my $relative_position_in_part = $part->relative_exonic_position($record->mid_position) // return 0;
+		$relative_position_in_part = $part_exonic_length - $relative_position_in_part if $part->strand == -1;
+		my $bin = int($bins * ($relative_position_in_part / $part->exonic_length));
+		$counts[$bin] += $record->copy_number;
+	});
+	
+	return \@counts;
+}
+
+
+1;

@@ -39,7 +39,7 @@ has 'gtf' => (
 	is            => 'rw',
 	isa           => 'Str',
 	traits        => ['Getopt'],
-	documentation => 'GTF file with genes/transcripts',
+	documentation => 'GTF file with transcripts',
 );
 
 
