@@ -29,7 +29,8 @@ package CLIPSeqTools::App;
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
-use App::Cmd::Setup -app;
-
+use Moose;
+use namespace::autoclean;
+extends 'MooseX::App::Cmd';
 
 1;

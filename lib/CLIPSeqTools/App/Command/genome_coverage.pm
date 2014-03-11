@@ -24,7 +24,7 @@ Measure the percent of the genome that is covered by the reads of a library.
                              delimited (chromosome\tsize) with one line per rname.
 
   Output.
-      -o_file <Str>          filename for output file. If path does not exist it will be created.
+      -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
 
   Input Filters (only for DBIC input type).
       -filter <Filter>       filter library. Option can be given multiple times.
@@ -54,112 +54,104 @@ package CLIPSeqTools::App::Command::genome_coverage;
 #######################################################################
 use Modern::Perl;
 use autodie;
-use Getopt::Long;
-use Pod::Usage;
-use File::Path qw(make_path);
+use Moose;
+use namespace::autoclean;
 use File::Spec;
-use Math::Round;
-use PDL;
-
-
-#######################################################################
-########################   Load GenOO modules   #######################
-#######################################################################
-use GenOO::RegionCollection::Factory;
+use PDL::Lite;
 
 
 #######################################################################
 ##################   Declare that class is a command   ################
 #######################################################################
-use CLIPSeqTools::App -command;
+extends 'MooseX::App::Cmd::Command';
 
 
+#######################################################################
+#######################   Command line options   ######################
+#######################################################################
+has 'rname_sizes' => (
+	is            => 'rw',
+	isa           => 'Str',
+	traits        => ['Getopt'],
+	documentation => 'file with sizes for reference alignment sequences (rnames). '.
+	                 'Must be tab delimited (chromosome\tsize) with one line per rname.',
+);
+
+#######################################################################
+##########################   Consume Roles   ##########################
+#######################################################################
+with 'CLIPSeqTools::Role::CollectionReader' => {
+		-alias    => { validate_args => '_validate_args_for_collection_reader' },
+		-excludes => 'validate_args',
+	},
+	'CLIPSeqTools::Role::CollectionFilter' => {
+		-alias    => { validate_args => '_validate_args_for_collection_filter' },
+		-excludes => 'validate_args',
+	},
+	'CLIPSeqTools::Role::OutputPrefix' => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix' },
+		-excludes => 'validate_args',
+	},
+	'CLIPSeqTools::Role::Verbose' => {
+		-alias    => { validate_args => '_validate_args_for_verbose' },
+		-excludes => 'validate_args',
+	},
+	'CLIPSeqTools::Role::Help' => {
+		-alias    => { validate_args => '_check_help_flag' },
+		-excludes => 'validate_args',
+	};
+
+	
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub description {
-	return 'Measure the percent of the genome that is covered by the reads of a library';
+	'Measure the percent of the genome that is covered by the reads of a library';
 }
 
-
-sub opt_spec {
-	return (
-		[],
-		['Input options for library'],
-		['type=s',          'input type (eg. DBIC, BED)', {
-		                        default => 'DBIC'
-		                     }],
-		['file=s',          'input file. Only works if type specifies a file type'],
-		['driver=s',        'driver for database connection (eg. mysql, SQLite). Only works if type is DBIC'],
-		['database=s',      'database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC'],
-		['table=s',         'database table. Only works if type is DBIC.'],
-		['host=s',          'hostname for database connection. Only works if type is DBIC'],
-		['user=s',          'username for database connection. Only works if type is DBIC'],
-		['password=s',      'password for database connection. Only works if type is DBIC'],
-		['records_class=s', 'type of records stored in database', {
-		                        default => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3'
-		                    }],
-		
-		[],
-		['Other input'],
-		['rname_sizes=s',   'file with sizes for reference alignment sequences (rnames). '.
-		                    'Must be tab delimited (chromosome\tsize) with one line per rname.'],
-		[],
-		['Output'],
-		['o_file=s',        'filename for output file. If path does not exist it will be created.'],
-		
-		[],
-		['Input Filters (only for DBIC input type)'],
-		['filter=s@',       'filter library. Option can be given multiple times.'.
-                            'Filter syntax: column_name="pattern"'.
-                            '  e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.'.
-                            '  e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or equal to 50.'.
-                            'Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"'],
-		
-		[],
-		['Other options'],
-		['verbose|v',       'If used progress lines are printed'],
-		['help|h',          'print usage message and exit' ],
-	);
+sub validate_args {
+	my ($self, $opt, $args) = @_;
+	
+	$self->_check_help_flag;
+	$self->_validate_args_for_collection_reader;
+	$self->_validate_args_for_collection_filter;
+	$self->_validate_args_for_output_prefix;
+	$self->usage_error('File with sizes for reference alignment sequences is required') if !$self->rname_sizes;
 }
 
 sub execute {
 	my ($self, $opt, $args) = @_;
 	
 	
-	##############################################
-	warn "Reading sizes for reference alignment sequences\n" if $opt->verbose;
-	my %rname_sizes = read_rname_sizes($opt->rname_sizes);
+	warn "Reading sizes for reference alignment sequences\n" if $self->verbose;
+	my %rname_sizes = $self->read_rname_sizes();
 	
 	
-	##############################################
-	warn "Creating reads collection\n" if $opt->verbose;
-	my $reads_collection = read_collection($opt);
-	apply_simple_filters($reads_collection, $opt->filter) if $opt->type eq 'DBIC';
+	warn "Creating reads collection\n" if $self->verbose;
+	my $reads_collection = $self->read_collection;
+	$self->apply_simple_filters_on_collection($reads_collection) if $self->type eq 'DBIC';
 	my @rnames = $reads_collection->rnames_for_all_strands;
 	
 	
-	#################################
-	warn "Creating output path\n" if $opt->verbose;
-	my (undef, $directory, undef) = File::Spec->splitpath($opt->o_file); make_path($directory);
+	warn "Creating output path\n" if $self->verbose;
+	$self->make_path_for_output_prefix();
 	
 	
-	##############################################
-	warn "Calculating genome coverage\n" if $opt->verbose;
+	warn "Calculating genome coverage\n" if $self->verbose;
 	my $total_genome_coverage = 0;
 	my $total_genome_length = 0;
-	open(my $OUT, '>', $opt->o_file);
+	open(my $OUT, '>', $self->o_prefix.'genome_coverage.tab');
 	say $OUT join("\t", 'rname', 'covered_area', 'size', 'percent_covered');
 	foreach my $rname (@rnames) {
-		warn "Working for $rname\n" if $opt->verbose;
-		my $pdl = zeros(byte, $rname_sizes{$rname});
+		warn "Working for $rname\n" if $self->verbose;
+		my $pdl = PDL->zeros(PDL::byte(), $rname_sizes{$rname});
 		
 		$reads_collection->foreach_record_on_rname_do($rname, sub {
 			$pdl->slice([$_[0]->start, $_[0]->stop]) .= 1;
 			return 0;
 		});
 		
-		my $covered_area = sum($pdl);
+		my $covered_area = $pdl->sum();
 		say $OUT join("\t", $rname, $covered_area, $rname_sizes{$rname}, $covered_area/$rname_sizes{$rname}*100);
 		
 		$total_genome_coverage += $covered_area;
@@ -169,75 +161,11 @@ sub execute {
 	close $OUT;
 }
 
-sub validate_args {
-	my ($self, $opt, $args) = @_;
-	
-	if ( $opt->help ) {
-		my ($command) = $self->command_names;
-		$self->app->execute_command(
-			$self->app->prepare_command("help", $command)
-		);
-		exit;
-    }
-	
-	if ($opt->type eq 'DBIC') {
-		$self->usage_error("Driver for database connection is required for type DBIC") if !$opt->driver;
-		$self->usage_error("Database name or path is required for type DBIC") if !$opt->database;
-		$self->usage_error("Database table is required for type DBIC") if !$opt->table;
-	}
-	elsif ($opt->type eq 'BED' or $opt->type eq 'SAM') {
-		$self->usage_error("File is required for type ".$opt->type) if !$opt->file;
-	}
-	else {
-		$self->usage_error("Unknown or no input type specified.\n");
-	}
-	
-	$self->usage_error("File with sizes for reference alignment sequences is required") if !$opt->rname_sizes;
-	$self->usage_error("Output file is required.\n") if !$opt->o_file;
-}
-
-
-
-#######################################################################
-########################   Interface Methods   ########################
-#######################################################################
-sub read_collection {
-	my ($opt) = @_;
-	
-	return read_collection_from_file($opt) if $opt->type =~ /^(BED|SAM)$/;
-	return read_collection_from_database($opt) if $opt->type =~ /^DBIC$/;
-}
-
-
-sub read_collection_from_file {
-	my ($opt) = @_;
-	
-	return GenOO::RegionCollection::Factory->create($opt->type, {
-		file => $opt->file
-	})->read_collection;
-}
-
-
-sub read_collection_from_database {
-	my ($opt) = @_;
-	
-	return GenOO::RegionCollection::Factory->create('DBIC', {
-		driver        => $opt->driver,
-		host          => $opt->host,
-		database      => $opt->database,
-		user          => $opt->user,
-		password      => $opt->password,
-		table         => $opt->table,
-		records_class => $opt->records_class,
-	})->read_collection;
-}
-
-
 sub read_rname_sizes {
-	my ($rname_sizes) = @_;
+	my ($self) = @_;
 	
 	my %rname_size;
-	open (my $CHRSIZE, '<', $rname_sizes);
+	open (my $CHRSIZE, '<', $self->rname_sizes);
 	while (my $line = <$CHRSIZE>) {
 		chomp $line;
 		my ($chr, $size) = split(/\t/, $line);
@@ -248,16 +176,6 @@ sub read_rname_sizes {
 }
 
 
-sub apply_simple_filters {
-	my ($collection, $params) = @_;
-	
-	foreach my $element (@$params) {
-		$element =~ /^(.+?)=(.+?)$/;
-		my $col_name = $1;
-		my $filter   = $2;
-		$collection->simple_filter($col_name, $filter);
-	}
-}
 
 
 1;
