@@ -4,7 +4,7 @@ CLIPSeqTools::Role::HelpOption - Role to enable help option from the command lin
 
 =head1 SYNOPSIS
 
-Role to enable reading a GTF file with transcripts from the command line
+Role to enable help option from the command line
 
   Defines options.
       -h -? --usage --help       print help message
