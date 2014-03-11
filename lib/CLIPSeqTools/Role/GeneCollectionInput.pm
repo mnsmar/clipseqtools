@@ -10,8 +10,8 @@ Role to enable reading a GTF file with genes/transcripts from the command line
       -gtf <Str>               GTF file for transcripts.
 
   Provides attributes.
-      -gene_collection         the collection of genes that is read from the GTF
-      -transcript_collection   the collection of transcripts that is read from the GTF
+      gene_collection          the collection of genes that is read from the GTF
+      transcript_collection    the collection of transcripts that is read from the GTF
 
 =cut
 

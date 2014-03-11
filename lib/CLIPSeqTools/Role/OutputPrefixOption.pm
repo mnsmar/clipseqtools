@@ -1,13 +1,16 @@
 =head1 NAME
 
-CLIPSeqTools::Role::HelpOption - Role to enable output prefix option from the command line
+CLIPSeqTools::Role::OutputPrefixOption - Role to enable output prefix option from the command line
 
 =head1 SYNOPSIS
 
 Role to enable output prefix option from the command line
 
   Defines options.
-      -o_prefix <Str>        output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
+      -o_prefix <Str>              output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
+
+  Provides methods.
+      make_path_for_output_prefix  creates the path for the output prefix if it does not exist. eg foo/bar.txt will create foo/
 
 =cut
 

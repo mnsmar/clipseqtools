@@ -23,7 +23,7 @@ Role to enable reading a library with reads from the command line
                              Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
 
   Provides attributes.
-      -reads_collection     the collection of reads that is read from the source specified by the options above
+      reads_collection      the collection of reads that is read from the source specified by the options above
 
 =cut
 

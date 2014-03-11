@@ -10,7 +10,7 @@ Role to enable reading a GTF file with transcripts from the command line
       -gtf <Str>               GTF file for transcripts.
 
   Provides attributes.
-      -transcript_collection   the collection of transcripts that is read from the GTF
+      transcript_collection    the collection of transcripts that is read from the GTF
 
 =cut
 
