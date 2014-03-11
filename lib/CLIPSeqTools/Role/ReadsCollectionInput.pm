@@ -9,12 +9,12 @@ Role to enable reading a library with reads from the command line
   Defines options.
       -type <Str>            input type (eg. DBIC, BED).
       -file <Str>            input file. Only works if type specifies a file type.
-      -driver <Str>          driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.
-      -database <Str>        database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.
-      -table <Str>           database table. Only works if type is DBIC.
-      -host <Str>            hostname for database connection. Only works if type is DBIC.
-      -user <Str>            username for database connection. Only works if type is DBIC.
-      -password <Str>        password for database connection. Only works if type is DBIC.
+      -driver <Str>          driver for database connection (eg. mysql, SQLite).
+      -database <Str>        database name or path to database file for file based databases (eg. SQLite).
+      -table <Str>           database table.
+      -host <Str>            hostname for database connection.
+      -user <Str>            username for database connection.
+      -password <Str>        password for database connection.
       -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
       -filter <Filter>       filter library. Option can be given multiple times.
                              Filter syntax: column_name="pattern"
@@ -68,42 +68,42 @@ has 'driver' => (
 	isa           => 'Str',
 	traits        => ['Getopt'],
 	default       => 'SQLite',
-	documentation => 'driver for database connection (eg. mysql, SQLite). Only works if type is DBIC.',
+	documentation => 'driver for database connection (eg. mysql, SQLite).',
 );
 
 has 'database' => (
 	is            => 'rw',
 	isa           => 'Str',
 	traits        => ['Getopt'],
-	documentation => 'database name or path to database file for file based databases (eg. SQLite). Only works if type is DBIC.',
+	documentation => 'database name or path to database file for file based databases (eg. SQLite).',
 );
 
 has 'table' => (
 	is            => 'rw',
 	isa           => 'Str',
 	traits        => ['Getopt'],
-	documentation => 'database table. Only works if type is DBIC.',
+	documentation => 'database table.',
 );
 
 has 'host' => (
 	is            => 'rw',
 	isa           => 'Str',
 	traits        => ['Getopt'],
-	documentation => 'hostname for database connection. Only works if type is DBIC.',
+	documentation => 'hostname for database connection.',
 );
 
 has 'user' => (
 	is            => 'rw',
 	isa           => 'Str',
 	traits        => ['Getopt'],
-	documentation => 'input type (eg. DBIC, BED, SAM).',
+	documentation => 'username for database connection.',
 );
 
 has 'password' => (
 	is            => 'rw',
 	isa           => 'Str',
 	traits        => ['Getopt'],
-	documentation => 'password for database connection. Only works if type is DBIC.',
+	documentation => 'password for database connection.',
 );
 
 has 'records_class' => (

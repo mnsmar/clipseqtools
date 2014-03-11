@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::Command::count_reads_on_genic_elements - Counts library reads on transcripts, genes, exons, introns
+CLIPSeqTools::App::Command::count_reads_on_genic_elements - Count library reads on transcripts, genes, exons, introns
 
 =head1 SYNOPSIS
 

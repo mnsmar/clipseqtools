@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::Command::genome_coverage - Measure the percent of the genome that is covered by the reads of a library.
+CLIPSeqTools::App::Command::genome_coverage - Measure percent of genome covered by library reads.
 
 =head1 SYNOPSIS
 
