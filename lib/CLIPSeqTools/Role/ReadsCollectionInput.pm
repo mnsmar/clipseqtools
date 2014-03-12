@@ -166,7 +166,7 @@ sub _build_collection {
 	
 	if ($self->type =~ /^DBIC$/) {
 		my $collection = $self->_build_collection_from_database;
-		$self->_apply_simple_filters_on_collection;
+		_apply_simple_filters_on_collection($self->filter, $collection);
 		return $collection;
 	}
 	elsif ($self->type =~ /^(BED|SAM)$/) {
@@ -196,15 +196,19 @@ sub _build_collection_from_database {
 	})->read_collection;
 }
 
+
+#######################################################################
+########################   Private Functions   ########################
+#######################################################################
 sub _apply_simple_filters_on_collection {
-	my ($self) = @_;
+	my ($filters, $collection) = @_;
 	
-	my @elements = @{$self->filter};
+	my @elements = @{$filters};
 	foreach my $element (@elements) {
 		$element =~ /^(.+?)=(.+?)$/;
 		my $col_name = $1;
 		my $filter   = $2;
-		$self->collection->simple_filter($col_name, $filter);
+		$collection->simple_filter($col_name, $filter);
 	}
 }
 
