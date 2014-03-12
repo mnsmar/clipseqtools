@@ -37,6 +37,7 @@ package CLIPSeqTools::Role::ReadsCollectionInput;
 use Modern::Perl;
 use autodie;
 use Moose::Role;
+use MooseX::App::Role;
 
 
 #######################################################################
@@ -48,76 +49,66 @@ use GenOO::RegionCollection::Factory;
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
-has 'type' => (
+option 'type' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => 'DBIC',
 	documentation => 'input type (eg. DBIC, BED, SAM).',
 );
 
-has 'file' => (
+option 'file' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'input file. Only works if type specifies a file type.',
 );
 
-has 'driver' => (
+option 'driver' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => 'SQLite',
 	documentation => 'driver for database connection (eg. mysql, SQLite).',
 );
 
-has 'database' => (
+option 'database' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'database name or path to database file for file based databases (eg. SQLite).',
 );
 
-has 'table' => (
+option 'table' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'database table.',
 );
 
-has 'host' => (
+option 'host' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'hostname for database connection.',
 );
 
-has 'user' => (
+option 'user' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'username for database connection.',
 );
 
-has 'password' => (
+option 'password' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'password for database connection.',
 );
 
-has 'records_class' => (
+option 'records_class' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3',
 	documentation => 'type of records stored in database.',
 );
 
-has 'filter' => (
+option 'filter' => (
 	is            => 'rw',
 	isa           => 'ArrayRef',
-	traits        => ['Getopt'],
 	default       => sub { [] },
 	documentation => 'filter library. Option can be given multiple times.'.
                      'Filter syntax: column_name="pattern"'.
@@ -131,7 +122,6 @@ has 'filter' => (
 ######################   Interface Attributes   #######################
 #######################################################################
 has 'reads_collection' => (
-	traits    => [ 'NoGetopt' ],
 	is        => 'rw',
 	builder   => '_build_collection',
 	lazy      => 1,
@@ -145,12 +135,12 @@ sub validate_args {
 	my ($self) = @_;
 	
 	if ($self->type eq 'DBIC') {
-		$self->usage_error('Driver for database connection is required for type DBIC') if !$self->driver;
-		$self->usage_error('Database name or path is required for type DBIC') if !$self->database;
-		$self->usage_error('Database table is required for type DBIC') if !$self->table;
+		$self->usage_error('Driver for database connection is required') if !$self->driver;
+		$self->usage_error('Database name or path is required') if !$self->database;
+		$self->usage_error('Database table is required') if !$self->table;
 	}
 	elsif ($self->type eq 'BED' or $self->type eq 'SAM') {
-		$self->usage_error('File is required for type '.$self->type) if !$self->file;
+		$self->usage_error('File is required') if !$self->file;
 	}
 	else {
 		$self->usage_error('Unknown or no input type specified');

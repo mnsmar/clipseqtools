@@ -21,15 +21,15 @@ package CLIPSeqTools::Role::VerbosityOption;
 use Modern::Perl;
 use autodie;
 use Moose::Role;
+use MooseX::App::Role;
 
 
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
-has 'verbose' => (
+option 'verbose' => (
 	is            => 'rw',
 	isa           => 'Bool',
-	traits        => ['Getopt'],
 	cmd_aliases   => 'v',
 	documentation => 'print progress lines and extra information.',
 );

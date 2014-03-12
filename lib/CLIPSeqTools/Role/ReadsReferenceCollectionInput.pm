@@ -37,6 +37,7 @@ package CLIPSeqTools::Role::ReadsReferenceCollectionInput;
 use Modern::Perl;
 use autodie;
 use Moose::Role;
+use MooseX::App::Role;
 
 
 #######################################################################
@@ -48,76 +49,66 @@ use GenOO::RegionCollection::Factory;
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
-has 'r_type' => (
+option 'r_type' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => 'DBIC',
 	documentation => 'input type (eg. DBIC, BED, SAM).',
 );
 
-has 'r_file' => (
+option 'r_file' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'input file. Only works if type specifies a file type.',
 );
 
-has 'r_driver' => (
+option 'r_driver' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => 'SQLite',
 	documentation => 'driver for database connection (eg. mysql, SQLite).',
 );
 
-has 'r_database' => (
+option 'r_database' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'database name or path to database file for file based databases (eg. SQLite).',
 );
 
-has 'r_table' => (
+option 'r_table' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'database table.',
 );
 
-has 'r_host' => (
+option 'r_host' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'hostname for database connection.',
 );
 
-has 'r_user' => (
+option 'r_user' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'username for database connection.',
 );
 
-has 'r_password' => (
+option 'r_password' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'password for database connection.',
 );
 
-has 'r_records_class' => (
+option 'r_records_class' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3',
 	documentation => 'type of records stored in database.',
 );
 
-has 'r_filter' => (
+option 'r_filter' => (
 	is            => 'rw',
 	isa           => 'ArrayRef',
-	traits        => ['Getopt'],
 	default       => sub { [] },
 	documentation => 'filter library. Option can be given multiple times.'.
                      'Filter syntax: column_name="pattern"'.

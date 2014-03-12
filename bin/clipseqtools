@@ -7,7 +7,6 @@ package clipseqtools;
 ##############################################
 # Import external libraries
 use Modern::Perl;
-use autodie;
 
 
 ##############################################
@@ -17,4 +16,4 @@ use CLIPSeqTools::App;
 
 ##############################################
 # Run the application
-CLIPSeqTools::App->run;
+CLIPSeqTools::App->new_with_command->run();

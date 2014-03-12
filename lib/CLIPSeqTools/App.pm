@@ -26,11 +26,24 @@ Bugs:        Please open issues in the GitHub repository L<https://github.com/pa
 package CLIPSeqTools::App;
 
 
+# Make it an App and load plugins
+use MooseX::App qw(Config Color BashCompletion Man);
+
+
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
-use Moose;
-use namespace::autoclean;
-extends 'MooseX::App::Cmd';
+use Modern::Perl;
+
+
+#######################################################################
+########################   Interface Methods   ########################
+#######################################################################
+sub usage_error {
+	my ($self, $error) = @_;
+	
+	say 'Usage error: '.$error;
+	exit 1;
+}
 
 1;

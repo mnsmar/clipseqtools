@@ -24,6 +24,7 @@ package CLIPSeqTools::Role::TranscriptCollectionInput;
 use Modern::Perl;
 use autodie;
 use Moose::Role;
+use MooseX::App::Role;
 
 
 #######################################################################
@@ -35,10 +36,9 @@ use GenOO::TranscriptCollection::Factory;
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
-has 'gtf' => (
+option 'gtf' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	documentation => 'GTF file with transcripts',
 );
 
@@ -47,7 +47,6 @@ has 'gtf' => (
 ######################   Interface Attributes   #######################
 #######################################################################
 has 'transcript_collection' => (
-	traits    => ['NoGetopt'],
 	is        => 'rw',
 	builder   => '_read_transcript_collection',
 	lazy      => 1,

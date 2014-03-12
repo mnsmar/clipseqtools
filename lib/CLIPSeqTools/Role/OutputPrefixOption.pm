@@ -25,15 +25,15 @@ use Modern::Perl;
 use autodie;
 use Moose::Role;
 use File::Path qw(make_path);
+use MooseX::App::Role;
 
 
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
-has 'o_prefix' => (
+option 'o_prefix' => (
 	is            => 'rw',
 	isa           => 'Str',
-	traits        => ['Getopt'],
 	default       => './',
 	documentation => 'output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./',
 );
