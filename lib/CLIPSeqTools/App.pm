@@ -40,9 +40,19 @@ use Modern::Perl;
 ########################   Interface Methods   ########################
 #######################################################################
 sub usage_error {
-	my ($self, $error) = @_;
+	my ($self, $error_msg) = @_;
 	
-	say 'Usage error: '.$error;
+	my $class = ref($self) || $self;
+	my $meta = $class->meta;
+	
+	MooseX::App::Message::Envelope->new(
+		$meta->command_message(
+			header          => $error_msg,
+			type            => "error",
+		),
+		$meta->command_usage_command($meta),
+	)->run;
+	
 	exit 1;
 }
 
