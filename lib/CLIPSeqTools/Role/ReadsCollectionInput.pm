@@ -8,7 +8,7 @@ Role to enable reading a library with reads from the command line
 
   Defines options.
       -type <Str>            input type (eg. DBIC, BED).
-      -file <Str>            input file. Only works if type specifies a file type.
+      -file <Str>            input file. Only works if type is a file type.
       -driver <Str>          driver for database connection (eg. mysql, SQLite).
       -database <Str>        database name or path to database file for file based databases (eg. SQLite).
       -table <Str>           database table.
@@ -17,10 +17,10 @@ Role to enable reading a library with reads from the command line
       -password <Str>        password for database connection.
       -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
       -filter <Filter>       filter library. Option can be given multiple times.
-                             Filter syntax: column_name="pattern"
+                             Syntax: column_name="pattern"
                                e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
                                e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
-                             Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
+                             Supported operators: >, >=, <, <=, =, !=, def, undef.
 
   Provides attributes.
       reads_collection      the collection of reads that is read from the source specified by the options above
@@ -59,7 +59,7 @@ option 'type' => (
 option 'file' => (
 	is            => 'rw',
 	isa           => 'Str',
-	documentation => 'input file. Only works if type specifies a file type.',
+	documentation => 'input file. Only if type is a file type.',
 );
 
 option 'driver' => (
@@ -72,7 +72,7 @@ option 'driver' => (
 option 'database' => (
 	is            => 'rw',
 	isa           => 'Str',
-	documentation => 'database name or path to database file for file based databases (eg. SQLite).',
+	documentation => 'database name or path.',
 );
 
 option 'table' => (
@@ -110,11 +110,11 @@ option 'filter' => (
 	is            => 'rw',
 	isa           => 'ArrayRef',
 	default       => sub { [] },
-	documentation => 'filter library. Option can be given multiple times.'.
-                     'Filter syntax: column_name="pattern"'.
-                     '  e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.'.
-                     '  e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or equal to 50.'.
-                     'Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"',
+	documentation => 'filter library. Option can be given multiple times. '.
+                     'Syntax: column_name="pattern" '.
+                     'e.g. -filter deletion="def" -filter rmsk="undef" -filter query_length=">31" '.
+                     'to keep reads with deletions AND not repeats AND longer than 31. '.
+                     'Supported operators: >, >=, <, <=, =, !=, def, undef.',
 );
 
 

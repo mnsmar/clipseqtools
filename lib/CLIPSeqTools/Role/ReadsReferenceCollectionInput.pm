@@ -10,17 +10,17 @@ Role to enable reading reference libraries with reads from the command line
       -r_type <Str>            input type for reference library (eg. DBIC, BED).
       -r_file <Str>            input file for reference library. Only works if type specifies a file type.
       -r_driver <Str>          driver for database connection  for reference library(eg. mysql, SQLite).
-      -r_database <Str>        database name or path to database file for file based databases for reference library (eg. SQLite).
+      -r_database <Str>        database name or path for reference library (eg. SQLite).
       -r_table <Str>           database table for reference library.
       -r_host <Str>            hostname for database connection for reference library.
       -r_user <Str>            username for database connection for reference library.
       -r_password <Str>        password for database connection for reference library.
       -r_records_class <Str>   type of records stored in database  for reference library (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
       -r_filter <Filter>       filter library. Option can be given multiple times.
-                               Filter syntax: column_name="pattern"
+                               Syntax: column_name="pattern"
                                  e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
                                  e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
-                               Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"
+                               Supported operators: >, >=, <, <=, =, !=, def, undef.
 
   Provides attributes.
       r_reads_collection      the collections of reads that are read from the source specified by the options above
@@ -54,12 +54,14 @@ option 'r_type' => (
 	isa           => 'Str',
 	default       => 'DBIC',
 	documentation => 'input type (eg. DBIC, BED, SAM).',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_file' => (
 	is            => 'rw',
 	isa           => 'Str',
-	documentation => 'input file. Only works if type specifies a file type.',
+	documentation => 'input file. Only if r_type is a file type.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_driver' => (
@@ -67,36 +69,42 @@ option 'r_driver' => (
 	isa           => 'Str',
 	default       => 'SQLite',
 	documentation => 'driver for database connection (eg. mysql, SQLite).',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_database' => (
 	is            => 'rw',
 	isa           => 'Str',
-	documentation => 'database name or path to database file for file based databases (eg. SQLite).',
+	documentation => 'database name or path.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_table' => (
 	is            => 'rw',
 	isa           => 'Str',
 	documentation => 'database table.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_host' => (
 	is            => 'rw',
 	isa           => 'Str',
 	documentation => 'hostname for database connection.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_user' => (
 	is            => 'rw',
 	isa           => 'Str',
 	documentation => 'username for database connection.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_password' => (
 	is            => 'rw',
 	isa           => 'Str',
 	documentation => 'password for database connection.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_records_class' => (
@@ -104,17 +112,19 @@ option 'r_records_class' => (
 	isa           => 'Str',
 	default       => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3',
 	documentation => 'type of records stored in database.',
+	cmd_tags        => ['Reference library'],
 );
 
 option 'r_filter' => (
 	is            => 'rw',
 	isa           => 'ArrayRef',
 	default       => sub { [] },
-	documentation => 'filter library. Option can be given multiple times.'.
-                     'Filter syntax: column_name="pattern"'.
-                     '  e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.'.
-                     '  e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or equal to 50.'.
-                     'Supported operators: ">", ">=", "<", "<=", "=", "!=","def", "undef"',
+	documentation => 'filter reference library. Option can be given multiple times. '.
+                     'Syntax: column_name="pattern" '.
+                     'e.g. -r_filter deletion="def" -r_filter rmsk="undef" -r_filter query_length=">31" '.
+                     'to keep reads with deletions AND not repeats AND longer than 31. '.
+                     'Supported operators: >, >=, <, <=, =, !=, def, undef.',
+    cmd_tags        => ['Reference library'],
 );
 
 
@@ -136,12 +146,12 @@ sub validate_args {
 	my ($self) = @_;
 	
 	if ($self->r_type eq 'DBIC') {
-		$self->usage_error('Driver for database connection is required for type DBIC') if !$self->r_driver;
-		$self->usage_error('Database name or path is required for type DBIC') if !$self->r_database;
-		$self->usage_error('Database table is required for type DBIC') if !$self->r_table;
+		$self->usage_error('Driver for database connection is required') if !$self->r_driver;
+		$self->usage_error('Database name or path is required') if !$self->r_database;
+		$self->usage_error('Database table is required') if !$self->r_table;
 	}
 	elsif ($self->r_type eq 'BED' or $self->r_type eq 'SAM') {
-		$self->usage_error('File is required for type '.$self->r_type) if !$self->r_file;
+		$self->usage_error('File is required') if !$self->r_file;
 	}
 	else {
 		$self->usage_error('Unknown or no input type specified');
