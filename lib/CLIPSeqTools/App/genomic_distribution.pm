@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::genomic_distribution - Count reads on genes, repeats, exons, ...
+CLIPSeqTools::App::genomic_distribution - Count reads on genes, repeats, exons, introns, 5'UTRs, ...
 
 =head1 SYNOPSIS
 
@@ -99,7 +99,7 @@ option 'file' => (
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_output_prefix_option;
@@ -107,7 +107,7 @@ sub validate_args {
 }
 
 sub run {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();

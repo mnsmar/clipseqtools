@@ -112,7 +112,7 @@ with
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_transcriptcollection_input;
@@ -121,7 +121,7 @@ sub validate_args {
 }
 
 sub run {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();

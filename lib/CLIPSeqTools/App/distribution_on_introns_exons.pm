@@ -13,9 +13,6 @@ Split the exons and introns of coding transcripts in bins and measure the read d
 
 =head1 OPTIONS
 
-Measure the distribution of reads along idealized exons and introns.
-Split the exons and introns of coding transcripts in bins and measure the read density in each bin.
-
   Input options for library.
     -type <Str>            input type (eg. DBIC, BED).
     -file <Str>            input file. Only works if type specifies a file type.
@@ -115,7 +112,7 @@ with
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_transcriptcollection_input;
@@ -124,7 +121,7 @@ sub validate_args {
 }
 
 sub run {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
