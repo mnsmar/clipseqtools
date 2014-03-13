@@ -86,6 +86,7 @@ use PDL::Lite; $PDL::BIGPDL = 0; $PDL::BIGPDL++; # enable huge pdls
 option 'rname_sizes' => (
 	is            => 'rw',
 	isa           => 'Str',
+	required      => 1,
 	documentation => 'file with sizes for reference alignment sequences (rnames). Must be tab delimited (chromosome\tsize) with one line per rname.',
 );
 

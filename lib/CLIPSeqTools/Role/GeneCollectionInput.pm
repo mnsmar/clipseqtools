@@ -41,6 +41,7 @@ use GenOO::TranscriptCollection::Factory;
 option 'gtf' => (
 	is            => 'rw',
 	isa           => 'Str',
+	required      => 1,
 	documentation => 'GTF file with genes/transcripts',
 );
 
@@ -66,11 +67,7 @@ has 'transcript_collection' => (
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
-sub validate_args {
-	my ($self) = @_;
-	
-	$self->usage_error('GTF file with genes/transcripts is required') if !$self->gtf;
-}
+sub validate_args {}
 
 
 #######################################################################
