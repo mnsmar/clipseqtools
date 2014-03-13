@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::count_reads_on_genic_elements - Count library reads on transcripts, genes, exons, introns
+CLIPSeqTools::App::count_reads_on_genic_elements - Count reads on transcripts, genes, exons, introns
 
 =head1 SYNOPSIS
 
@@ -15,7 +15,7 @@ Counts library reads on transcripts, genes, exons, introns.
 
 =head1 OPTIONS
 
-Input options for library.
+  Input options for library.
     -type <Str>            input type (eg. DBIC, BED).
     -file <Str>            input file. Only works if type specifies a file type.
     -driver <Str>          driver for database connection (eg. mysql,
@@ -63,7 +63,6 @@ extends 'CLIPSeqTools::App';
 #######################################################################
 use Modern::Perl;
 use autodie;
-use Moose;
 use namespace::autoclean;
 use File::Spec;
 use List::Util qw(sum max);

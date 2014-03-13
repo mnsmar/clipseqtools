@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::genomic_distribution - Count reads on genes, repeats, exons, etc.
+CLIPSeqTools::App::genomic_distribution - Count reads on genes, repeats, exons, ...
 
 =head1 SYNOPSIS
 
