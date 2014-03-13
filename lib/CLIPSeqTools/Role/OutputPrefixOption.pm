@@ -35,7 +35,7 @@ option 'o_prefix' => (
 	is            => 'rw',
 	isa           => 'Str',
 	default       => './',
-	documentation => 'output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./',
+	documentation => 'output path prefix. Program will add an extension to prefix. If path does not exist it will be created.',
 );
 
 

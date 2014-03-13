@@ -66,7 +66,6 @@ use Modern::Perl;
 use autodie;
 use namespace::autoclean;
 use File::Spec;
-use List::Util qw(sum max);
 
 
 #######################################################################
@@ -76,14 +75,14 @@ option 'bins' => (
 	is            => 'rw',
 	isa           => 'Int',
 	default       => 10,
-	documentation => 'number of bins each element is split into. Default: 10',
+	documentation => 'number of bins each element is split into.',
 );
 
 option 'length_thres' => (
 	is            => 'rw',
 	isa           => 'Int',
 	default       => 300,
-	documentation => 'genic elements shorter than this are skipped. Default: 300',
+	documentation => 'genic elements shorter than this are skipped.',
 );
 
 
