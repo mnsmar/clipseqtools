@@ -50,7 +50,7 @@ sub make_path_for_output_prefix {
 }
 
 sub validate_args {
-	my ($self, $opt, $args) = @_;
+	my ($self) = @_;
 	
 	$self->usage_error('Output path prefix is required') if !$self->o_prefix;
 }

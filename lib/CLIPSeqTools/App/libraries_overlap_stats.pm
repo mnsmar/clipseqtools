@@ -14,7 +14,7 @@ Count reads of library A that overlap those of reference library B.
 
   Input options for library.
     -type <Str>            input type (eg. DBIC, BED).
-    -file <Str>            input file. Only if type specifies a file type.
+    -file <Str>            input file. Only if type is a file type.
     -driver <Str>          driver for database connection (eg. mysql,
                            SQLite).
     -database <Str>        database name or path to database file for file
@@ -35,7 +35,7 @@ Count reads of library A that overlap those of reference library B.
 
   Input options for reference library.
     -r_type <Str>          input type (eg. DBIC, BED).
-    -r_file <Str>          input file. Only if r_type specifies a file type.
+    -r_file <Str>          input file. Only if r_type is a file type.
     -r_driver <Str>        driver for database connection (eg. mysql, 
                            SQLite).
     -r_database <Str>      database name or path to database file for file

@@ -15,7 +15,7 @@ Split the 5'UTR, CDS and 3'UTR of coding transcripts in bins and measure the rea
 
   Input options for library.
     -type <Str>            input type (eg. DBIC, BED).
-    -file <Str>            input file. Only works if type specifies a file type.
+    -file <Str>            input file. Only works if type is a file type.
     -driver <Str>          driver for database connection (eg. mysql,
                            SQLite).
     -database <Str>        database name or path to database file for file
