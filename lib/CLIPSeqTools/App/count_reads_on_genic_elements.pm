@@ -4,7 +4,7 @@ CLIPSeqTools::App::count_reads_on_genic_elements - Count reads on transcripts, g
 
 =head1 SYNOPSIS
 
-count_tags_per_genic_element.pl [options/parameters]
+clipseqtools count_tags_per_genic_element [options/parameters]
 
 =head1 DESCRIPTION
 

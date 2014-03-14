@@ -4,7 +4,7 @@ CLIPSeqTools::App::distribution_on_introns_exons - Measure read distribution on 
 
 =head1 SYNOPSIS
 
-distribution_on_introns_exons.pl [options/parameters]
+clipseqtools distribution_on_introns_exons [options/parameters]
 
 =head1 DESCRIPTION
 

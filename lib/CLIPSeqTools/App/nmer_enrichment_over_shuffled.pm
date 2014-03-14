@@ -4,7 +4,7 @@ CLIPSeqTools::App::nmer_enrichment_over_shuffled - Measure Nmer enrichment over 
 
 =head1 SYNOPSIS
 
-nmer_enrichment_over_shuffled.pl [options/parameters]
+clipseqtools nmer_enrichment_over_shuffled [options/parameters]
 
 =head1 DESCRIPTION
 

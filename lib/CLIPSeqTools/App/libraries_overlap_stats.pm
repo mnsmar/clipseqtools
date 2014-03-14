@@ -4,7 +4,7 @@ CLIPSeqTools::App::libraries_overlap_stats - Count reads of library A that overl
 
 =head1 SYNOPSIS
 
-libraries_overlap_stats.pl [options/parameters]
+clipseqtools libraries_overlap_stats [options/parameters]
 
 =head1 DESCRIPTION
 

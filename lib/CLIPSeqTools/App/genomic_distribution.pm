@@ -4,7 +4,7 @@ CLIPSeqTools::App::genomic_distribution - Count reads on genes, repeats, exons, 
 
 =head1 SYNOPSIS
 
-genomic_distribution.pl [options/parameters]
+clipseqtools genomic_distribution [options/parameters]
 
 =head1 DESCRIPTION
 

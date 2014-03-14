@@ -4,7 +4,7 @@ CLIPSeqTools::App::distribution_on_genic_elements - Measure read distribution on
 
 =head1 SYNOPSIS
 
-distribution_on_genic_elements.pl [options/parameters]
+clipseqtools distribution_on_genic_elements [options/parameters]
 
 =head1 DESCRIPTION
 

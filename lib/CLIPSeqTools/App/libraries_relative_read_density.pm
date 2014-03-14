@@ -4,7 +4,7 @@ CLIPSeqTools::App::libraries_relative_read_density - Measure read density around
 
 =head1 SYNOPSIS
 
-libraries_relative_read_density.pl [options/parameters]
+clipseqtools libraries_relative_read_density [options/parameters]
 
 =head1 DESCRIPTION
 

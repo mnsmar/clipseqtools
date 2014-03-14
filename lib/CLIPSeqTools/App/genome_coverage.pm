@@ -4,7 +4,7 @@ CLIPSeqTools::App::genome_coverage - Measure percent of genome covered by reads.
 
 =head1 SYNOPSIS
 
-genome_coverage.pl [options/parameters]
+clipseqtools genome_coverage [options/parameters]
 
 =head1 DESCRIPTION
 

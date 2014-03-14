@@ -4,7 +4,7 @@ CLIPSeqTools::App::normalize_tables_with_UQ - Do Upper Quartile normalization on
 
 =head1 SYNOPSIS
 
-normalize_tables_with_UQ.pl [options/parameters]
+clipseqtools normalize_tables_with_UQ [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -196,26 +196,6 @@ sub all_tables_of_equal_size {
 	
 	return 1;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 1;
