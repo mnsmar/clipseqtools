@@ -81,14 +81,14 @@ with
 #######################################################################
 ###################   Silence command line options   ##################
 #######################################################################
-option 'type' => (
+has 'type' => (
 	is            => 'ro',
 	isa           => 'Str',
 	default       => 'DBIC',
 	documentation => 'input type (eg. DBIC, BED, SAM).',
 );
 
-option 'file' => (
+has 'file' => (
 	is            => 'ro',
 	isa           => 'Str',
 	documentation => 'input file. Only works if type specifies a file type.',
