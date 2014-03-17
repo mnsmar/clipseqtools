@@ -1,16 +1,15 @@
 =head1 NAME
 
-CLIPSeqTools::DBApp::annotate_with_genic_elements - Annotate database table containing alignments with genic elements.
+CLIPSeqTools::DBApp::annotate_with_file - Annotate an alignments containing database table with regions from a file (ie BED, SAM).
 
 =head1 SYNOPSIS
 
-clipseqtools-db annotate_with_genic_elements [options/parameters]
+clipseqtools-db annotate_with_file [options/parameters]
 
 =head1 DESCRIPTION
 
-Annotate a database table that contains alignments with gene transcript info.
-Add columns named "transcript", "exon", "coding_transcript", "utr5", "cds", "utr3".
-Column values will be null if the alignment is contained in a corresponding region and not null otherwise.
+Annotate an alignments containing database table with regions from a file (ie BED, SAM).
+Add a user defined column that will be NOT NULL if an alignment is contained within a region from the file and NULL otherwise.
 
 =head1 OPTIONS
 
@@ -34,19 +33,26 @@ Column values will be null if the alignment is contained in a corresponding regi
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Other input
-    -gtf <Str>             GTF file with genes/transcripts.
+    -a_type <Str>          type of file with annotation regions (ie. BED,
+                           SAM).
+    -a_file <Str>          file with annotation regions.
 
   Database options.
-    -drop                  drop columns if they already exist (not
+    -drop                  drop column if it already exists (not
                            supported in SQlite).
 
   Other options.
+    -column <Str>          name for the new annotation column.
+    -both_strands          annotate both strands irrespective of the
+                           region strand specified in the file. May be
+                           useful for repeats where only one strand is
+                           usually provided.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
 
 =cut
 
-package CLIPSeqTools::DBApp::annotate_with_genic_elements;
+package CLIPSeqTools::DBApp::annotate_with_file;
 
 
 # Make it an app command
@@ -67,10 +73,37 @@ use Try::Tiny;
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
+option 'a_type' => (
+	is            => 'rw',
+	isa           => 'Str',
+	default       => 'BED',
+	documentation => 'type of file with annotation regions (ie. BED, SAM).',
+);
+
+option 'a_file' => (
+	is            => 'rw',
+	isa           => 'Str',
+	required      => 1,
+	documentation => 'file with annotation regions.',
+);
+
+option 'column' => (
+	is            => 'rw',
+	isa           => 'Str',
+	required      => 1,
+	documentation => 'name for the new annotation column.',
+);
+
 option 'drop' => (
 	is            => 'rw',
 	isa           => 'Bool',
 	documentation => 'drop columns if they already exist (not supported in SQlite).',
+);
+
+option 'both_strands' => (
+	is            => 'rw',
+	isa           => 'Bool',
+	documentation => 'annotate both strands irrespective of the region strand specified in the file. May be useful for repeats where only one strand is usually provided.',
 );
 
 
@@ -80,10 +113,6 @@ option 'drop' => (
 with 
 	"CLIPSeqTools::Role::ReadsCollectionInput" => {
 		-alias    => { validate_args => '_validate_args_for_reads_collection_input' },
-		-excludes => 'validate_args',
-	},
-	"CLIPSeqTools::Role::TranscriptCollectionInput" => {
-		-alias    => { validate_args => '_validate_args_for_transcriptcollection_input' },
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::VerbosityOption" => {
@@ -124,7 +153,6 @@ sub validate_args {
 	my ($self) = @_;
 	
 	$self->_validate_args_for_reads_collection_input;
-	$self->_validate_args_for_transcriptcollection_input;
 	$self->_validate_args_for_verbosity_option;
 }
 
@@ -134,86 +162,51 @@ sub run {
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
 
-	warn "Creating transcript collection\n" if $self->verbose;
-	my $transcript_collection = $self->transcript_collection;
+	warn "Opening annotations file\n" if $self->verbose;
+	my $a_class = 'GenOO::Data::File::'.$self->a_type;
+	eval 'require ' . $a_class;
+	my $a_file_parser = $a_class->new(file => $self->a_file);
 
-	warn "Creating reads collection\n" if $self->verbose;
+	warn "Opening reads collection\n" if $self->verbose;
 	my $reads_collection = $self->reads_collection;
 	my $reads_rs = $reads_collection->resultset;
 
-
-	my $table = $self->table;
 	if ($self->drop) {
-		warn "Droping columns transcript, exon, coding_transcript, utr5, cds, utr3\n" if $self->verbose;
+		warn "Droping column ".$self->column."\n" if $self->verbose;
 		try {
 			$reads_collection->schema->storage->dbh_do( sub {
 				my ($storage, $dbh, @cols) = @_;
-				$dbh->do( "ALTER TABLE $table DROP COLUMN transcript" );
-				$dbh->do( "ALTER TABLE $table DROP COLUMN exon" );
-				$dbh->do( "ALTER TABLE $table DROP COLUMN coding_transcript" );
-				$dbh->do( "ALTER TABLE $table DROP COLUMN utr5" );
-				$dbh->do( "ALTER TABLE $table DROP COLUMN cds" );
-				$dbh->do( "ALTER TABLE $table DROP COLUMN utr3" );
+				$dbh->do('ALTER TABLE '.$self->table.' DROP COLUMN '.$self->column);
 			});
 		};
 	}
 
 	try {
-		warn "Creating columns transcript, exon, coding_transcript, utr5, cds, utr3\n" if $self->verbose;
+		warn "Creating column ".$self->column."\n" if $self->verbose;
 		$reads_collection->schema->storage->dbh_do( sub {
 			my ($storage, $dbh, @cols) = @_;
-			$dbh->do( "ALTER TABLE $table ADD COLUMN transcript INT(1)" );
-			$dbh->do( "ALTER TABLE $table ADD COLUMN coding_transcript INT(1)" );
-			$dbh->do( "ALTER TABLE $table ADD COLUMN exon INT(1)" );
-			$dbh->do( "ALTER TABLE $table ADD COLUMN utr5 INT(1)" );
-			$dbh->do( "ALTER TABLE $table ADD COLUMN cds INT(1)" );
-			$dbh->do( "ALTER TABLE $table ADD COLUMN utr3 INT(1)" );
+			$dbh->do('ALTER TABLE '.$self->table.' ADD COLUMN '.$self->column.' INT(1)');
 		});
 	} catch {
-		warn "Warning: Column creation failed. Maybe some columns already exist.\n" if $self->verbose;
-		warn "Caught error: $_\n"  if $self->verbose > 1;
+		warn "Warning: Column creation failed. Maybe column already exist.\n" if $self->verbose;
+		warn "$_\n"  if $self->verbose > 1;
 	};
 
-	warn "Looping on transcripts to annotate records.\nThis might take a long time. Relax...\n" if $self->verbose;
-	$reads_collection->schema->txn_do(sub {
-		$transcript_collection->foreach_record_do( sub {
-			my ($transcript) = @_;
+	warn "Looping on annotation file to annotate records.\nThis might take a long time. Relax...\n" if $self->verbose;
+	$reads_collection->schema->txn_do( sub {
+		while (my $record = $a_file_parser->next_record) {
+			my $search_hs = {
+				rname         => $record->rname,
+				start         => { '-between' => [$record->start, $record->stop] },
+				stop          => { '-between' => [$record->start, $record->stop] },
+			};
+			$search_hs->{strand} = $record->strand if !$self->both_strands;
 			
-			my $transcript_reads_rs = $reads_rs->search({
-				strand => $transcript->strand,
-				rname  => $transcript->rname,
-				start  => { '-between' => [$transcript->start, $transcript->stop] },
-				stop   => { '-between' => [$transcript->start, $transcript->stop] },
-			});
+			$reads_rs->search($search_hs)->update({$self->column => 1});
 			
-			$transcript_reads_rs->update({transcript => 1});
-			
-			foreach my $exon (@{$transcript->exons}) {
-				my $exon_reads_rs = $transcript_reads_rs->search([
-					start => { '-between' => [$exon->start, $exon->stop] },
-					stop  => { '-between' => [$exon->start, $exon->stop] },
-				]);
-				
-				$exon_reads_rs->update({exon => 1});
-			}
-			
-			if ($transcript->is_coding) {
-				foreach my $part_type ('utr5', 'cds', 'utr3') {
-					my $part = $transcript->$part_type() or next;
-					my $part_reads_rs = $transcript_reads_rs->search([
-						start => { '-between' => [$part->start, $part->stop] },
-						stop  => { '-between' => [$part->start, $part->stop] },
-					]);
-					
-					$part_reads_rs->update({$part_type => 1});
-				}
-				
-				$transcript_reads_rs->update({coding_transcript => 1});
-			}
-		});
+			warn " Parsed records: ".$a_file_parser->records_read_count."\n" if $self->verbose > 1 and $a_file_parser->records_read_count % 10000 == 0;
+		}
 	});
-
 }
-
 
 1;
