@@ -45,4 +45,4 @@ plot(idata$relative_position, idata$norm_counts_no_copy_number_antisense, type="
 abline(v=0, lty=2, col="grey", lwd=1.5)
 
 mtext(figfile, outer = TRUE, cex = 1.5)
-dev.off()
+graphics.off()

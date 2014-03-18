@@ -29,4 +29,4 @@ plot(idata$bin[idata$element == 'exon'], idata$avg_rpkm[idata$element   == 'exon
 plot(idata$bin[idata$element == 'intron'],  idata$avg_rpkm[idata$element   == 'intron'],  type="b", ylim=c(0, max(idata$avg_rpkm)),   col=mypalette[2], main="Intron",   xlab="Bin", ylab="Average RPKM")
 plot(idata$bin[idata$element == 'exon'], idata$avg_counts[idata$element == 'exon'], type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[1], main="Exon", xlab="Bin", ylab="Average number of reads")
 plot(idata$bin[idata$element == 'intron'],  idata$avg_counts[idata$element == 'intron'],  type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[2], main="Intron",   xlab="Bin", ylab="Average number of reads")
-dev.off()
+graphics.off()
