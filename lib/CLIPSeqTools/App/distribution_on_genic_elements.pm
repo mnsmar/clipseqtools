@@ -46,6 +46,7 @@ Split the 5'UTR, CDS and 3'UTR of coding transcripts in bins and measure the rea
                            Default: 10
     -length_thres <Int>    genic elements shorter than this are skipped.
                            Default: 300
+    -plot                  call plotting script to create plots.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
     
@@ -98,6 +99,10 @@ with
 		-alias    => { validate_args => '_validate_args_for_transcriptcollection_input' },
 		-excludes => 'validate_args',
 	},
+	"CLIPSeqTools::Role::PlotOption" => {
+		-alias    => { validate_args => '_validate_args_for_plot_option' },
+		-excludes => 'validate_args',
+	},
 	"CLIPSeqTools::Role::OutputPrefixOption" => {
 		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
 		-excludes => 'validate_args',
@@ -116,6 +121,7 @@ sub validate_args {
 	
 	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_transcriptcollection_input;
+	$self->_validate_args_for_plot_option;
 	$self->_validate_args_for_output_prefix_option;
 	$self->_validate_args_for_verbosity_option;
 }
@@ -197,6 +203,14 @@ sub run {
 	}
 	foreach my $bin (0..$self->bins-1) {
 		say $OUT join("\t", $bin, 'utr3', $utr3_binned_mean_reads[$bin], $utr3_binned_mean_reads_per_nt[$bin], $utr3_binned_mean_percent_reads_per_nt[$bin]);
+	}
+	
+	if ($self->plot) {
+		warn "Creating plot\n" if $self->verbose;
+		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::distribution_on_genic_elements', 
+			file     => $self->o_prefix.'distribution_on_genic_elements.tab',
+			o_prefix => $self->o_prefix
+		)->run();
 	}
 }
 

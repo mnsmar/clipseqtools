@@ -37,6 +37,7 @@ such as genic, intergenic, repeats, exonic, intronic, etc.
                            extension to path. Default: ./
 
   Other options.
+    -plot                  call plotting script to create plots.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
 
@@ -66,6 +67,10 @@ use List::Util qw(sum max);
 with 
 	"CLIPSeqTools::Role::ReadsCollectionInput" => {
 		-alias    => { validate_args => '_validate_args_for_reads_collection_input' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::PlotOption" => {
+		-alias    => { validate_args => '_validate_args_for_plot_option' },
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::OutputPrefixOption" => {
@@ -102,6 +107,7 @@ sub validate_args {
 	my ($self) = @_;
 	
 	$self->_validate_args_for_reads_collection_input;
+	$self->_validate_args_for_plot_option;
 	$self->_validate_args_for_output_prefix_option;
 	$self->_validate_args_for_verbosity_option;
 }
@@ -114,7 +120,7 @@ sub run {
 	
 	warn "Creating reads collection\n" if $self->verbose;
 	my $reads_collection = $self->reads_collection;
-	$reads_collection->schema->storage->debug(1) if $self->verbose;
+	$reads_collection->schema->storage->debug(1) if $self->verbose > 1;
 
 	warn "Preparing reads resultset\n" if $self->verbose;
 	my $reads_rs = $reads_collection->resultset;
@@ -227,6 +233,14 @@ sub run {
 		join("\t", 'CDS (+exonic +code -repeat)',  $counts{'cds-exonic-coding-norepeat'},  $counts{'total'})."\n".
 		join("\t", '3UTR (+exonic +code -repeat)', $counts{'utr3-exonic-coding-norepeat'}, $counts{'total'})."\n";
 	close $OUT;
+	
+	if ($self->plot) {
+		warn "Creating plot\n" if $self->verbose;
+		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::genomic_distribution', 
+			file     => $self->o_prefix.'genomic_distribution.tab',
+			o_prefix => $self->o_prefix
+		)->run();
+	}
 }
 
 

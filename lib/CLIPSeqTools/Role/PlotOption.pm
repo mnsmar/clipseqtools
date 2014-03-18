@@ -1,18 +1,18 @@
 =head1 NAME
 
-CLIPSeqTools::Role::VerbosityOption - Role to enable verbose option from the command line
+CLIPSeqTools::Role::PlotOption - Role to enable plot option from the command line
 
 =head1 SYNOPSIS
 
-Role to enable verbosity option from the command line
+Role to enable plot option from the command line
 
   Defines options.
-      -v --verbose         print progress lines and extra information.
+      --plot            call plotting script to create plots.
 
 =cut
 
 
-package CLIPSeqTools::Role::VerbosityOption;
+package CLIPSeqTools::Role::PlotOption;
 
 
 #######################################################################
@@ -25,13 +25,18 @@ use MooseX::App::Role;
 
 
 #######################################################################
+####################   Load CLIPSeqTools plotting   ###################
+#######################################################################
+use CLIPSeqTools::PlotApp;
+
+
+#######################################################################
 #######################   Command line options   ######################
 #######################################################################
-option 'verbose' => (
+option 'plot' => (
 	is            => 'rw',
 	isa           => 'Bool',
-	cmd_aliases   => 'v',
-	documentation => 'print progress lines and extra information.',
+	documentation => 'call plotting script to create plots.',
 );
 
 

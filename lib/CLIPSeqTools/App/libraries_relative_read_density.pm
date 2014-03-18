@@ -59,6 +59,7 @@ For a library A and a reference library B, measure the density of A reads around
   Other options.
     -span <Int>            the region around reference reads where density
                            is measured.
+    -plot                  call plotting script to create plots.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
 
@@ -112,6 +113,10 @@ with
 		-alias    => { validate_args => '_validate_args_for_reads_r_collection_input' },
 		-excludes => 'validate_args',
 	},
+	"CLIPSeqTools::Role::PlotOption" => {
+		-alias    => { validate_args => '_validate_args_for_plot_option' },
+		-excludes => 'validate_args',
+	},
 	"CLIPSeqTools::Role::OutputPrefixOption" => {
 		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
 		-excludes => 'validate_args',
@@ -130,6 +135,7 @@ sub validate_args {
 	
 	$self->_validate_args_for_reads_collection_input;
 	$self->_validate_args_for_reads_r_collection_input;
+	$self->_validate_args_for_plot_option;
 	$self->_validate_args_for_output_prefix_option;
 	$self->_validate_args_for_verbosity_option;
 }
@@ -223,6 +229,14 @@ sub run {
 		say $OUT join("\t", $distance, $counts_with_copy_number_sense->at($idx), $counts_no_copy_number_sense->at($idx), $counts_with_copy_number_antisense->at($idx), $counts_no_copy_number_antisense->at($idx));
 	}
 	close $OUT;
+	
+	if ($self->plot) {
+		warn "Creating plot\n" if $self->verbose;
+		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::libraries_relative_read_density', 
+			file     => $self->o_prefix.'libraries_relative_read_density.tab',
+			o_prefix => $self->o_prefix
+		)->run();
+	}
 }
 
 sub read_rname_sizes {
