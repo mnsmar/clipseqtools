@@ -18,13 +18,42 @@ Source code: The source has been deposited in GitHub L<https://github.com/palexi
 Contribute:  Please fork the GitHub repository and provide patches, features or tests.
 Bugs:        Please open issues in the GitHub repository L<https://github.com/palexiou/GenOO-CLIP/issues>
 
+=head1 EXAMPLES
+
 =cut
 
-# Let the code begin...
+
+package CLIPSeqTools::App;
 
 
-package CLIPSeqTools;
+# Make it an App and load plugins
+use MooseX::App qw(Config Color BashCompletion Man);
 
+
+#######################################################################
+#######################   Load External modules   #####################
+#######################################################################
 use Modern::Perl;
+
+
+#######################################################################
+########################   Interface Methods   ########################
+#######################################################################
+sub usage_error {
+	my ($self, $error_msg) = @_;
+	
+	my $class = ref($self) || $self;
+	my $meta = $class->meta;
+	
+	MooseX::App::Message::Envelope->new(
+		$meta->command_message(
+			header          => $error_msg,
+			type            => "error",
+		),
+		$meta->command_usage_command($meta),
+	)->run;
+	
+	exit 1;
+}
 
 1;
