@@ -21,7 +21,7 @@ Create plots for script genomic_distribution.
 
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
-    
+
 =cut
 
 package CLIPSeqTools::PlotApp::genomic_distribution;
@@ -39,6 +39,7 @@ use Modern::Perl;
 use autodie;
 use namespace::autoclean;
 use File::Spec;
+use Statistics::R;
 
 
 #######################################################################
@@ -89,8 +90,45 @@ sub run {
 	$filename =~ s/\.tab$//;
 	my $figfile = $self->o_prefix . $filename . '.pdf';
 	
-	warn "Creating plots\n" if $self->verbose;
-	system q{Rscript bin/plot_genomic_distribution.R --ifile=} . $self->file . q{ --figfile=} . $figfile;
+	warn "Creating plots with R\n" if $self->verbose;
+	$self->run_R;
+}
+
+sub run_R {
+	my ($self) = @_;
+	
+	# Build output file by replacing suffix .tab with .pdf
+	my (undef, undef, $filename) = File::Spec->splitpath($self->file);
+	$filename =~ s/\.tab$//;
+	my $figfile = $self->o_prefix . $filename . '.pdf';
+	
+	# Start R
+	my $R = Statistics::R->new();
+	
+	# Pass arguments to R
+	$R->set('ifile', $self->file);
+	$R->set('figfile', $figfile);
+	
+	# Load R libraries
+	$R->run(q{library(plotrix)});
+	$R->run(q{library(RColorBrewer)});
+	
+	# Prepare color palette
+	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
+	
+	# Read table with data - Do exra calulations
+	$R->run(q{idata = read.delim(ifile)});
+	$R->run(q{idata$percent = (idata$count / idata$total) * 100});
+	
+	# Do plots
+	$R->run(q{pdf(figfile, width=14)});
+	$R->run(q{par(mfrow = c(1, 2), mar=c(9.5, 4.1, 4.1, 2.1));});
+	$R->run(q{barp(height=idata$percent, names.arg=idata$category, col=c(rep("black",2), rep("darkgrey",3), rep("grey",3), rep("lightgrey",3), rep("lightblue",3)), staxx=TRUE, srt=45, ylim=c(0,100), ylab="Percent of total reads");});
+	$R->run(q{barp(height=idata$count, names.arg=idata$category, col=c(rep("black",2), rep("darkgrey",3), rep("grey",3), rep("lightgrey",3), rep("lightblue",3)), staxx=TRUE, srt=45, ylab="Number of reads");});
+	$R->run(q{graphics.off()});
+	
+	# Close R
+	$R->stop();
 }
 
 1;

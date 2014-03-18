@@ -21,7 +21,7 @@ Create plots for script libraries_relative_read_density.
 
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
-    
+
 =cut
 
 package CLIPSeqTools::PlotApp::libraries_relative_read_density;
@@ -39,6 +39,7 @@ use Modern::Perl;
 use autodie;
 use namespace::autoclean;
 use File::Spec;
+use Statistics::R;
 
 
 #######################################################################
@@ -89,8 +90,59 @@ sub run {
 	$filename =~ s/\.tab$//;
 	my $figfile = $self->o_prefix . $filename . '.pdf';
 	
-	warn "Creating plots\n" if $self->verbose;
-	system q{Rscript bin/plot_libraries_relative_read_density.R --ifile=} . $self->file . q{ --figfile=} . $figfile;
+	warn "Creating plots with R\n" if $self->verbose;
+	$self->run_R;
+}
+
+sub run_R {
+	my ($self) = @_;
+	
+	# Build output file by replacing suffix .tab with .pdf
+	my (undef, undef, $filename) = File::Spec->splitpath($self->file);
+	$filename =~ s/\.tab$//;
+	my $figfile = $self->o_prefix . $filename . '.pdf';
+	
+	# Start R
+	my $R = Statistics::R->new();
+	
+	# Pass arguments to R
+	$R->set('ifile', $self->file);
+	$R->set('figfile', $figfile);
+	
+	# Load R libraries
+	$R->run(q{library(RColorBrewer)});
+	
+	# Prepare color palette
+	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
+	
+	# Read table with data
+	$R->run(q{idata = read.delim(ifile)});
+	
+	# Convert counts to density
+	$R->run(q{idata$norm_counts_with_copy_number_sense     = idata$counts_with_copy_number_sense    / sum(as.numeric(idata$counts_with_copy_number_sense))});
+	$R->run(q{idata$norm_counts_no_copy_number_sense       = idata$counts_no_copy_number_sense      / sum(as.numeric(idata$counts_no_copy_number_sense))});
+	$R->run(q{idata$norm_counts_with_copy_number_antisense = idata$counts_with_copy_number_antisense/ sum(as.numeric(idata$counts_with_copy_number_antisense))});
+	$R->run(q{idata$norm_counts_no_copy_number_antisense   = idata$counts_no_copy_number_antisense  / sum(as.numeric(idata$counts_no_copy_number_antisense))});
+	
+	# Find plot y_lim
+	$R->run(q{ylimit = max(idata$norm_counts_with_copy_number_sense, idata$norm_counts_no_copy_number_sense, idata$norm_counts_with_copy_number_antisense, idata$norm_counts_no_copy_number_antisense)});
+	
+	# Do plots
+	$R->run(q{pdf(figfile, width=28)});
+	$R->run(q{par(mfrow = c(1, 4), cex.lab=1.8, cex.axis=1.7, cex.main=2, lwd=1.5, oma=c(0, 0, 2, 0))});
+	$R->run(q{plot(idata$relative_position, idata$norm_counts_with_copy_number_sense, type="o", main="Sense records (with copy number)", xlab="Relative position", ylab="Density", col=mypalette[1], ylim=c(0,ylimit))});
+	$R->run(q{abline(v=0, lty=2, col="grey", lwd=1.5)});
+	$R->run(q{plot(idata$relative_position, idata$norm_counts_no_copy_number_sense, type="o", main="Sense records (no copy number)", xlab="Relative position", ylab="Density", col=mypalette[2], ylim=c(0,ylimit))});
+	$R->run(q{abline(v=0, lty=2, col="grey", lwd=1.5)});
+	$R->run(q{plot(idata$relative_position, idata$norm_counts_with_copy_number_antisense, type="o", main="Anti-sense records (with copy number)", xlab="Relative position", ylab="Density", col=mypalette[3], ylim=c(0,ylimit))});
+	$R->run(q{abline(v=0, lty=2, col="grey", lwd=1.5)});
+	$R->run(q{plot(idata$relative_position, idata$norm_counts_no_copy_number_antisense, type="o", main="Anti-sense records (no copy number)", xlab="Relative position", ylab="Density", col=mypalette[4], ylim=c(0,ylimit))});
+	$R->run(q{abline(v=0, lty=2, col="grey", lwd=1.5)});
+	$R->run(q{mtext(figfile, outer = TRUE, cex = 1.5)});
+	$R->run(q{graphics.off()});
+	
+	# Close R
+	$R->stop();
 }
 
 1;
