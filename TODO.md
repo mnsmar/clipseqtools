@@ -21,11 +21,12 @@
 * DONE - Normalize counts with Upper Quartile
 * DONE - Nmer counts and enrichment
 
-* ???? - location -> on exons (bins)  --- _MNS --- distribution_on_genic_parts.pl
-* ???? - location -> on genes (bins)  --- ???? --- 
-* ???? - location -> on elements / locations (arbirtrary bed file) --- ???? ---
-
-* TODO - sequence -> filter tags containing Nmer (list of Nmers)         --- ???? --- 
+* TODO - Cluster characterization
+* TODO - Cluster size distribution
+* TODO - size distribution
+* TODO - nucleotide preferences
+* TODO - location -> on elements / locations (arbirtrary bed file)
+* ???? - sequence -> filter tags containing Nmer (list of Nmers)
 
 ## Compare libraries
 
