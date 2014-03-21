@@ -85,11 +85,6 @@ sub run {
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
 	
-	warn "Building output file\n" if $self->verbose;
-	my (undef, undef, $filename) = File::Spec->splitpath($self->file);
-	$filename =~ s/\.tab$//;
-	my $figfile = $self->o_prefix . $filename . '.pdf';
-	
 	warn "Creating plots with R\n" if $self->verbose;
 	$self->run_R;
 }
