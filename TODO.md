@@ -20,9 +20,10 @@
 * DONE - Count reads on genic elements (Genes, Transcripts, 5'UTR, CDS, 3'UTR, Introns, Exons)
 * DONE - Normalize counts with Upper Quartile
 * DONE - Nmer counts and enrichment
+* DONE - Cluster size distribution
+* DONE - Intron (Ns in reads) size distribution
 
 * TODO - Cluster characterization
-* TODO - Cluster size distribution
 * TODO - size distribution
 * TODO - nucleotide preferences
 * TODO - location -> on elements / locations (arbirtrary bed file)
