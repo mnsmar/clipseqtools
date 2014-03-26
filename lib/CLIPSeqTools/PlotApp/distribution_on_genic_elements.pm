@@ -4,7 +4,7 @@ CLIPSeqTools::PlotApp::distribution_on_genic_elements - Create plots for script 
 
 =head1 SYNOPSIS
 
-clipseqtools distribution_on_genic_elements [options/parameters]
+clipseqtools-plot distribution_on_genic_elements [options/parameters]
 
 =head1 DESCRIPTION
 

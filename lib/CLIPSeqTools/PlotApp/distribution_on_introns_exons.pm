@@ -4,7 +4,7 @@ CLIPSeqTools::PlotApp::distribution_on_introns_exons - Create plots for script d
 
 =head1 SYNOPSIS
 
-clipseqtools distribution_on_introns_exons [options/parameters]
+clipseqtools-plot distribution_on_introns_exons [options/parameters]
 
 =head1 DESCRIPTION
 

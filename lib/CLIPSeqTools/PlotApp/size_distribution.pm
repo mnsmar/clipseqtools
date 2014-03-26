@@ -1,14 +1,14 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::reads_long_gaps_size_distribution - Create plots for script reads_long_gaps_size_distribution.
+CLIPSeqTools::PlotApp::size_distribution - Create plots for script size_distribution.
 
 =head1 SYNOPSIS
 
-clipseqtools-plot reads_long_gaps_size_distribution [options/parameters]
+clipseqtools-plot size_distribution [options/parameters]
 
 =head1 DESCRIPTION
 
-Create plots for script reads_long_gaps_size_distribution.
+Create plots for script size_distribution.
 
 =head1 OPTIONS
 
@@ -24,7 +24,7 @@ Create plots for script reads_long_gaps_size_distribution.
 
 =cut
 
-package CLIPSeqTools::PlotApp::reads_long_gaps_size_distribution;
+package CLIPSeqTools::PlotApp::size_distribution;
 
 
 # Make it an app command
@@ -117,25 +117,11 @@ sub run_R {
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 	
-	# Create groups of scores
-	$R->run(q{mybreaks = c(seq(0,500,100), seq(1000,5000,2000), seq(10000,50000,20000), Inf)});
-	$R->run(q{idata$size_group = cut(idata$gap_size, breaks=mybreaks, dig.lab=4)});
-	
-	# Aggregate (sum) counts for size groups
-	$R->run(q{aggregate_counts = tapply(idata$count, idata$size_group , sum)});
-	
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
-	
-	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA, ylab="Number of gaps", main="Number of gaps with given size")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
-	$R->run(q{mtext(side = 1, "Gap size", line = 7)});
-	
-	$R->run(q{plot((aggregate_counts / sum(idata$count)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of gaps (%)", main="Percent of gaps with given size")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
-	$R->run(q{mtext(side = 1, "Gap size", line = 7)});
-	
+	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2, oma=c(0, 0, 2, 0), mar=c(5.1, 5.1, 4.1, 2.1))});
+	$R->run(q{plot(idata$size, idata$count, type="b", pch=19, xlab="Size", ylab="Number of reads", main="Number of reads with given size")});
+	$R->run(q{plot(idata$size, (idata$count / sum(idata$count)) * 100, type="b", pch=19, xlab="Size", ylab="Percent of reads (%)", main="Percent of reads with given size")});
 	$R->run(q{graphics.off()});
 	
 	# Close R

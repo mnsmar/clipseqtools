@@ -4,7 +4,7 @@ CLIPSeqTools::PlotApp::genomic_distribution - Create plots for script genomic_di
 
 =head1 SYNOPSIS
 
-clipseqtools genomic_distribution [options/parameters]
+clipseqtools-plot genomic_distribution [options/parameters]
 
 =head1 DESCRIPTION
 

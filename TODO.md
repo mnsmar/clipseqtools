@@ -22,9 +22,9 @@
 * DONE - Nmer counts and enrichment
 * DONE - Cluster size distribution
 * DONE - Intron (Ns in reads) size distribution
+* DONE - Size distribution
 
 * TODO - Cluster characterization
-* TODO - size distribution
 * TODO - nucleotide preferences
 * TODO - location -> on elements / locations (arbirtrary bed file)
 * ???? - sequence -> filter tags containing Nmer (list of Nmers)

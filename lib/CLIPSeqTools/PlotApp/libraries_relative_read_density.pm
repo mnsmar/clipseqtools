@@ -4,7 +4,7 @@ CLIPSeqTools::PlotApp::libraries_relative_read_density - Create plots for script
 
 =head1 SYNOPSIS
 
-clipseqtools libraries_relative_read_density [options/parameters]
+clipseqtools-plot libraries_relative_read_density [options/parameters]
 
 =head1 DESCRIPTION
 

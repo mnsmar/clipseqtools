@@ -4,7 +4,7 @@ CLIPSeqTools::PlotApp::cluster_size_and_score_distribution - Create plots for sc
 
 =head1 SYNOPSIS
 
-clipseqtools cluster_size_and_score_distribution [options/parameters]
+clipseqtools-plot cluster_size_and_score_distribution [options/parameters]
 
 =head1 DESCRIPTION
 
