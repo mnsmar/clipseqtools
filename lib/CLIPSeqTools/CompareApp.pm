@@ -2,22 +2,22 @@
 
 =head1 NAME
 
-CLIPSeqTools::PlotApp - A collection of tools to create plots for the output of CLIPSeqTools.
+CLIPSeqTools::CompareApp - A collection of tools to compare two libraries of sequencing reads.
 
 =head1 SYNOPSIS
 
-CLIPSeqTools::PlotApp provides tools to create plots for the output of CLIPSeqTools.
+CLIPSeqTools::CompareApp provides tools to compare two libraries of sequencing reads..
 
 =head1 DESCRIPTION
 
-CLIPSeqTools::PlotApp is primarily a collection of scripts and modules that can be used to create plots for the output of CLIPSeqTools.
+CLIPSeqTools::CompareApp is primarily a collection of scripts and modules that can be used to compare two libraries of sequencing reads..
 
 =head1 EXAMPLES
 
 =cut
 
 
-package CLIPSeqTools::PlotApp;
+package CLIPSeqTools::CompareApp;
 
 
 # Make it an App and load plugins

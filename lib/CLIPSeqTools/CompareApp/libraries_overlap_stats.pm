@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::libraries_overlap_stats - Count reads of library A that overlap those of reference library B.
+CLIPSeqTools::CompareApp::libraries_overlap_stats - Count reads of library A that overlap those of reference library B.
 
 =head1 SYNOPSIS
 
@@ -62,12 +62,12 @@ Count reads of library A that overlap those of reference library B.
 
 =cut
 
-package CLIPSeqTools::App::libraries_overlap_stats;
+package CLIPSeqTools::CompareApp::libraries_overlap_stats;
 
 
 # Make it an app command
 use MooseX::App::Command;
-extends 'CLIPSeqTools::App';
+extends 'CLIPSeqTools::CompareApp';
 
 
 #######################################################################

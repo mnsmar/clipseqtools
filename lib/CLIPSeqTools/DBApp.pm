@@ -22,7 +22,7 @@ package CLIPSeqTools::DBApp;
 
 
 # Make it an App and load plugins
-use MooseX::App qw(Config Color BashCompletion Man);
+use Moose;
 extends 'CLIPSeqTools::App';
 
 

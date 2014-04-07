@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::libraries_relative_read_density - Measure read density around the reads of a reference library
+CLIPSeqTools::CompareApp::libraries_relative_read_density - Measure read density around the reads of a reference library
 
 =head1 SYNOPSIS
 
@@ -65,12 +65,12 @@ For a library A and a reference library B, measure the density of A reads around
 
 =cut
 
-package CLIPSeqTools::App::libraries_relative_read_density;
+package CLIPSeqTools::CompareApp::libraries_relative_read_density;
 
 
 # Make it an app command
 use MooseX::App::Command;
-extends 'CLIPSeqTools::App';
+extends 'CLIPSeqTools::CompareApp';
 
 
 #######################################################################
