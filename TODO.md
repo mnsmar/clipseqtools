@@ -6,8 +6,8 @@
 ## Annotation
 * DONE - Annotate with transcript/genic info
 * DONE - Annotate with RMSK
+* DONE - Annotate with deletions
 * TODO - Annotate with T->C mutations
-* TODO - Annotate with mismatches/deletions
 
 
 # Analyses

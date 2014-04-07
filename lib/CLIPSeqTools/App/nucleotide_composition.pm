@@ -1,19 +1,14 @@
 =head1 NAME
 
-CLIPSeqTools::App::reads_long_gaps_size_distribution - Measure size distribution of long alignment gaps produced by a gap aware aligner.
+CLIPSeqTools::App::nucleotide_composition - Measure nucleotide composition along reads.
 
 =head1 SYNOPSIS
 
-clipseqtools reads_long_gaps_size_distribution [options/parameters]
+clipseqtools nucleotide_composition [options/parameters]
 
 =head1 DESCRIPTION
 
-Measure size distribution of gaps within alignments produced by a gap
-aware aligner. Reads that have been aligned with a gap aware aligner
-might map in two distant points on the reference sequence with the
-intermediate region usually marked in the cigar sting with Ns.
-Measure the size of these intermediate regions and create a size
-distribution.
+Measure nucleotide composition along reads.
 
 =head1 OPTIONS
 
@@ -49,7 +44,7 @@ distribution.
 
 =cut
 
-package CLIPSeqTools::App::reads_long_gaps_size_distribution;
+package CLIPSeqTools::App::nucleotide_composition;
 
 
 # Make it an app command
@@ -64,7 +59,7 @@ use Modern::Perl;
 use autodie;
 use namespace::autoclean;
 use File::Spec;
-use List::Util qw(max);
+use List::Util qw(min max sum);
 
 
 #######################################################################
@@ -111,38 +106,38 @@ sub run {
 	my $reads_collection = $self->reads_collection;
 	$reads_collection->schema->storage->debug(1) if $self->verbose > 1;
 	
-	warn "Measuring long gaps\n" if $self->verbose;
-	my %gap_size_count;
+	warn "Measuring nucleotide composition along the reads\n" if $self->verbose;
+	my @nt_count;
+	my %existent_nts;
 	$reads_collection->foreach_record_do( sub {
 		my ($rec) = @_;
 		
-		my $cigar = $rec->cigar;
-		if ($cigar !~ /N/) {
-			$gap_size_count{0} += $rec->copy_number;
-		}
-		else {
-			while ($cigar =~ /(\d+)N/g) {
-				my $gap_length = $1;
-				$gap_size_count{$gap_length} += $rec->copy_number;
-			}
+		my @nts = split(//, uc($rec->sequence));
+		for my $i (0..$#nts) {
+			$nt_count[$i]{$nts[$i]} += $rec->copy_number;
+			$existent_nts{$nts[$i]} = 1;
 		}
 		
 		return 0;
 	});
-
+	my @sorted_existent_nts = sort keys %existent_nts;
+	
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
 	
 	warn "Printing results\n" if $self->verbose;
-	open (my $OUT1, '>', $self->o_prefix.'reads_long_gaps_size_distribution.tab');
-	say $OUT1 join("\t", 'gap_size', 'count');
-	say $OUT1 join("\t", $_, $gap_size_count{$_}) for sort {$a <=> $b} keys %gap_size_count;
+	open (my $OUT1, '>', $self->o_prefix.'nucleotide_composition.tab');
+	say $OUT1 join("\t", 'position', map {$_.'_count'} @sorted_existent_nts, 'total_count');
+	for (my $i=0; $i<@nt_count; $i++) {
+		my @counts = map {$nt_count[$i]{$_} || 0} @sorted_existent_nts;
+		say $OUT1 join("\t", $i, @counts, sum(@counts));
+	}
 	close $OUT1;
 	
 	if ($self->plot) {
 		warn "Creating plot\n" if $self->verbose;
-		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::reads_long_gaps_size_distribution', 
-			file     => $self->o_prefix.'reads_long_gaps_size_distribution.tab',
+		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::nucleotide_composition', 
+			file     => $self->o_prefix.'nucleotide_composition.tab',
 			o_prefix => $self->o_prefix
 		)->run();
 	}
