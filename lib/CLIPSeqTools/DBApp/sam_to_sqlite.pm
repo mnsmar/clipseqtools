@@ -43,8 +43,6 @@ extends 'CLIPSeqTools::DBApp';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
-use File::Temp;
 use DBI;
 
 

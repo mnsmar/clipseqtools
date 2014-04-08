@@ -13,8 +13,6 @@ For a library A and a reference library B, measure the density of A reads around
 =head1 OPTIONS
 
   Input options for library.
-    -type <Str>            input type (eg. DBIC, BED).
-    -file <Str>            input file. Only if type is a file type.
     -driver <Str>          driver for database connection (eg. mysql,
                            SQLite).
     -database <Str>        database name or path to database file for file
@@ -34,8 +32,6 @@ For a library A and a reference library B, measure the density of A reads around
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Input options for reference library.
-    -r_type <Str>          input type (eg. DBIC, BED).
-    -r_file <Str>          input file. Only if r_type is a file type.
     -r_driver <Str>        driver for database connection (eg. mysql, 
                            SQLite).
     -r_database <Str>      database name or path to database file for file
@@ -79,7 +75,6 @@ extends 'CLIPSeqTools::CompareApp';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
 use PDL::Lite; $PDL::BIGPDL = 0; $PDL::BIGPDL++; # enable huge pdls
 
 

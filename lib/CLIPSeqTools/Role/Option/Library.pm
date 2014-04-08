@@ -7,8 +7,6 @@ CLIPSeqTools::Role::Option::Library - Role to enable reading a library with read
 Role to enable reading a library with reads from the command line
 
   Defines options.
-      -type <Str>            input type (eg. DBIC, BED).
-      -file <Str>            input file. Only works if type is a file type.
       -driver <Str>          driver for database connection (eg. mysql, SQLite).
       -database <Str>        database name or path to database file for file based databases (eg. SQLite).
       -table <Str>           database table.
@@ -23,7 +21,7 @@ Role to enable reading a library with reads from the command line
                              Supported operators: >, >=, <, <=, =, !=, def, undef.
 
   Provides attributes.
-      reads_collection      the collection of reads that is read from the source specified by the options above
+      reads_collection      reads collection that is read from the specified source.
 
 =cut
 
@@ -47,19 +45,6 @@ use GenOO::RegionCollection::Factory;
 #######################################################################
 #######################   Command line options   ######################
 #######################################################################
-option 'type' => (
-	is            => 'rw',
-	isa           => 'Str',
-	default       => 'DBIC',
-	documentation => 'input type (eg. DBIC, BED, SAM).',
-);
-
-option 'file' => (
-	is            => 'rw',
-	isa           => 'Str',
-	documentation => 'input file. Only if type is a file type.',
-);
-
 option 'driver' => (
 	is            => 'rw',
 	isa           => 'Str',
@@ -70,12 +55,14 @@ option 'driver' => (
 option 'database' => (
 	is            => 'rw',
 	isa           => 'Str',
+	required      => 1,
 	documentation => 'database name or path.',
 );
 
 option 'table' => (
 	is            => 'rw',
 	isa           => 'Str',
+	required      => 1,
 	documentation => 'database table.',
 );
 
@@ -129,21 +116,7 @@ has 'reads_collection' => (
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
-sub validate_args {
-	my ($self) = @_;
-	
-	if ($self->type eq 'DBIC') {
-		$self->usage_error('Driver for database connection is required') if !$self->driver;
-		$self->usage_error('Database name or path is required') if !$self->database;
-		$self->usage_error('Database table is required') if !$self->table;
-	}
-	elsif ($self->type eq 'BED' or $self->type eq 'SAM') {
-		$self->usage_error('File is required') if !$self->file;
-	}
-	else {
-		$self->usage_error('Unknown or no input type specified');
-	}
-}
+sub validate_args {}
 
 
 #######################################################################
@@ -152,22 +125,9 @@ sub validate_args {
 sub _build_collection {
 	my ($self) = @_;
 	
-	if ($self->type =~ /^DBIC$/) {
-		my $collection = $self->_build_collection_from_database;
-		_apply_simple_filters_on_collection($self->filter, $collection);
-		return $collection;
-	}
-	elsif ($self->type =~ /^(BED|SAM)$/) {
-		return $self->_build_collection_from_file;
-	}
-}
-
-sub _build_collection_from_file {
-	my ($self) = @_;
-	
-	return GenOO::RegionCollection::Factory->create($self->type, {
-		file => $self->file
-	})->read_collection;
+	my $collection = $self->_build_collection_from_database;
+	_apply_simple_filters_on_collection($self->filter, $collection);
+	return $collection;
 }
 
 sub _build_collection_from_database {

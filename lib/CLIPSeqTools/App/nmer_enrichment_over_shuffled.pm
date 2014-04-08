@@ -61,31 +61,12 @@ extends 'CLIPSeqTools::App';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
 use List::Util qw(sum max);
 use List::Util qw(shuffle);
 
 
 #######################################################################
-##########################   Consume Roles   ##########################
-#######################################################################
-with 
-	"CLIPSeqTools::Role::Option::Library" => {
-		-alias    => { validate_args => '_validate_args_for_library' },
-		-excludes => 'validate_args',
-	},
-	"CLIPSeqTools::Role::Option::OutputPrefix" => {
-		-alias    => { validate_args => '_validate_args_for_output_prefix' },
-		-excludes => 'validate_args',
-	},
-	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity' },
-		-excludes => 'validate_args',
-	};
-
-
-#######################################################################
-###################   Silence command line options   ##################
+#######################   Command line options   ######################
 #######################################################################
 option 'nmer_length' => (
 	is            => 'rw',
@@ -107,6 +88,24 @@ option 'subset' => (
 	default       => '100%',
 	documentation => 'run analys on random subset. Option specifies the number (if integer) or percent (if % is used) of data to be used.',
 );
+
+
+#######################################################################
+##########################   Consume Roles   ##########################
+#######################################################################
+with 
+	"CLIPSeqTools::Role::Option::Library" => {
+		-alias    => { validate_args => '_validate_args_for_library' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::Option::OutputPrefix" => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::Option::Verbosity" => {
+		-alias    => { validate_args => '_validate_args_for_verbosity' },
+		-excludes => 'validate_args',
+	};
 
 
 #######################################################################

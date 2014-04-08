@@ -14,8 +14,6 @@ Split the exons and introns of coding transcripts in bins and measure the read d
 =head1 OPTIONS
 
   Input options for library.
-    -type <Str>            input type (eg. DBIC, BED).
-    -file <Str>            input file. Only works if type is a file type.
     -driver <Str>          driver for database connection (eg. mysql,
                            SQLite).
     -database <Str>        database name or path to database file for file
@@ -66,7 +64,6 @@ extends 'CLIPSeqTools::App';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
 
 
 #######################################################################

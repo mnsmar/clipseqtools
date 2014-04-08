@@ -60,7 +60,6 @@ extends 'CLIPSeqTools::DBApp';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
 use Try::Tiny;
 
 
@@ -90,31 +89,6 @@ with
 		-alias    => { validate_args => '_validate_args_for_verbosity' },
 		-excludes => 'validate_args',
 	};
-
-
-#######################################################################
-###################   Silence command line options   ##################
-#######################################################################
-has 'type' => (
-	is            => 'ro',
-	isa           => 'Str',
-	default       => 'DBIC',
-	documentation => 'input type (eg. DBIC, BED, SAM).',
-);
-
-has 'file' => (
-	is            => 'ro',
-	isa           => 'Str',
-	documentation => 'input file. Only works if type specifies a file type.',
-);
-
-option '+database' => (
-	required      => 1,
-);
-
-option '+table' => (
-	required      => 1,
-);
 
 
 #######################################################################

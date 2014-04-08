@@ -24,6 +24,7 @@ package CLIPSeqTools::Role::Option::OutputPrefix;
 use Modern::Perl;
 use MooseX::App::Role;
 use File::Path qw(make_path);
+use File::Spec;
 
 
 #######################################################################
