@@ -78,16 +78,16 @@ option 'drop' => (
 ##########################   Consume Roles   ##########################
 #######################################################################
 with 
-	"CLIPSeqTools::Role::ReadsCollectionInput" => {
-		-alias    => { validate_args => '_validate_args_for_reads_collection_input' },
+	"CLIPSeqTools::Role::Option::Library" => {
+		-alias    => { validate_args => '_validate_args_for_library' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::TranscriptCollectionInput" => {
-		-alias    => { validate_args => '_validate_args_for_transcriptcollection_input' },
+	"CLIPSeqTools::Role::Option::Transcripts" => {
+		-alias    => { validate_args => '_validate_args_for_transcripts' },
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
+		-alias    => { validate_args => '_validate_args_for_verbosity' },
 		-excludes => 'validate_args',
 	};
 
@@ -123,9 +123,9 @@ option '+table' => (
 sub validate_args {
 	my ($self) = @_;
 	
-	$self->_validate_args_for_reads_collection_input;
-	$self->_validate_args_for_transcriptcollection_input;
-	$self->_validate_args_for_verbosity_option;
+	$self->_validate_args_for_library;
+	$self->_validate_args_for_transcripts;
+	$self->_validate_args_for_verbosity;
 }
 
 sub run {

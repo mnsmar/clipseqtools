@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::Role::ReadsReferenceCollectionInput - Role to enable reading reference libraries with reads from the command line
+CLIPSeqTools::Role::Option::ReferenceLibrary - Role to enable reading reference libraries with reads from the command line
 
 =head1 SYNOPSIS
 
@@ -28,15 +28,13 @@ Role to enable reading reference libraries with reads from the command line
 =cut
 
 
-package CLIPSeqTools::Role::ReadsReferenceCollectionInput;
+package CLIPSeqTools::Role::Option::ReferenceLibrary;
 
 
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
 use Modern::Perl;
-use autodie;
-use Moose::Role;
 use MooseX::App::Role;
 
 

@@ -95,7 +95,7 @@ option 'drop' => (
 #######################################################################
 with 
 	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
+		-alias    => { validate_args => '_validate_args_for_verbosity' },
 		-excludes => 'validate_args',
 	};
 
@@ -106,7 +106,7 @@ with
 sub validate_args {
 	my ($self) = @_;
 	
-	$self->_validate_args_for_verbosity_option;
+	$self->_validate_args_for_verbosity;
 }
 
 sub run {

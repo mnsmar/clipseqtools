@@ -57,12 +57,12 @@ option 'file' => (
 ##########################   Consume Roles   ##########################
 #######################################################################
 with 
-	"CLIPSeqTools::Role::OutputPrefixOption" => {
-		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
+	"CLIPSeqTools::Role::Option::OutputPrefix" => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix' },
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
+		-alias    => { validate_args => '_validate_args_for_verbosity' },
 		-excludes => 'validate_args',
 	};
 
@@ -73,8 +73,8 @@ with
 sub validate_args {
 	my ($self) = @_;
 	
-	$self->_validate_args_for_output_prefix_option;
-	$self->_validate_args_for_verbosity_option;
+	$self->_validate_args_for_output_prefix;
+	$self->_validate_args_for_verbosity;
 }
 
 sub run {

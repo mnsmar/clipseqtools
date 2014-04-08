@@ -1,10 +1,10 @@
 =head1 NAME
 
-CLIPSeqTools::Role::PlotOption - Role to enable plot option from the command line
+CLIPSeqTools::Role::Option::Plot - Role to enable plot as command line option
 
 =head1 SYNOPSIS
 
-Role to enable plot option from the command line
+Role to enable plot as command line option
 
   Defines options.
       --plot            call plotting script to create plots.
@@ -12,15 +12,13 @@ Role to enable plot option from the command line
 =cut
 
 
-package CLIPSeqTools::Role::PlotOption;
+package CLIPSeqTools::Role::Option::Plot;
 
 
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
 use Modern::Perl;
-use autodie;
-use Moose::Role;
 use MooseX::App::Role;
 
 

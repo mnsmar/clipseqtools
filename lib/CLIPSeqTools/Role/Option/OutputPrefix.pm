@@ -1,13 +1,13 @@
 =head1 NAME
 
-CLIPSeqTools::Role::OutputPrefixOption - Role to enable output prefix option from the command line
+CLIPSeqTools::Role::Option::OutputPrefix - Role to enable output prefix as command line option.
 
 =head1 SYNOPSIS
 
-Role to enable output prefix option from the command line
+Role to enable output prefix as command line option.
 
   Defines options.
-      -o_prefix <Str>              output path prefix. Script adds an extension to path. If path does not exist it will be created. Default: ./
+      -o_prefix <Str>              output path prefix. If path does not exist it will be created. Default: ./
 
   Provides methods.
       make_path_for_output_prefix  creates the path for the output prefix if it does not exist. eg foo/bar.txt will create foo/
@@ -15,17 +15,15 @@ Role to enable output prefix option from the command line
 =cut
 
 
-package CLIPSeqTools::Role::OutputPrefixOption;
+package CLIPSeqTools::Role::Option::OutputPrefix;
 
 
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
 use Modern::Perl;
-use autodie;
-use Moose::Role;
-use File::Path qw(make_path);
 use MooseX::App::Role;
+use File::Path qw(make_path);
 
 
 #######################################################################
@@ -49,11 +47,7 @@ sub make_path_for_output_prefix {
 	make_path($directory);
 }
 
-sub validate_args {
-	my ($self) = @_;
-	
-	$self->usage_error('Output path prefix is required') if !$self->o_prefix;
-}
+sub validate_args {}
 
 
 1;

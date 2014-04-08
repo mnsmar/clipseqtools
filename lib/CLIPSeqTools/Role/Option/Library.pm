@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::Role::ReadsCollectionInput - Role to enable reading a library with reads from the command line
+CLIPSeqTools::Role::Option::Library - Role to enable reading a library with reads from the command line
 
 =head1 SYNOPSIS
 
@@ -28,15 +28,13 @@ Role to enable reading a library with reads from the command line
 =cut
 
 
-package CLIPSeqTools::Role::ReadsCollectionInput;
+package CLIPSeqTools::Role::Option::Library;
 
 
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
 use Modern::Perl;
-use autodie;
-use Moose::Role;
 use MooseX::App::Role;
 
 

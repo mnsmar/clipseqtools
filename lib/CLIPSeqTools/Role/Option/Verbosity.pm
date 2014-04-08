@@ -19,7 +19,6 @@ package CLIPSeqTools::Role::Option::Verbosity;
 #######################   Load External modules   #####################
 #######################################################################
 use Modern::Perl;
-use Moose::Role;
 use MooseX::App::Role;
 
 
