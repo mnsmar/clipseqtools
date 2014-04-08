@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::App::normalize_tables_with_UQ - Do Upper Quartile normalization on specified columns of tables.
+CLIPSeqTools::CompareApp::normalize_tables_with_UQ - Do Upper Quartile normalization on specified columns of tables.
 
 =head1 SYNOPSIS
 
@@ -34,12 +34,12 @@ Do Upper Quartile normalization on specified columns of tables.
     
 =cut
 
-package CLIPSeqTools::App::normalize_tables_with_UQ;
+package CLIPSeqTools::CompareApp::normalize_tables_with_UQ;
 
 
 # Make it an app command
 use MooseX::App::Command;
-extends 'CLIPSeqTools::App';
+extends 'CLIPSeqTools::CompareApp';
 
 
 #######################################################################
@@ -92,7 +92,7 @@ with
 		-alias    => { validate_args => '_validate_args_for_output_prefix_option' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::VerbosityOption" => {
+	"CLIPSeqTools::Role::Option::Verbosity" => {
 		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
 		-excludes => 'validate_args',
 	};

@@ -1,10 +1,10 @@
 =head1 NAME
 
-CLIPSeqTools::Role::VerbosityOption - Role to enable verbose option from the command line
+CLIPSeqTools::Role::Option::Verbosity - Role to enable verbosity as command line option
 
 =head1 SYNOPSIS
 
-Role to enable verbosity option from the command line
+Role to enable verbosity as command line option
 
   Defines options.
       -v --verbose         print progress lines and extra information.
@@ -12,14 +12,13 @@ Role to enable verbosity option from the command line
 =cut
 
 
-package CLIPSeqTools::Role::VerbosityOption;
+package CLIPSeqTools::Role::Option::Verbosity;
 
 
 #######################################################################
 #######################   Load External modules   #####################
 #######################################################################
 use Modern::Perl;
-use autodie;
 use Moose::Role;
 use MooseX::App::Role;
 

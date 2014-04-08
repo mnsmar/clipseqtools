@@ -86,7 +86,7 @@ with
 		-alias    => { validate_args => '_validate_args_for_transcriptcollection_input' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::VerbosityOption" => {
+	"CLIPSeqTools::Role::Option::Verbosity" => {
 		-alias    => { validate_args => '_validate_args_for_verbosity_option' },
 		-excludes => 'validate_args',
 	};
