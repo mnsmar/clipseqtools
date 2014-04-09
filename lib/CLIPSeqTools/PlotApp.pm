@@ -2,15 +2,20 @@
 
 =head1 NAME
 
-CLIPSeqTools::PlotApp - A collection of tools to create plots for the output of CLIPSeqTools.
+CLIPSeqTools::PlotApp - Tools to create plots based on the output of CLIPSeqTools applications.
 
 =head1 SYNOPSIS
 
-CLIPSeqTools::PlotApp provides tools to create plots for the output of CLIPSeqTools.
+CLIPSeqTools::PlotApp provides tools to create plots based on the output of CLIPSeqTools applications.
 
 =head1 DESCRIPTION
 
-CLIPSeqTools::PlotApp is primarily a collection of scripts and modules that can be used to create plots for the output of CLIPSeqTools.
+CLIPSeqTools::PlotApp consists of a collection of scripts and modules that
+can be used to create plots based on the output of CLIPSeqTools.
+These tools basically use the output of CLIPSeqTools applications as input
+and create plots for visualization. Most of these tools offer minimal
+customization and are mostly used for rapid visualization of the
+CLIPSeqTools output files.
 
 =head1 EXAMPLES
 

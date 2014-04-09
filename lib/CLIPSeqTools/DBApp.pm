@@ -2,16 +2,19 @@
 
 =head1 NAME
 
-CLIPSeqTools::DBApp - A collection of tools for managing database tables for CLIPSeqTools.
+CLIPSeqTools::DBApp - Tools for creation/management of database tables with CLIP-Seq data.
 
 =head1 SYNOPSIS
 
-CLIPSeqTools::DBApp provides tools for management of databases that are compatible with CLIPSeqTools.
+CLIPSeqTools::DBApp provides tools for creation/management of database tables with CLIP-Seq data.
 
 =head1 DESCRIPTION
 
-CLIPSeqTools::DBApp is primarily a collection of scripts and modules that can be used for management of databases that are compatible with CLIPSeqTools.
-It provides functionality for converting SAM files to database tables and annotating this tables with extra infromation such as transcripts, 3'UTRs, repeats etc.
+CLIPSeqTools::DBApp consists of a collection of scripts and modules that
+can be used for the creation and management of databases tables that
+contain CLIP-Seq data and are compatible with CLIPSeqTools applications.
+It provides tools to convert SAM files to database tables and to annotate
+these tables with infromation such as transcripts, 3'UTRs, repeats etc.
 
 =head1 EXAMPLES
 
@@ -24,12 +27,6 @@ package CLIPSeqTools::DBApp;
 # Make it an App and load plugins
 use Moose;
 extends 'CLIPSeqTools::App';
-
-
-#######################################################################
-#######################   Load External modules   #####################
-#######################################################################
-use Modern::Perl;
 
 
 1;
