@@ -4,7 +4,7 @@ CLIPSeqTools::CompareApp::libraries_overlap_stats - Count reads of library A tha
 
 =head1 SYNOPSIS
 
-clipseqtools libraries_overlap_stats [options/parameters]
+clipseqtools-compare libraries_overlap_stats [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -122,6 +122,8 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
+	
+	warn "Starting analysis: libraries_overlap_stats\n";
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();

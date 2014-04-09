@@ -102,7 +102,7 @@ with
 ########################   Override Options   #########################
 #######################################################################
 option '+o_prefix' => (
-	documentation => 'output path prefix. Script will create output files using this prefix and by substituting the extension of input tables with ".uq.tab".',
+	documentation => 'output path prefix. Script will create output files using the prefix and substituting the suffix of input tables with ".uq.tab".',
 );
 
 
@@ -118,6 +118,8 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
+	
+	warn "Starting analysis: normalize_tables_with_UQ\n";
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();

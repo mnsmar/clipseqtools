@@ -100,6 +100,8 @@ sub validate_args {
 sub run {
 	my ($self) = @_;
 	
+	warn "Starting analysis: reads_long_gaps_size_distribution\n";
+	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
 	

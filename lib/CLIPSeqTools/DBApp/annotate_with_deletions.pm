@@ -108,6 +108,8 @@ sub validate_args {
 sub run {
 	my ($self) = @_;
 	
+	warn "Starting: annotate_with_deletions\n";
+	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
 

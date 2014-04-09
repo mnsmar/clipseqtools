@@ -122,6 +122,8 @@ sub validate_args {
 sub run {
 	my ($self) = @_;
 	
+	warn "Starting analysis: nmer_enrichment_over_shuffled\n";
+	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
 

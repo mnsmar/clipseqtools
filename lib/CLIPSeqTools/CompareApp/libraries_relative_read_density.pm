@@ -4,7 +4,7 @@ CLIPSeqTools::CompareApp::libraries_relative_read_density - Measure read density
 
 =head1 SYNOPSIS
 
-clipseqtools libraries_relative_read_density [options/parameters]
+clipseqtools-compare libraries_relative_read_density [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -54,7 +54,7 @@ For a library A and a reference library B, measure the density of A reads around
 
   Other options.
     -span <Int>            the region around reference reads where density
-                           is measured.
+                           is measured. [Default: 25]
     -plot                  call plotting script to create plots.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
@@ -137,6 +137,8 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
+	
+	warn "Starting analysis: libraries_relative_read_density\n";
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();

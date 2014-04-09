@@ -118,6 +118,8 @@ sub validate_args {
 sub run {
 	my ($self) = @_;
 	
+	warn "Starting analysis: cluster_size_and_score_distribution\n";
+	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
 	

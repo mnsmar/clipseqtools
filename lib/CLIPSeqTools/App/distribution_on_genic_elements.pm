@@ -126,6 +126,8 @@ sub validate_args {
 sub run {
 	my ($self) = @_;
 	
+	warn "Starting analysis: distribution_on_genic_elements\n";
+	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
 	

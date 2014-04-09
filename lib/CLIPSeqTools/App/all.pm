@@ -64,7 +64,6 @@ extends 'CLIPSeqTools::App';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
 
 
 #######################################################################
