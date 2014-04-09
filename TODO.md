@@ -13,7 +13,6 @@
 # Analyses
 
 ## Per library
-
 * DONE - Distribution on genic elements (5'UTR, CDS, 3'UTR, Introns, Exons)
 * DONE - Genome coverage (percent of genome covered by library)
 * DONE - Genomic distribution (percent of reads on genomic elements - 5'UTR, CDS, Exons, Repeats, etc)
@@ -23,26 +22,19 @@
 * DONE - Cluster size distribution
 * DONE - Intron (Ns in reads) size distribution
 * DONE - Size distribution
+* DONE - Nucleotide composition
 
 * TODO - Cluster characterization
-* TODO - nucleotide preferences
 * TODO - location -> on elements / locations (arbirtrary bed file)
-* ???? - sequence -> filter tags containing Nmer (list of Nmers)
 
 ## Compare libraries
-
 * DONE - Percent of overlap between two libraries.
 * DONE - Read density of one library around the reads of another.
 * TODO - counts -> compare per genomic element
-* ???? - location -> compare loc on exons
-* TODO - sequence -> Nmer comparison
-* TODO - sequence -> Nmer (genes / exons etc) comparison
-
 
 # Issues:
-
-* DONE - simplify input (driver, host etc) since we know which db will be used
-* DONE - standardize flags
-* TO?? - speed
-* TODO - use no custom files
-* TODO - minimize external files usage (gtf etc)
+* simplify input (driver, host etc) since we know which db will be used
+* standardize flags
+* speed
+* use no custom files
+* minimize external files usage (gtf etc)

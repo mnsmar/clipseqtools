@@ -139,7 +139,7 @@ sub run {
 			intronic_count => $transcript_intronic_count
 		});
 		
-		if ($self->verbose and ($counter % 1000 == 0)){
+		if ($self->verbose and ($counter % 5000 == 0)){
 			warn "Parsed $counter transcripts\n";
 		}
 		$counter++;
