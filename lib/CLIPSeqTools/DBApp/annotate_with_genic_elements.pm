@@ -84,10 +84,6 @@ with
 	"CLIPSeqTools::Role::Option::Transcripts" => {
 		-alias    => { validate_args => '_validate_args_for_transcripts' },
 		-excludes => 'validate_args',
-	},
-	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity' },
-		-excludes => 'validate_args',
 	};
 
 
@@ -99,7 +95,6 @@ sub validate_args {
 	
 	$self->_validate_args_for_library;
 	$self->_validate_args_for_transcripts;
-	$self->_validate_args_for_verbosity;
 }
 
 sub run {

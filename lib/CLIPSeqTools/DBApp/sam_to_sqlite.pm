@@ -89,23 +89,9 @@ option 'drop' => (
 
 
 #######################################################################
-##########################   Consume Roles   ##########################
-#######################################################################
-with 
-	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity' },
-		-excludes => 'validate_args',
-	};
-
-
-#######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
-sub validate_args {
-	my ($self) = @_;
-	
-	$self->_validate_args_for_verbosity;
-}
+sub validate_args {}
 
 sub run {
 	my ($self) = @_;

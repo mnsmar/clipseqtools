@@ -88,10 +88,6 @@ with
 	"CLIPSeqTools::Role::Option::Library" => {
 		-alias    => { validate_args => '_validate_args_for_library' },
 		-excludes => 'validate_args',
-	},
-	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity' },
-		-excludes => 'validate_args',
 	};
 
 
@@ -102,7 +98,6 @@ sub validate_args {
 	my ($self) = @_;
 	
 	$self->_validate_args_for_library;
-	$self->_validate_args_for_verbosity;
 }
 
 sub run {

@@ -74,10 +74,6 @@ with
 	"CLIPSeqTools::Role::Option::OutputPrefix" => {
 		-alias    => { validate_args => '_validate_args_for_output_prefix' },
 		-excludes => 'validate_args',
-	},
-	"CLIPSeqTools::Role::Option::Verbosity" => {
-		-alias    => { validate_args => '_validate_args_for_verbosity' },
-		-excludes => 'validate_args',
 	};
 
 
@@ -90,7 +86,6 @@ sub validate_args {
 	$self->_validate_args_for_library;
 	$self->_validate_args_for_plot;
 	$self->_validate_args_for_output_prefix;
-	$self->_validate_args_for_verbosity;
 }
 
 sub run {
