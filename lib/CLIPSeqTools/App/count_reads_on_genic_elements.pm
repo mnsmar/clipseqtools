@@ -110,7 +110,7 @@ sub run {
 	warn "Creating reads collection\n" if $self->verbose;
 	my $reads_collection = $self->reads_collection;
 
-	warn "Calculate transcript and exon/intron counts by summing the total number of overlapping reads\n" if $self->verbose;
+	warn "Calculating transcript and exon/intron counts\n" if $self->verbose;
 	my $counter = 1;
 	$transcript_collection->foreach_record_do( sub {
 		my ($transcript) = @_;
@@ -146,7 +146,7 @@ sub run {
 		
 	});
 	
-	warn "Define gene counts as the counts of its most expressed transcript\n" if $self->verbose;
+	warn "Calculating gene counts\n" if $self->verbose;
 	$gene_collection->foreach_record_do( sub {
 		my ($gene) = @_;
 		

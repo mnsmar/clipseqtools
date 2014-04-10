@@ -21,10 +21,9 @@ Do Upper Quartile normalization on specified columns of tables.
     -val_col <Str>         name of column with values to be normalized.
 
   Output.
-    -o_prefix <Str>        output path prefix. Script will create output
-                           files using this prefix and by substituting
-                           the extension of input tables with ".uq.tab".
-                           Default: ./
+    -o_table <Str>         output table file/files. Use option multiple
+                           times to give multiple files. Must be given as
+                           many times as the table option.
 
   Other options.
     -val_thres <Num>       rows with value lower or equal than val_thres
@@ -49,6 +48,7 @@ use Modern::Perl;
 use autodie;
 use namespace::autoclean;
 use File::Spec;
+use File::Path qw(make_path);
 use Data::Table;
 
 
@@ -59,7 +59,7 @@ option 'table' => (
 	is            => 'rw',
 	isa           => 'ArrayRef[Str]',
 	required      => 1,
-	documentation => 'input table file/files. Use option multiple times to specify multiple table files.',
+	documentation => 'input table file/files. Use option multiple times to give multiple files.',
 );
 
 option 'key_col' => (
@@ -83,22 +83,11 @@ option 'val_thres' => (
 	documentation => 'rows with value lower or equal than val_thres are not used for normalization.',
 );
 
-
-#######################################################################
-##########################   Consume Roles   ##########################
-#######################################################################
-with 
-	"CLIPSeqTools::Role::Option::OutputPrefix" => {
-		-alias    => { validate_args => '_validate_args_for_output_prefix' },
-		-excludes => 'validate_args',
-	};
-
-
-#######################################################################
-########################   Override Options   #########################
-#######################################################################
-option '+o_prefix' => (
-	documentation => 'output path prefix. Script will create output files using the prefix and substituting the suffix of input tables with ".uq.tab".',
+option 'o_table' => (
+	is            => 'rw',
+	isa           => 'ArrayRef[Str]',
+	required      => 1,
+	documentation => 'output table file/files. Use option multiple times to give multiple files. Must be given as many times as the table option.'
 );
 
 
@@ -108,7 +97,7 @@ option '+o_prefix' => (
 sub validate_args {
 	my ($self) = @_;
 	
-	$self->_validate_args_for_output_prefix;
+	$self->usage_error('Input table files must be as many as output ones.') if @{$self->table} != @{$self->o_table};
 }
 
 sub run {
@@ -129,15 +118,12 @@ sub run {
 
 	warn "Normalizing the values\n" if $self->verbose;
 	_build_normalized_column_in_tables($self->val_col, $quantile_index, @tables); #Normalized column name is value column + "_uq" suffix
-
-	warn "Creating output path\n" if $self->verbose;
-	$self->make_path_for_output_prefix();
 	
 	warn "Writing output files\n" if $self->verbose;
-	for (my $i=0; $i<@{$self->table}; $i++) {
-		my (undef, undef, $table_filename) = File::Spec->splitpath($self->table->[$i]);
-		$table_filename =~ s/\.tab$//;
-		open (my $OUT, '>', $self->o_prefix . $table_filename . '.uq.tab');
+	for (my $i=0; $i<@{$self->o_table}; $i++) {
+		my (undef, $directory, undef) = File::Spec->splitpath($self->o_table->[$i]);
+		make_path($directory);
+		open (my $OUT, '>', $self->o_table->[$i]);
 		print $OUT $tables[$i]->tsv;
 		close $OUT;
 	}

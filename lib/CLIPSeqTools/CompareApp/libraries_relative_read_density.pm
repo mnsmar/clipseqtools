@@ -128,7 +128,6 @@ sub validate_args {
 	$self->_validate_args_for_reference_library;
 	$self->_validate_args_for_plot;
 	$self->_validate_args_for_output_prefix;
-	$self->_validate_args_for_verbosity;
 }
 
 sub run {
