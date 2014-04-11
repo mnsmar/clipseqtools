@@ -33,10 +33,9 @@ Run all clipseqtools-compare analyses.
     --res_prefix <Str>      results prefix of clipseqtools analysis. 
                             Should match the o_prefix used when running
                             clipseqtools on the library.
-    
 
   Input options for reference library.
-    --r_driver <Str>        driver for database connection (eg. mysql, 
+    --r_driver <Str>        driver for database connection (eg. mysql,
                             SQLite).
     --r_database <Str>      database name or path to database file for
                             file based databases (eg. SQLite).

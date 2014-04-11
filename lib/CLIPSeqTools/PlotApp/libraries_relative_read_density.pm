@@ -13,11 +13,11 @@ Create plots for script libraries_relative_read_density.
 =head1 OPTIONS
 
   Input.
-    -file <Str>            input file.
+    --file <Str>           input file.
 
   Output
-    -o_prefix <Str>        output path prefix. Script will create and add
-                           extension to path. Default: ./
+    --o_prefix <Str>       output path prefix. Script will create and add
+                           extension to path. [Default: ./]
 
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message

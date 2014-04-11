@@ -13,24 +13,24 @@ Do Upper Quartile normalization on specified columns of tables.
 =head1 OPTIONS
 
   Input options.
-    -table <Str>           input table file/files. Use option multiple
+    --table <Str>          input table file/files. Use option multiple
                            times to specify multiple table files.
-    -key_col <Str>         name for the column/columns to use as a key. It
+    --key_col <Str>        name for the column/columns to use as a key. It
                            must be unique for each table row. Use option
                            multiple times to specify multiple columns.
-    -val_col <Str>         name of column with values to be normalized.
+    --val_col <Str>        name of column with values to be normalized.
 
   Output.
-    -o_table <Str>         output table file/files. Use option multiple
+    --o_table <Str>        output table file/files. Use option multiple
                            times to give multiple files. Must be given as
                            many times as the table option.
 
   Other options.
-    -val_thres <Num>       rows with value lower or equal than val_thres
+    --val_thres <Num>      rows with value lower or equal than val_thres
                            are not used for normalization. Default: 0
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
-    
+
 =cut
 
 package CLIPSeqTools::CompareApp::normalize_tables_with_UQ;

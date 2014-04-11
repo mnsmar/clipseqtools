@@ -39,7 +39,7 @@ Run all clipseqtools analysis.
 
   Output
     --o_prefix <Str>       output path prefix. Script will create and add
-                           extension to path. Default: ./
+                           extension to path. [Default: ./]
 
   Other options.
     --allowed_dis <Int>    reads closer than this value are assembled in

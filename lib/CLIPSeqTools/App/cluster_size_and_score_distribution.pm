@@ -29,14 +29,14 @@ Create a distribution of the sizes and scores.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                -filter deletion="def" 
-                                -filter rmsk="undef" .
-                                -filter query_length=">31".
+                                --filter deletion="def" 
+                                --filter rmsk="undef" .
+                                --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Output
     --o_prefix <Str>       output path prefix. Script will create and add
-                           extension to path. Default: ./
+                           extension to path. [Default: ./]
 
   Other options.
     --allowed_dis <Int>    reads closer than this value are assembled in

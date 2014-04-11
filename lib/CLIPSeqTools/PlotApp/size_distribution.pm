@@ -13,14 +13,14 @@ Create plots for script size_distribution.
 =head1 OPTIONS
 
   Input.
-    --file <Str>                 file with long gaps distribution.
+    --file <Str>           input file.
 
   Output
-    --o_prefix <Str>             output path prefix. Script will create and add
-                                 extension to path. Default: ./
+    --o_prefix <Str>       output path prefix. Script will create and add
+                           extension to path. [Default: ./]
 
-    -v --verbose                 print progress lines and extra information.
-    -h -? --usage --help         print help message
+    -v --verbose           print progress lines and extra information.
+    -h -? --usage --help   print help message
 
 =cut
 

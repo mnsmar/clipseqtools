@@ -13,35 +13,35 @@ Measure Nmer enrichment over shuffled reads. Suffling is done at the nucleotide 
 =head1 OPTIONS
 
   Input options for library.
-    -driver <Str>          driver for database connection (eg. mysql,
+    --driver <Str>         driver for database connection (eg. mysql,
                            SQLite).
-    -database <Str>        database name or path to database file for file
+    --database <Str>       database name or path to database file for file
                            based databases (eg. SQLite).
-    -table <Str>           database table.
-    -host <Str>            hostname for database connection.
-    -user <Str>            username for database connection.
-    -password <Str>        password for database connection.
-    -records_class <Str>   type of records stored in database.
-    -filter <Filter>       filter library. May be used multiple times.
+    --table <Str>          database table.
+    --host <Str>           hostname for database connection.
+    --user <Str>           username for database connection.
+    --password <Str>       password for database connection.
+    --records_class <Str>  type of records stored in database.
+    --filter <Filter>      filter library. May be used multiple times.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                -filter deletion="def" 
-                                -filter rmsk="undef" .
-                                -filter query_length=">31".
+                                --filter deletion="def" 
+                                --filter rmsk="undef" .
+                                --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Output
-    -o_prefix <Str>        output path prefix. Script will create and add
-                           extension to path. Default: ./
+    --o_prefix <Str>       output path prefix. Script will create and add
+                           extension to path. [Default: ./]
 
   Other options.
-    -nmer_length <Int>     the length N of the Nmer. Default: 6
-    -permutations <Int>    the number of permutation to be performed. 
+    --nmer_length <Int>    length N of the Nmer. Default: 6
+    --permutations <Int>   number of permutation to be performed. 
                            Use more than 100 to get p-values < 0.01.
-    -subset <Num>          run analys on random subset. Option specifies 
-                           the number (if integer) or percent (if % is 
-                           used) of data to be used.
+    --subset <Num>         run analysis on random subset. Option specifies
+                           number (if integer) or percent (if % is used)
+                           of data to be used.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
 

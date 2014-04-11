@@ -14,36 +14,36 @@ Add a user defined column that will be NOT NULL if an alignment is contained wit
 =head1 OPTIONS
 
   Input options for library.
-    -driver <Str>          driver for database connection (eg. mysql,
+    --driver <Str>         driver for database connection (eg. mysql,
                            SQLite).
-    -database <Str>        database name or path to database file for file
+    --database <Str>       database name or path to database file for file
                            based databases (eg. SQLite).
-    -table <Str>           database table.
-    -host <Str>            hostname for database connection.
-    -user <Str>            username for database connection.
-    -password <Str>        password for database connection.
-    -records_class <Str>   type of records stored in database.
-    -filter <Filter>       filter library. May be used multiple times.
+    --table <Str>          database table.
+    --host <Str>           hostname for database connection.
+    --user <Str>           username for database connection.
+    --password <Str>       password for database connection.
+    --records_class <Str>  type of records stored in database.
+    --filter <Filter>      filter library. May be used multiple times.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                -filter deletion="def" 
-                                -filter rmsk="undef" .
-                                -filter query_length=">31".
+                                --filter deletion="def" 
+                                --filter rmsk="undef" .
+                                --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Other input
-    -a_type <Str>          type of file with annotation regions (ie. BED,
+    --a_type <Str>         type of file with annotation regions (ie. BED,
                            SAM).
-    -a_file <Str>          file with annotation regions.
+    --a_file <Str>         file with annotation regions.
 
   Database options.
-    -drop                  drop column if it already exists (not
+    --drop                 drop column if it already exists (not
                            supported in SQlite).
 
   Other options.
-    -column <Str>          name for the new annotation column.
-    -both_strands          annotate both strands irrespective of the
+    --column <Str>         name for the new annotation column.
+    --both_strands         annotate both strands irrespective of the
                            region strand specified in the file. May be
                            useful for repeats where only one strand is
                            usually provided.

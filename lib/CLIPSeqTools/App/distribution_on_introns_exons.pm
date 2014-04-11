@@ -14,37 +14,37 @@ Split the exons and introns of coding transcripts in bins and measure the read d
 =head1 OPTIONS
 
   Input options for library.
-    -driver <Str>          driver for database connection (eg. mysql,
+    --driver <Str>         driver for database connection (eg. mysql,
                            SQLite).
-    -database <Str>        database name or path to database file for file
+    --database <Str>       database name or path to database file for file
                            based databases (eg. SQLite).
-    -table <Str>           database table.
-    -host <Str>            hostname for database connection.
-    -user <Str>            username for database connection.
-    -password <Str>        password for database connection.
-    -records_class <Str>   type of records stored in database.
-    -filter <Filter>       filter library. May be used multiple times.
+    --table <Str>          database table.
+    --host <Str>           hostname for database connection.
+    --user <Str>           username for database connection.
+    --password <Str>       password for database connection.
+    --records_class <Str>  type of records stored in database.
+    --filter <Filter>      filter library. May be used multiple times.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                -filter deletion="def" 
-                                -filter rmsk="undef" .
-                                -filter query_length=">31".
+                                --filter deletion="def" 
+                                --filter rmsk="undef" .
+                                --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Other input
-    -gtf <Str>             GTF file with genes/transcripts.
+    --gtf <Str>            GTF file with genes/transcripts.
 
   Output
-    -o_prefix <Str>        output path prefix. Script will create and add
-                           extension to path. Default: ./
+    --o_prefix <Str>       output path prefix. Script will create and add
+                           extension to path. [Default: ./]
 
   Other options.
-    -bins <Int>            number of bins each element is split into.
-                           Default: 10
-    -length_thres <Int>    genic elements shorter than this are skipped.
-                           Default: 300
-    -plot                  call plotting script to create plots.
+    --bins <Int>           number of bins each element is split into.
+                           [Default: 10]
+    --length_thres <Int>   genic elements shorter than this are skipped.
+                           [Default: 300]
+    --plot                 call plotting script to create plots.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
 

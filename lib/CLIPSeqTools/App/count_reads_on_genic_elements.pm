@@ -16,30 +16,30 @@ Counts library reads on transcripts, genes, exons, introns.
 =head1 OPTIONS
 
   Input options for library.
-    -driver <Str>          driver for database connection (eg. mysql,
+    --driver <Str>         driver for database connection (eg. mysql,
                            SQLite).
-    -database <Str>        database name or path to database file for file
+    --database <Str>       database name or path to database file for file
                            based databases (eg. SQLite).
-    -table <Str>           database table.
-    -host <Str>            hostname for database connection.
-    -user <Str>            username for database connection.
-    -password <Str>        password for database connection.
-    -records_class <Str>   type of records stored in database.
-    -filter <Filter>       filter library. May be used multiple times.
+    --table <Str>          database table.
+    --host <Str>           hostname for database connection.
+    --user <Str>           username for database connection.
+    --password <Str>       password for database connection.
+    --records_class <Str>  type of records stored in database.
+    --filter <Filter>      filter library. May be used multiple times.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                -filter deletion="def" 
-                                -filter rmsk="undef" .
-                                -filter query_length=">31".
+                                --filter deletion="def" 
+                                --filter rmsk="undef" .
+                                --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Other input
-    -gtf <Str>             GTF file with genes/transcripts.
+    --gtf <Str>            GTF file with genes/transcripts.
 
   Output
-    -o_prefix <Str>        output path prefix. Script will create and add
-                           extension to path. Default: ./
+    --o_prefix <Str>       output path prefix. Script will create and add
+                           extension to path. [Default: ./]
 
   Other options.
     -v --verbose           print progress lines and extra information.

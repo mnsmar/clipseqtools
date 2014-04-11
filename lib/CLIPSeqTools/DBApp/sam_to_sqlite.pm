@@ -13,15 +13,15 @@ Store alignments from a SAM file into and SQLite database. If SAM tag XC:i exist
 =head1 OPTIONS
 
   Input options.
-    -sam_file <Str>        sam file to be stored in database. If not
+    --sam_file <Str>       sam file to be stored in database. If not
                            specified STDIN is used.
-    -records_class <Str>   type of records stored in SAM file. Default:
-                           GenOOx::Data::File::SAMstar::Record
+    --records_class <Str>  type of records stored in SAM file. [Default:
+                           GenOOx::Data::File::SAMstar::Record]
 
   Database options.
-    -database <Str>        database name or path. Will be created.
-    -table <Str>           database table. Will be created.
-    -drop <Str>            drop table if it already exists.
+    --database <Str>       database name or path. Will be created.
+    --table <Str>          database table. Will be created.
+    --drop <Str>           drop table if it already exists.
 
   Other options.
     -v --verbose           print progress lines and extra information.
