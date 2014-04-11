@@ -10,7 +10,7 @@ clipseqtools nucleotide_preference [options/parameters]
 
 Count nucleotide appearences within reads, per length and per position.
 Measure the nucleotide composition for each read position and read length.
-Measure counts using the reads copy number and without using it.
+Measure counts using the reads copy number (i.e. how many times a read appears) and without using it.
 
 =head1 OPTIONS
 

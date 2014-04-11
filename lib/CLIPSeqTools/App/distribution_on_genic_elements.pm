@@ -8,7 +8,7 @@ clipseqtools distribution_on_genic_elements [options/parameters]
 
 =head1 DESCRIPTION
 
-Measure the distribution of reads along idealized transcript elements. 
+Measure the distribution of reads along transcript elements in parts of their length. 
 Split the 5'UTR, CDS and 3'UTR of coding transcripts in bins and measure the read density in each bin.
 
 =head1 OPTIONS

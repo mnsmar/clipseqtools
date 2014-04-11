@@ -13,6 +13,8 @@ Counts library reads on transcripts, genes, exons, introns.
 * Transcript counts are measured only on their exons.
 * Gene counts are measured only for exonic regions.
 
+Output (4 files): counts.gene.tab, counts.transcript.tab, counts.exon.tab, counts.intron.tab - (name, location, length, count, count_per_nt, exonic_count, exonic_length, exonic_count_per_nt)
+
 =head1 OPTIONS
 
   Input options for library.

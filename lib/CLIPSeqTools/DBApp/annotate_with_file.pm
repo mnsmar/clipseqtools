@@ -9,7 +9,7 @@ clipseqtools-db annotate_with_file [options/parameters]
 =head1 DESCRIPTION
 
 Annotate alignments in a database table with regions from a BED/SAM file.
-Add a user defined column that will be NOT NULL if an alignment is contained within a region from the file and NULL otherwise.
+Adds a user defined column that will be NOT NULL if an alignment is contained within a region from the file and NULL otherwise.
 
 =head1 OPTIONS
 
@@ -33,7 +33,7 @@ Add a user defined column that will be NOT NULL if an alignment is contained wit
                            Operators: >, >=, <, <=, =, !=, def, undef
 
   Other input
-    --a_type <Str>         type of file with annotation regions (ie. BED,
+    --a_type <Str>         type of file with annotation regions (i.e. BED,
                            SAM).
     --a_file <Str>         file with annotation regions.
 

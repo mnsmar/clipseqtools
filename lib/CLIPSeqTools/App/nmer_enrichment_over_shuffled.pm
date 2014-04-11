@@ -8,7 +8,7 @@ clipseqtools nmer_enrichment_over_shuffled [options/parameters]
 
 =head1 DESCRIPTION
 
-Measure Nmer enrichment over shuffled reads. Suffling is done at the nucleotide level and p-values are calculated using permutations.
+Measure words of length N (Nmer) enrichment and compare to shuffled reads. Shuffling is done at the nucleotide level and p-values are calculated using permutations.
 
 =head1 OPTIONS
 
@@ -86,7 +86,7 @@ option 'subset' => (
 	is            => 'rw',
 	isa           => 'Str',
 	default       => '100%',
-	documentation => 'run analys on random subset. Option specifies the number (if integer) or percent (if % is used) of data to be used.',
+	documentation => 'run analysis on random subset. Option specifies the number (if integer) or percent (if % is used) of data to be used.',
 );
 
 

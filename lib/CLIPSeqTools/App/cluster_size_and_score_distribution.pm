@@ -10,8 +10,8 @@ clipseqtools cluster_size_and_score_distribution [options/parameters]
 
 Assemble reads in clusters and measure their size and number of contained reads distribution.
 Reads that are closer than a user defined threshold are assembled in clusters.
-Measure the length/size and the number of contained reads (score) of these clusters.
-Create a distribution of the sizes and scores.
+Cluster size and number of reads (score) contained in each cluster is measured.
+Output: Distribution of cluster size (cluster_size_distribution.tab). Distribution of cluster scores (cluster_score_distribution.tab).
 
 =head1 OPTIONS
 

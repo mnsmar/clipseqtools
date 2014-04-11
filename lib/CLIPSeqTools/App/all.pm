@@ -8,7 +8,7 @@ clipseqtools all [options/parameters]
 
 =head1 DESCRIPTION
 
-Run all clipseqtools analysis.
+Run all clipseqtools analyses.
 
 =head1 OPTIONS
 

@@ -9,7 +9,7 @@ clipseqtools-db annotate_with_genic_elements [options/parameters]
 =head1 DESCRIPTION
 
 Annotate alignments in a database table with genic information
-Add columns named "transcript", "exon", "coding_transcript", "utr5", "cds", "utr3".
+Adds columns named "transcript", "exon", "coding_transcript", "utr5", "cds", "utr3".
 Column values will be NOT NULL if an alignment is contained in the corresponding region and NULL otherwise.
 
 =head1 OPTIONS

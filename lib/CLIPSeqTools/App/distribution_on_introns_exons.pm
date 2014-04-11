@@ -8,7 +8,7 @@ clipseqtools distribution_on_introns_exons [options/parameters]
 
 =head1 DESCRIPTION
 
-Measure the distribution of reads along idealized exons and introns.
+Measure the distribution of reads along exons and introns as part of their length.
 Split the exons and introns of coding transcripts in bins and measure the read density in each bin.
 
 =head1 OPTIONS
