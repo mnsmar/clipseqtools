@@ -169,7 +169,8 @@ sub run {
 	
 	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::libraries_overlap_stats', %options)->run();
 	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::libraries_relative_read_density', %options)->run();
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::normalize_tables_with_UQ', 
+	
+	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
 		table   => [$self->res_prefix.'counts.transcript.tab', $self->r_res_prefix.'counts.transcript.tab'],
 		o_table => [$self->o_prefix.'library.counts.transcript.uq.tab', $self->o_prefix.'r_library.counts.transcript.uq.tab'],
 		key_col => ['transcript_id'],
@@ -177,7 +178,7 @@ sub run {
 		verbose => $self->verbose,
 	)->run();
 	
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::normalize_tables_with_UQ', 
+	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
 		table   => [$self->res_prefix.'counts.gene.tab', $self->r_res_prefix.'counts.gene.tab'],
 		o_table => [$self->o_prefix.'library.counts.gene.uq.tab', $self->o_prefix.'r_library.counts.gene.uq.tab'],
 		key_col => ['gene_name', 'gene_location'],
@@ -185,7 +186,7 @@ sub run {
 		verbose => $self->verbose
 	)->run();
 	
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::normalize_tables_with_UQ', 
+	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
 		table   => [$self->res_prefix.'counts.exon.tab', $self->r_res_prefix.'counts.exon.tab'],
 		o_table => [$self->o_prefix.'library.counts.exon.uq.tab', $self->o_prefix.'r_library.counts.exon.uq.tab'],
 		key_col => ['transcript_id', 'exon_location'],
@@ -193,7 +194,7 @@ sub run {
 		verbose => $self->verbose
 	)->run();
 	
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::normalize_tables_with_UQ', 
+	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
 		table   => [$self->res_prefix.'counts.intron.tab', $self->r_res_prefix.'counts.intron.tab'],
 		o_table => [$self->o_prefix.'library.counts.intron.uq.tab', $self->o_prefix.'r_library.counts.intron.uq.tab'],
 		key_col => ['transcript_id', 'intron_location'],

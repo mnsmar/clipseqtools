@@ -1,10 +1,10 @@
 =head1 NAME
 
-CLIPSeqTools::CompareApp::normalize_tables_with_UQ - Do Upper Quartile normalization on specified columns of tables.
+CLIPSeqTools::CompareApp::upper_quartile_normalization - Do Upper Quartile normalization on specified columns of tables.
 
 =head1 SYNOPSIS
 
-clipseqtools normalize_tables_with_UQ [options/parameters]
+clipseqtools upper_quartile_normalization [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -33,7 +33,7 @@ Do Upper Quartile normalization on specified columns of tables.
 
 =cut
 
-package CLIPSeqTools::CompareApp::normalize_tables_with_UQ;
+package CLIPSeqTools::CompareApp::upper_quartile_normalization;
 
 
 # Make it an app command
@@ -103,7 +103,7 @@ sub validate_args {
 sub run {
 	my ($self) = @_;
 	
-	warn "Starting analysis: normalize_tables_with_UQ\n";
+	warn "Starting analysis: upper_quartile_normalization\n";
 	
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
