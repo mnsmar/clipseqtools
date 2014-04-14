@@ -1,10 +1,10 @@
 =head1 NAME
 
-CLIPSeqTools::DBApp::sam_to_sqlite - Load a SAM file in an SQLite database.
+CLIPSeqTools::PreprocessApp::sam_to_sqlite - Load a SAM file in an SQLite database.
 
 =head1 SYNOPSIS
 
-clipseqtools-db sam_to_sqlite [options/parameters]
+clipseqtools-preprocess sam_to_sqlite [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -29,12 +29,12 @@ Store alignments from a SAM file into and SQLite database. If SAM tag XC:i exist
 
 =cut
 
-package CLIPSeqTools::DBApp::sam_to_sqlite;
+package CLIPSeqTools::PreprocessApp::sam_to_sqlite;
 
 
 # Make it an app command
 use MooseX::App::Command;
-extends 'CLIPSeqTools::DBApp';
+extends 'CLIPSeqTools::PreprocessApp';
 
 
 #######################################################################

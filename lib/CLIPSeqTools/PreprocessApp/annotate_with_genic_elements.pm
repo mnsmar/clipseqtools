@@ -1,10 +1,10 @@
 =head1 NAME
 
-CLIPSeqTools::DBApp::annotate_with_genic_elements - Annotate alignments in a database table with genic information.
+CLIPSeqTools::PreprocessApp::annotate_with_genic_elements - Annotate alignments in a database table with genic information.
 
 =head1 SYNOPSIS
 
-clipseqtools-db annotate_with_genic_elements [options/parameters]
+clipseqtools-preprocess annotate_with_genic_elements [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -46,12 +46,12 @@ Column values will be NOT NULL if an alignment is contained in the corresponding
 
 =cut
 
-package CLIPSeqTools::DBApp::annotate_with_genic_elements;
+package CLIPSeqTools::PreprocessApp::annotate_with_genic_elements;
 
 
 # Make it an app command
 use MooseX::App::Command;
-extends 'CLIPSeqTools::DBApp';
+extends 'CLIPSeqTools::PreprocessApp';
 
 
 #######################################################################
