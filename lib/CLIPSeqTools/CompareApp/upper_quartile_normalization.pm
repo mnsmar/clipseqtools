@@ -8,7 +8,10 @@ clipseqtools upper_quartile_normalization [options/parameters]
 
 =head1 DESCRIPTION
 
-Do Upper Quartile normalization on specified columns of tables. All non-zero valued keys are sorted foreach library and then the value of the top 25%th key is set to 1, all other values normalized (divided) by this value.
+Do Upper Quartile normalization on specified value column of one or more tables.
+For each table, all entries are sorted by descending value (specified by val_col).
+All values are divided by the value of the 25%th entry.
+The 25%th entry is found after the entries with value lower than val_thres in all tables are excluded.
 
 =head1 OPTIONS
 

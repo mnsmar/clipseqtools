@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::CompareApp::libraries_overlap_stats - Reads of library A that overlap reads in reference library B.
+CLIPSeqTools::CompareApp::libraries_overlap_stats - Count reads of library A that overlap reads in reference library B.
 
 =head1 SYNOPSIS
 
@@ -8,7 +8,7 @@ clipseqtools-compare libraries_overlap_stats [options/parameters]
 
 =head1 DESCRIPTION
 
-Counts the number of reads in library A that overlap with any read of reference library B.
+Count reads of library A that overlap reads in reference library B.
 
 =head1 OPTIONS
 

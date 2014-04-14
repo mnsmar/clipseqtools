@@ -10,7 +10,8 @@ clipseqtools-compare all [options/parameters]
 
 Run all clipseqtools-compare analyses.
 
-Takes two libraries (one called input and one called reference) and assumes that all the single sample analyses have been already ran on the libraries. The results prefix (called output prefix when running single libraries) needs to be provided for both libraries.
+Takes two libraries (one called input and one called reference) on which all single clipseqtools analyses have ran.
+Assumes that all single clipseqtools analyses used a common o_prefix for each library.
 
 =head1 OPTIONS
 
