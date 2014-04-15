@@ -164,7 +164,7 @@ sub run {
 	$dbh->commit;
 
 	warn "Building index on " . $self->table . "\n" if $self->verbose;
-	$dbh->do(q{CREATE INDEX } . $self->table . q{_loc ON } . $self->table .q{ (strand, rname, start);});
+	$dbh->do(q{CREATE INDEX } . $self->table . q{_loc ON } . $self->table .q{ (rname, start);});
 
 	warn "Disconnecting from the database\n" if $self->verbose;
 	$dbh->disconnect;
