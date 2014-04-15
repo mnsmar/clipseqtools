@@ -114,7 +114,6 @@ sub run {
 		'--outFilterMatchNmin 15',
 		'--outFilterMatchNminOverLread 0.9',
 		'--outFileNamePrefix ' . $self->o_prefix. 'reads.adtrim.star_',
-		'--readFilesCommand zcat',
 	);
 	
 	warn "Creating output path\n" if $self->verbose;
