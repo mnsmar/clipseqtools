@@ -62,7 +62,7 @@ option 'database' => (
 option 'table' => (
 	is            => 'rw',
 	isa           => 'Str',
-	required      => 1,
+	default       => 'sample',
 	documentation => 'database table.',
 );
 
@@ -97,7 +97,7 @@ option 'filter' => (
 	default       => sub { [] },
 	documentation => 'filter library. Option can be given multiple times. '.
                      'Syntax: column_name="pattern" '.
-                     'e.g. -filter deletion="def" -filter rmsk="undef" -filter query_length=">31" '.
+                     'e.g. --filter deletion="def" --filter rmsk="undef" --filter query_length=">31" '.
                      'to keep reads with deletions AND not repeats AND longer than 31. '.
                      'Supported operators: >, >=, <, <=, =, !=, def, undef.',
 );
@@ -124,7 +124,7 @@ sub validate_args {}
 #######################################################################
 sub _build_collection {
 	my ($self) = @_;
-	
+
 	my $collection = $self->_build_collection_from_database;
 	_apply_simple_filters_on_collection($self->filter, $collection);
 	return $collection;
@@ -132,7 +132,7 @@ sub _build_collection {
 
 sub _build_collection_from_database {
 	my ($self) = @_;
-	
+
 	return GenOO::RegionCollection::Factory->create('DBIC', {
 		driver        => $self->driver,
 		host          => $self->host,
@@ -150,7 +150,7 @@ sub _build_collection_from_database {
 #######################################################################
 sub _apply_simple_filters_on_collection {
 	my ($filters, $collection) = @_;
-	
+
 	my @elements = @{$filters};
 	foreach my $element (@elements) {
 		$element =~ /^(.+?)=(.+?)$/;

@@ -56,15 +56,17 @@ option 'r_driver' => (
 option 'r_database' => (
 	is            => 'rw',
 	isa           => 'Str',
+	required      => 1,
 	documentation => 'database name or path.',
-	cmd_tags        => ['Reference library'],
+	cmd_tags      => ['Reference library'],
 );
 
 option 'r_table' => (
 	is            => 'rw',
 	isa           => 'Str',
+	default       => 'sample',
 	documentation => 'database table.',
-	cmd_tags        => ['Reference library'],
+	cmd_tags      => ['Reference library'],
 );
 
 option 'r_host' => (
@@ -78,14 +80,14 @@ option 'r_user' => (
 	is            => 'rw',
 	isa           => 'Str',
 	documentation => 'username for database connection.',
-	cmd_tags        => ['Reference library'],
+	cmd_tags      => ['Reference library'],
 );
 
 option 'r_password' => (
 	is            => 'rw',
 	isa           => 'Str',
 	documentation => 'password for database connection.',
-	cmd_tags        => ['Reference library'],
+	cmd_tags      => ['Reference library'],
 );
 
 option 'r_records_class' => (
@@ -93,7 +95,7 @@ option 'r_records_class' => (
 	isa           => 'Str',
 	default       => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3',
 	documentation => 'type of records stored in database.',
-	cmd_tags        => ['Reference library'],
+	cmd_tags      => ['Reference library'],
 );
 
 option 'r_filter' => (
@@ -102,10 +104,10 @@ option 'r_filter' => (
 	default       => sub { [] },
 	documentation => 'filter reference library. Option can be given multiple times. '.
                      'Syntax: column_name="pattern" '.
-                     'e.g. -r_filter deletion="def" -r_filter rmsk="undef" -r_filter query_length=">31" '.
+                     'e.g. --r_filter deletion="def" --r_filter rmsk="undef" --r_filter query_length=">31" '.
                      'to keep reads with deletions AND not repeats AND longer than 31. '.
                      'Supported operators: >, >=, <, <=, =, !=, def, undef.',
-    cmd_tags        => ['Reference library'],
+    cmd_tags      => ['Reference library'],
 );
 
 
@@ -131,7 +133,7 @@ sub validate_args {}
 #######################################################################
 sub _build_reference_collection {
 	my ($self) = @_;
-	
+
 	my $collection = $self->_build_reference_collection_from_database;
 	_apply_simple_filters_on_reference_collection($self->filter, $collection);
 	return $collection;
@@ -139,7 +141,7 @@ sub _build_reference_collection {
 
 sub _build_reference_collection_from_database {
 	my ($self) = @_;
-	
+
 	return GenOO::RegionCollection::Factory->create('DBIC', {
 		driver        => $self->r_driver,
 		host          => $self->r_host,
@@ -157,7 +159,7 @@ sub _build_reference_collection_from_database {
 #######################################################################
 sub _apply_simple_filters_on_reference_collection {
 	my ($filters, $collection) = @_;
-	
+
 	my @elements = @{$filters};
 	foreach my $element (@elements) {
 		$element =~ /^(.+?)=(.+?)$/;
