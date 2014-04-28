@@ -19,7 +19,7 @@ I<CLIPSeqTools> is divided in 4 toolboxes:
 
 =item 2. clipseqtools-compare (Application to compare two CLIP-Seq libraries. Requires to run C<clipseqtools> on each library first.)
 
-=item 2. clipseqtools-plot (Helper application to create plots for the output of C<clipseqtools>. Usually, the plots are created via C<clipseqtools> with the C<--plot> option.)
+=item 3. clipseqtools-plot (Helper application to create plots for the output of C<clipseqtools>. Usually, the plots are created via C<clipseqtools> with the C<--plot> option.)
 
 =item 4. clipseqtools-preprocess (Helper application to process a FastQ file into files that are compatible with C<clipseqtools>.)
 
@@ -147,13 +147,13 @@ To run C<clipseqtools>.
 
   clipseqtools all --database proteinA/reads.adtrim.star_Aligned.out.single.sorted.db --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --plot -v
 
-The command above is doing a lot of stuff and it's going to take some time, probably a few hours so be B<patient>.
+The command above is doing many operations and is going to take some time, probably a few hours so be B<patient>.
 When it finishes you will find the result files in C<clip/proteinA/>.
 
 
 =head2 Compare two libraries with C<clipseqtools-compare>
 
-Let's assume you have two libraries on which you run C<clipseqtools>.
+Let's assume you have two libraries on which you have run C<clipseqtools>.
 For simplicity, we assume the two directories for these libraries are C<clip/proteinA/> and C<clip/protein_B/>.
 To compare the two libraries run the following command.
 
