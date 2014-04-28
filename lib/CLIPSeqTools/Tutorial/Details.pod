@@ -39,7 +39,7 @@ C<clipseqtools-preprocess> supports the following commands which can run indepen
 
 =head3 Database
 
-As mentioned C<clipseqtools-preprocess> will prepare a database compatible with C<clipseqtools>. The fields of the database table are extracted directly from the SAM file with alignments. Not all information are extracted from the SAM file. Only the information that are actually required by C<clipseqtools>.
+As mentioned C<clipseqtools-preprocess> will prepare a database compatible with C<clipseqtools>. The fields of the database table are extracted directly from the SAM file with alignments. Not all information are extracted from the SAM file. Only the information that is required by C<clipseqtools>.
 
 Specifically the fields that are included in the database are:
 
@@ -49,7 +49,7 @@ Specifically the fields that are included in the database are:
 
 =item * strand (either +1 or -1 depending on the strand where the read alinged to)
 
-=item * rname (name of reference sequence on which the read aligned to. Most likely a chromosome name)
+=item * rname (name of reference sequence on which the read aligned to. Usually a chromosome name)
 
 =item * start (position on reference sequence where the alignment starts, 0-based inclusive)
 
@@ -59,15 +59,15 @@ Specifically the fields that are included in the database are:
 
 =item * sequence (read sequence)
 
-=item * cigar (CIGAR string - see the SAM documentation for details)
+=item * cigar (CIGAR alignment string - see the SAM documentation for details)
 
-=item * mdz (MD:Z tag - see the SAM documentation for details)
+=item * mdz (MD:Z alignment tag - see the SAM documentation for details)
 
-=item * number_of_mappings (in how many other places the read also maps)
+=item * number_of_mappings (number of alternative places in which the read maps)
 
-=item * query_length (length of read)
+=item * query_length (length of the read)
 
-=item * alignment_length (length of the alignment)
+=item * alignment_length (length of the alignment - can be different due to insertions or deletions)
 
 =back
 
@@ -135,7 +135,7 @@ C<clipseqtools> supports the following commands which can run independently or t
 =head3 Running analysis on subsets of data
 
 As mentioned earlier C<clipseqtools> relies on database tables and therefore filtering and running an analysis on subsets of data is particularly easy.
-The only thing the user has to do is give the filtering criteria when executing the command. The syntax for the filtering criteria is easy and intuitive and probably best explained with an example.
+The only thing a user has to do is give the filtering criteria when executing the command. The syntax for the filtering criteria is easy and intuitive and probably best explained with an example.
 
 To run an analysis only on reads that have a deletion are not repeats and are longer than 31 nucleotides the following flags should be given when running the command:
 
@@ -199,7 +199,7 @@ C<clipseqtools-plot> supports the following commands.
 
 =head1 WHERE CAN I GET MORE INFORMATION?
 
-Obviously the most up-to-date information regarding an application can be found in the application itself.
+The most up-to-date information regarding an application can be found in the application itself.
 
 To get more information on a particular application, just run the application with the help command.
 
