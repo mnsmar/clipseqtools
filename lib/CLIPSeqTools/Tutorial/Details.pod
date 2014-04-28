@@ -1,0 +1,214 @@
+=pod
+
+=head1 NAME
+
+CLIPSeqTools::Tutorial::Details - A detailed description of I<CLIPSeqTools>
+
+
+=head1 APPLICATIONS
+
+=head2 C<clipseqtools-preprocess>
+
+=head3 Description
+
+CLIPSeqTools requires that alignment data are stored in a database (e.g. SQLite, MySQL, etc.). The reason is that databases support efficient range queries and allow easy annotation of the reads. The importance of the former is evident - almost all analyses require running some sort of range query on the datasets. The latter though, is particularly important for CLIP-Seq analysis. The reason is that in certain cases the user might need to limit an analysis on a particular annotation (e.g. genic areas) or exclude an annotation (e.g. repeat derived reads) or maybe a complex combination of both. Databases allow to do such selections particularly easy with usually no or small additional computational load.
+
+C<clipseqtools-preprocess> is a module that can be used to prepare the files (database) that C<clipseqtools> requires. It will get you from a FastQ file with CLIP-Seq data to an SQLite database with most important annotations included. It will process the FastQ file, align the reads on the reference genome, annotate the alignments with genic and repeat masker information and prepare an SQLite database that is compatible with  C<clipseqtools>.
+
+=head3 Supported commands
+
+C<clipseqtools-preprocess> supports the following commands which can run independently or through the C<all> command which will run a predefined pipeline.
+
+=over
+
+=item 1. cut_adaptor                  - Cut the adaptor sequence from the 3'end of reads.
+
+=item 2. star_alignment               - Align the reads on a reference genome with STAR.
+
+=item 3. cleanup_alignment            - Sort STAR alignments and keep only a single record for multimappers.
+
+=item 4. sam_to_sqlite                - Load a SAM file in an SQLite database.
+
+=item 5. annotate_with_deletions      - Annotate alignments with deletions.
+
+=item 6. annotate_with_file           - Annotate alignments with regions from a BED/SAM file.
+
+=item 7. annotate_with_genic_elements - Annotate alignments with genic information.
+
+=back
+
+=head3 Database
+
+As mentioned C<clipseqtools-preprocess> will prepare a database compatible with C<clipseqtools>. The fields of the database table are extracted directly from the SAM file with alignments. Not all information are extracted from the SAM file. Only the information that are actually required by C<clipseqtools>.
+
+Specifically the fields that are included in the database are:
+
+=over
+
+=item * id (an autoincrement id)
+
+=item * strand (either +1 or -1 depending on the strand where the read alinged to)
+
+=item * rname (name of reference sequence on which the read aligned to. Most likely a chromosome name)
+
+=item * start (position on reference sequence where the alignment starts, 0-based inclusive)
+
+=item * stop (position on reference sequence where the alignment stops, 0-based inclusive)
+
+=item * copy_number (number of reads with the same sequence that align on this position)
+
+=item * sequence (read sequence)
+
+=item * cigar (CIGAR string - see the SAM documentation for details)
+
+=item * mdz (MD:Z tag - see the SAM documentation for details)
+
+=item * number_of_mappings (in how many other places the read also maps)
+
+=item * query_length (length of read)
+
+=item * alignment_length (length of the alignment)
+
+=back
+
+A few extra fields will be added, when the annotation commands run. These fields will be defined (NOT NULL) or undefined (NULL) depending on whether the annotation is consistent of inconsistent with the alignment. For example, the transcript field for a read will be defined if the read is contained within a transcript and undefined otherwise.
+
+These annotation fields are:
+
+=over
+
+=item * transcript
+
+=item * coding_transcript
+
+=item * exon
+
+=item * utr5
+
+=item * cds
+
+=item * utr3
+
+=item * rmsk
+
+=item * deletion
+
+=back
+
+
+=head2 C<clipseqtools>
+
+=head3 Description
+
+C<clipseqtools> is the main module that runs actual analyses on a single library of data. It offers a wide selection of tools that cover many aspects of a CLIP-Seq analysis pipeline.
+
+=head3 Supported commands
+
+C<clipseqtools> supports the following commands which can run independently or through the C<all> command which will run a predefined pipeline.
+
+=over
+
+=item 1. reads_long_gaps_size_distribution   - Measure size distribution of long alignment gaps produced by a gap aware aligner.
+
+=item 2. size_distribution                   - Measure size distribution for reads.
+
+=item 3. cluster_size_and_score_distribution - Assemble reads in clusters and measure their size and number of contained reads distribution
+
+=item 4. count_reads_on_genic_elements       - Count reads on transcripts, genes, exons, introns
+
+=item 5. distribution_on_genic_elements      - Measure read distribution on 5'UTR, CDS and 3'UTR.
+
+=item 6. distribution_on_introns_exons       - Measure read distribution on exons and introns.
+
+=item 7. genome_coverage                     - Measure percent of genome covered by reads.
+
+=item 8. genomic_distribution                - Count reads on genes, repeats, exons , introns, 5'UTRs, ...
+
+=item 9. nmer_enrichment_over_shuffled       - Measure Nmer enrichment over shuffled reads.
+
+=item 10. nucleotide_composition             - Measure nucleotide composition along reads.
+
+=item 11. nucleotide_preference              - Count nucleotide appearences within reads, per length and per position
+
+=back
+
+=head3 Running analysis on subsets of data
+
+As mentioned earlier C<clipseqtools> relies on database tables and therefore filtering and running an analysis on subsets of data is particularly easy.
+The only thing the user has to do is give the filtering criteria when executing the command. The syntax for the filtering criteria is easy and intuitive and probably best explained with an example.
+
+To run an analysis only on reads that have a deletion are not repeats and are longer than 31 nucleotides the following flags should be given when running the command:
+
+  --filter deletion="def" --filter rmsk="undef" --filter query_length=">31"
+
+The supported operators for creating a filter are: C<< >, >=, <, <=, =, !=, def, undef >>.
+
+
+=head2 C<clipseqtools-compare>
+
+=head3 Description
+
+C<clipseqtools-compare> is an application that can be used to compare 2 CLIP-Seq libraries with each other.
+
+=head3 Supported commands
+
+C<clipseqtools-compare> supports the following commands which can run independently or through the C<all> command which will run a predefined pipeline.
+
+=over
+
+=item 1. libraries_overlap_stats         - Count reads of library A that overlap reads in reference library B.
+
+=item 2. libraries_relative_read_density - Measure read density around the reads of a reference library
+
+=item 3. upper_quartile_normalization    - Do Upper Quartile normalization on specified columns of tables.
+
+=back
+
+
+=head2 C<clipseqtools-plot>
+
+=head3 Description
+
+C<clipseqtools-plot> is an application that can be used to create figures for the output of C<clipseqtools> and C<clipseqtools-compare>.
+
+B<NOTE:> Usually you don't need to run these commands directly because they are automatically called from the corresponding C<clipseqtools> or C<clipseqtools-compare> commands when the C<--plot> flag is given.
+
+=head3 Supported commands
+
+C<clipseqtools-plot> supports the following commands.
+
+=over
+
+=item 1. cluster_size_and_score_distribution - Create plots for script cluster_size_and_score_distribution.
+
+=item 2. distribution_on_genic_elements      - Create plots for script distribution_on_genic_elements.
+
+=item 3. distribution_on_introns_exons       - Create plots for script distribution_on_introns_exons.
+
+=item 4. genomic_distribution                - Create plots for script genomic_distribution.
+
+=item 5. libraries_relative_read_density     - Create plots for script libraries_relative_read_density.
+
+=item 6. nucleotide_composition              - Create plots for script nucleotide_composition.
+
+=item 7. reads_long_gaps_size_distribution   - Create plots for script reads_long_gaps_size_distribution.
+
+=item 8. size_distribution                   - Create plots for script size_distribution.
+
+=back
+
+=head1 WHERE CAN I GET MORE INFORMATION?
+
+Obviously the most up-to-date information regarding an application can be found in the application itself.
+
+To get more information on a particular application, just run the application with the help command.
+
+For example:
+
+  clipseqtools help
+
+If you want to get information on particular command then run the command with the C<--help> flag.
+
+For example:
+
+  clipseqtools genome_coverage --help
