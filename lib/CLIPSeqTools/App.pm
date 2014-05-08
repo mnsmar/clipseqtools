@@ -10,7 +10,7 @@ CLIPSeqTools::App is the main CLIPSeqTools application with tools for analysis o
 
 =head1 DESCRIPTION
 
-CLIPSeqTools::App consists of tools that employ basic and more advanced 
+CLIPSeqTools::App consists of tools that employ basic and more advanced
 analysis on CLIP-Seq datasets. The offered tools vary from simpler ones
 such as the nucletide composition of reads to more complex ones such as
 Nmer enrichment within the CLIP-Seq reads.
@@ -40,6 +40,7 @@ option 'verbose' => (
 	is            => 'rw',
 	isa           => 'Bool',
 	cmd_aliases   => 'v',
+	default       => 0,
 	documentation => 'print progress lines and extra information.',
 );
 
@@ -49,10 +50,10 @@ option 'verbose' => (
 #######################################################################
 sub usage_error {
 	my ($self, $error_msg) = @_;
-	
+
 	my $class = ref($self) || $self;
 	my $meta = $class->meta;
-	
+
 	MooseX::App::Message::Envelope->new(
 		$meta->command_message(
 			header          => $error_msg,
@@ -60,7 +61,7 @@ sub usage_error {
 		),
 		$meta->command_usage_command($meta),
 	)->run;
-	
+
 	exit 1;
 }
 

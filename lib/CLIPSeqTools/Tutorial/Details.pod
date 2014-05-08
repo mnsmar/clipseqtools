@@ -128,8 +128,6 @@ C<clipseqtools> supports the following commands which can run independently or t
 
 =item 10. nucleotide_composition             - Measure nucleotide composition along reads.
 
-=item 11. nucleotide_preference              - Count nucleotide appearences within reads, per length and per position
-
 =back
 
 =head3 Running analysis on subsets of data
