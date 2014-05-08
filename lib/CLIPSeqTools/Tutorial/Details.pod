@@ -35,6 +35,8 @@ C<clipseqtools-preprocess> supports the following commands which can run indepen
 
 =item 7. annotate_with_genic_elements - Annotate alignments with genic information.
 
+=item 8. annotate_with_conservation   - Annotate alignments with PhyloP conservation scores.
+
 =back
 
 =head3 Database
@@ -95,6 +97,8 @@ These annotation fields are:
 
 =back
 
+Finally, one more field is added that contains the conservation score for each read. This score is calculated as the average PhyloP conservation score of the read's nucleotides. The database field is named conservation. To minimize storage needs, the PhyloP conservation score is converted from floating point number to integer by multiplying with 1000.
+
 
 =head2 C<clipseqtools>
 
@@ -135,9 +139,9 @@ C<clipseqtools> supports the following commands which can run independently or t
 As mentioned earlier C<clipseqtools> relies on database tables and therefore filtering and running an analysis on subsets of data is particularly easy.
 The only thing a user has to do is give the filtering criteria when executing the command. The syntax for the filtering criteria is easy and intuitive and probably best explained with an example.
 
-To run an analysis only on reads that have a deletion are not repeats and are longer than 31 nucleotides the following flags should be given when running the command:
+To run an analysis only on reads that are highly conserved, have a deletion, are not repeats and are longer than 31 nucleotides the following flags should be given when running the command:
 
-  --filter deletion="def" --filter rmsk="undef" --filter query_length=">31"
+  --filter conservation=">500" --filter deletion="def" --filter rmsk="undef" --filter query_length=">31"
 
 The supported operators for creating a filter are: C<< >, >=, <, <=, =, !=, def, undef >>.
 

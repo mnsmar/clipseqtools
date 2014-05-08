@@ -16,6 +16,7 @@ Specifically it will:
 4) Annotate alignments with genic information.
 5) Annotate alignments with Repeat Masker.
 6) Annotate alignments with deletions.
+7) Annotate alignments with conservation.
 
 =head1 OPTIONS
 
@@ -33,6 +34,10 @@ Specifically it will:
   Other options.
     --cutadapt_path <Str>  path to cutadapt executable. [Default: cutadapt].
     --star_path <Str>      path to STAR executable. [Default: STAR].
+    --rname_sizes <Str>    file with sizes for reference alignment
+                           sequences (rnames). Must be tab delimited
+                           (chromosome\tsize) with one line per rname.
+    --phyloP_dir <Str>     directory with PhyloP wigFix files.
     --threads <Int>        number of threads to use. [Default: 4].
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
@@ -107,6 +112,20 @@ option 'rmsk' => (
 	documentation => 'BED file with repeat masker regions.',
 );
 
+option 'rname_sizes' => (
+	is            => 'rw',
+	isa           => 'Str',
+	required      => 1,
+	documentation => 'file with sizes for reference alignment sequences (rnames). Must be tab delimited (chromosome\tsize) with one line per rname.',
+);
+
+option 'phyloP_dir' => (
+	is            => 'rw',
+	isa           => 'Str',
+	required      => 1,
+	documentation => 'directory with PhyloP wigFix files.',
+);
+
 
 #######################################################################
 ##########################   Consume Roles   ##########################
@@ -121,29 +140,29 @@ with
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_plot;
 	$self->_validate_args_for_output_prefix;
 }
 
 sub run {
 	my ($self) = @_;
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::cut_adaptor', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::cut_adaptor',
 		fastq         => $self->fastq,
 		adaptor       => $self->adaptor,
 		o_prefix      => $self->o_prefix,
 		cutadapt_path => $self->cutadapt_path,
 		verbose       => $self->verbose,
 	)->run();
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::star_alignment', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::star_alignment',
 		fastq         => $self->o_prefix . 'reads.adtrim.fastq',
 		star_genome   => $self->star_genome,
 		o_prefix      => $self->o_prefix,
@@ -151,30 +170,30 @@ sub run {
 		threads       => $self->threads,
 		verbose       => $self->verbose,
 	)->run();
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::cleanup_alignment', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::cleanup_alignment',
 		sam           => $self->o_prefix . 'reads.adtrim.star_Aligned.out.sam',
 		o_prefix      => $self->o_prefix,
 		verbose       => $self->verbose,
 	)->run();
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::sam_to_sqlite', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::sam_to_sqlite',
 		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
 		table         => 'sample',
 		sam_file      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.sam',
 		drop          => 1,
 		verbose       => $self->verbose,
 	)->run();
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_genic_elements', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_genic_elements',
 		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
 		table         => 'sample',
 		gtf           => $self->gtf,
 		drop          => 1,
 		verbose       => $self->verbose,
 	)->run();
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_file', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_file',
 		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
 		table         => 'sample',
 		a_file        => $self->rmsk,
@@ -182,11 +201,21 @@ sub run {
 		both_strands  => 1,
 		verbose       => $self->verbose,
 	)->run();
-	
-	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_deletions', 
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_deletions',
 		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
 		table         => 'sample',
+		drop          => 1,
 		verbose       => $self->verbose,
+	)->run();
+
+	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_conservation',
+		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
+		table         => 'sample',
+		drop          => 1,
+		verbose       => $self->verbose,
+		phyloP_dir    => $self->phyloP_dir,
+		rname_sizes   => $self->rname_sizes,
 	)->run();
 }
 
