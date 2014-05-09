@@ -26,7 +26,7 @@ Run all clipseqtools analyses.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                -filter deletion="def" 
+                                -filter deletion="def"
                                 -filter rmsk="undef" .
                                 -filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
@@ -80,7 +80,7 @@ option 'rname_sizes' => (
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 
+with
 	"CLIPSeqTools::Role::Option::Library" => {
 		-alias    => { validate_args => '_validate_args_for_library' },
 		-excludes => 'validate_args',
@@ -104,7 +104,7 @@ with
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_library;
 	$self->_validate_args_for_genes;
 	$self->_validate_args_for_plot;
@@ -113,9 +113,9 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
-	
+
 	my %options;
-	
+
 	$options{'driver'}        = $self->driver        if defined $self->driver;
 	$options{'database'}      = $self->database      if defined $self->database;
 	$options{'table'}         = $self->table         if defined $self->table;
@@ -129,7 +129,7 @@ sub run {
 	$options{'rname_sizes'}   = $self->rname_sizes   if defined $self->rname_sizes;
 	$options{'plot'}          = $self->plot          if defined $self->plot;
 	$options{'verbose'}       = $self->verbose       if defined $self->verbose;
-	
+
 	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::cluster_size_and_score_distribution', %options)->run();
 	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::count_reads_on_genic_elements', %options)->run();
 	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::distribution_on_genic_elements', %options)->run();
@@ -140,6 +140,7 @@ sub run {
 	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::nucleotide_composition', %options)->run();
 	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::reads_long_gaps_size_distribution', %options)->run();
 	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::size_distribution', %options)->run();
+	CLIPSeqTools::App->initialize_command_class('CLIPSeqTools::App::conservation_distribution', %options)->run();
 }
 
 
