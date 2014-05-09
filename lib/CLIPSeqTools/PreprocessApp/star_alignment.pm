@@ -84,24 +84,24 @@ with
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_output_prefix;
 }
 
 sub run {
 	my ($self) = @_;
-	
+
 	warn "Starting job: star_alignment\n";
-	
+
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
-	
+
 	warn "Preparing command\n" if $self->verbose;
 	my $cmd = join(' ',
 		$self->star_path,
@@ -113,12 +113,12 @@ sub run {
 		'--alignIntronMax 50000',
 		'--outFilterMatchNmin 15',
 		'--outFilterMatchNminOverLread 0.9',
-		'--outFileNamePrefix ' . $self->o_prefix. 'reads.adtrim.star_',
+		'--outFileNamePrefix ' . $self->o_prefix. 'star_',
 	);
-	
+
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
-	
+
 	warn "Running cutadapt\n" if $self->verbose;
 	warn "Command: $cmd\n" if $self->verbose;
 	system "$cmd";

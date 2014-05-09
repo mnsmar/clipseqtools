@@ -31,13 +31,15 @@ Specifically it will:
     --o_prefix <Str>       output path prefix. Script will create and add
                            extension to path. Default: ./
 
-  Other options.
-    --cutadapt_path <Str>  path to cutadapt executable. [Default: cutadapt].
-    --star_path <Str>      path to STAR executable. [Default: STAR].
+  Other input
     --rname_sizes <Str>    file with sizes for reference alignment
                            sequences (rnames). Must be tab delimited
                            (chromosome\tsize) with one line per rname.
     --phyloP_dir <Str>     directory with PhyloP wigFix files.
+
+  Other options.
+    --cutadapt_path <Str>  path to cutadapt executable. [Default: cutadapt].
+    --star_path <Str>      path to STAR executable. [Default: STAR].
     --threads <Int>        number of threads to use. [Default: 4].
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
@@ -165,7 +167,7 @@ sub run {
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::star_alignment',
 		fastq         => $self->o_prefix . 'reads.adtrim.fastq',
 		star_genome   => $self->star_genome,
-		o_prefix      => $self->o_prefix,
+		o_prefix      => $self->o_prefix . 'reads.adtrim.',,
 		star_path     => $self->star_path,
 		threads       => $self->threads,
 		verbose       => $self->verbose,
@@ -173,20 +175,20 @@ sub run {
 
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::cleanup_alignment',
 		sam           => $self->o_prefix . 'reads.adtrim.star_Aligned.out.sam',
-		o_prefix      => $self->o_prefix,
+		o_prefix      => $self->o_prefix . 'reads.adtrim.star_Aligned.out.',
 		verbose       => $self->verbose,
 	)->run();
 
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::sam_to_sqlite',
-		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
+		sam_file      => $self->o_prefix . 'reads.adtrim.star_Aligned.out.single.sorted.collapsed.sam',
+		database      => $self->o_prefix . 'reads.adtrim.star_Aligned.out.single.sorted.collapsed.db',
 		table         => 'sample',
-		sam_file      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.sam',
 		drop          => 1,
 		verbose       => $self->verbose,
 	)->run();
 
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_genic_elements',
-		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
+		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.collapsed.db',
 		table         => 'sample',
 		gtf           => $self->gtf,
 		drop          => 1,
@@ -194,7 +196,7 @@ sub run {
 	)->run();
 
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_file',
-		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
+		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.collapsed.db',
 		table         => 'sample',
 		a_file        => $self->rmsk,
 		column        => 'rmsk',
@@ -203,19 +205,19 @@ sub run {
 	)->run();
 
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_deletions',
-		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
+		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.collapsed.db',
 		table         => 'sample',
 		drop          => 1,
 		verbose       => $self->verbose,
 	)->run();
 
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_conservation',
-		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.db',
+		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.collapsed.db',
 		table         => 'sample',
-		drop          => 1,
-		verbose       => $self->verbose,
 		phyloP_dir    => $self->phyloP_dir,
 		rname_sizes   => $self->rname_sizes,
+		drop          => 1,
+		verbose       => $self->verbose,
 	)->run();
 }
 
