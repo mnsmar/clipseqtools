@@ -38,7 +38,6 @@ extends 'CLIPSeqTools::PlotApp';
 use Modern::Perl;
 use autodie;
 use namespace::autoclean;
-use File::Spec;
 use Statistics::R;
 
 
@@ -56,83 +55,79 @@ option 'file' => (
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 
+with
 	"CLIPSeqTools::Role::Option::OutputPrefix" => {
 		-alias    => { validate_args => '_validate_args_for_output_prefix' },
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_output_prefix;
 }
 
 sub run {
 	my ($self) = @_;
-	
+
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
-	
+
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
-	
+
 	warn "Creating plots with R\n" if $self->verbose;
 	$self->run_R;
 }
 
 sub run_R {
 	my ($self) = @_;
-	
-	# Build output file by replacing suffix .tab with .pdf
-	my (undef, undef, $filename) = File::Spec->splitpath($self->file);
-	$filename =~ s/\.tab$//;
-	my $figfile = $self->o_prefix . $filename . '.pdf';
-	
+
+	my $figfile = $self->o_prefix . 'reads_long_gaps_size_distribution.pdf';
 	# Start R
 	my $R = Statistics::R->new();
-	
+
 	# Pass arguments to R
 	$R->set('ifile', $self->file);
 	$R->set('figfile', $figfile);
-	
+
 	# Load R libraries
 	$R->run(q{library(RColorBrewer)});
-	
+
 	# Disable scientific notation
 	$R->run(q{options(scipen=999)});
-	
+
 	# Prepare color palette
 	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
-	
+
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
-	
+
 	# Create groups of scores
 	$R->run(q{mybreaks = c(seq(0,500,100), seq(1000,5000,2000), seq(10000,50000,20000), Inf)});
 	$R->run(q{idata$size_group = cut(idata$gap_size, breaks=mybreaks, dig.lab=4)});
-	
+
 	# Aggregate (sum) counts for size groups
 	$R->run(q{aggregate_counts = tapply(idata$count, idata$size_group , sum)});
-	
+
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
 	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
-	
+
 	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA, ylab="Number of gaps", main="Number of gaps with given size")});
 	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Gap size", line = 7)});
-	
+
 	$R->run(q{plot((aggregate_counts / sum(idata$count)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of gaps (%)", main="Percent of gaps with given size")});
 	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Gap size", line = 7)});
-	
+
 	$R->run(q{graphics.off()});
-	
+
 	# Close R
 	$R->stop();
 }
