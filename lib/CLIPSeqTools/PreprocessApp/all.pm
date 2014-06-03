@@ -35,7 +35,7 @@ Specifically it will:
     --rname_sizes <Str>    file with sizes for reference alignment
                            sequences (rnames). Must be tab delimited
                            (chromosome\tsize) with one line per rname.
-    --phyloP_dir <Str>     directory with PhyloP wigFix files.
+    --cons_dir <Str>       directory with phastCons or phyloP files.
 
   Other options.
     --cutadapt_path <Str>  path to cutadapt executable. [Default: cutadapt].
@@ -121,11 +121,11 @@ option 'rname_sizes' => (
 	documentation => 'file with sizes for reference alignment sequences (rnames). Must be tab delimited (chromosome\tsize) with one line per rname.',
 );
 
-option 'phyloP_dir' => (
+option 'cons_dir' => (
 	is            => 'rw',
 	isa           => 'Str',
 	required      => 1,
-	documentation => 'directory with PhyloP wigFix files.',
+	documentation => 'directory with phastCons or phyloP files.',
 );
 
 
@@ -214,7 +214,7 @@ sub run {
 	CLIPSeqTools::PreprocessApp->initialize_command_class('CLIPSeqTools::PreprocessApp::annotate_with_conservation',
 		database      => $self->o_prefix.'reads.adtrim.star_Aligned.out.single.sorted.collapsed.db',
 		table         => 'sample',
-		phyloP_dir    => $self->phyloP_dir,
+		cons_dir      => $self->cons_dir,
 		rname_sizes   => $self->rname_sizes,
 		drop          => 1,
 		verbose       => $self->verbose,

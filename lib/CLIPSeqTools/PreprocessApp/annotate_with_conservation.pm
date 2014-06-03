@@ -1,6 +1,6 @@
 =head1 NAME
 
-CLIPSeqTools::PreprocessApp::annotate_with_conservation - Annotate alignments in a database table with PhyloP conservation scores.
+CLIPSeqTools::PreprocessApp::annotate_with_conservation - Annotate alignments in a database table with conservation scores.
 
 =head1 SYNOPSIS
 
@@ -8,9 +8,10 @@ clipseqtools-preprocess annotate_with_conservation [options/parameters]
 
 =head1 DESCRIPTION
 
-Annotate alignments in a database table with PhyloP conservation scores.
-Adds a column named "conservation" with the average PhyloP conservation score.
-To minimize storage needs, the PhyloP conservation score is converted from
+Annotate alignments in a database table with phastCons or phyloP
+conservation scores. Adds a column named "conservation" with the average
+conservation score for the nucleotides of each read.
+To minimize storage needs, the conservation score is converted from
 floating point number to integer by multiplying with 1000.
 
 =head1 OPTIONS
@@ -38,7 +39,8 @@ floating point number to integer by multiplying with 1000.
     --rname_sizes <Str>    file with sizes for reference alignment
                            sequences (rnames). Must be tab delimited
                            (chromosome\tsize) with one line per rname.
-    --phyloP_dir <Str>     directory with PhyloP wigFix files.
+    --cons_dir <Str>       directory with phastCons or phyloP files.
+
 
   Database options.
     --drop                 drop column if it already exists (not
@@ -78,11 +80,11 @@ option 'rname_sizes' => (
 	documentation => 'file with sizes for reference alignment sequences (rnames). Must be tab delimited (chromosome\tsize) with one line per rname.',
 );
 
-option 'phyloP_dir' => (
+option 'cons_dir' => (
 	is            => 'rw',
 	isa           => 'Str',
 	required      => 1,
-	documentation => 'directory with PhyloP wigFix files.',
+	documentation => 'directory with phastCons or phyloP files.',
 );
 
 option 'drop' => (
@@ -132,7 +134,7 @@ sub run {
 
 	warn "Looping on annotation file to annotate records.\nThis might take a long time. Relax...\n" if $self->verbose;
 	foreach my $rname (@rnames) {
-		warn "Reading PhyloP data for $rname\n" if $self->verbose;
+		warn "Reading conservation data for $rname\n" if $self->verbose;
 		my $pdl = $self->plylop_pdl_for($rname, $rname_sizes{$rname});
 
 		warn "Annotating records for $rname\n" if $self->verbose;
@@ -208,8 +210,9 @@ sub plylop_pdl_for {
 
 	my $pdl = PDL->zeros(PDL::short(), $rname_size);
 
-	my $file = (glob $self->phyloP_dir . '/' . $rname . '*')[0]; chomp $file;
-	die if !-e $file;
+	my @files = glob $self->cons_dir . '/' . $rname . '.*';
+	die "More than one matching files for $rname" if @files > 1;
+	my $file = $files[0]; chomp $file;
 	open (my $H, "gzip -dc $file |");
 
 	my ($start, $step);

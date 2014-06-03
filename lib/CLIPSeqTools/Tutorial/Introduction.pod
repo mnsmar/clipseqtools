@@ -125,11 +125,11 @@ To process the fastq file, align the reads on the reference genome, annotate the
 
 =item 1. If you are running on a machine with B<more> than 32GB RAM.
 
-  clipseqtools-preprocess all --adaptor <5_END_ADAPTOR> --fastq proteinA/reads.fastq --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rmsk data/hg19/annotation/rmsk.bed --star_genome data/hg19/STAR/index/hg19-star/ --phyloP_dir data/hg19/phyloP/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --threads <NUMBER_OF_PROCESSORS> -v
+  clipseqtools-preprocess all --adaptor <5_END_ADAPTOR> --fastq proteinA/reads.fastq --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rmsk data/hg19/annotation/rmsk.bed --star_genome data/hg19/STAR/index/ --phyloP_dir data/hg19/phyloP/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --threads <NUMBER_OF_PROCESSORS> -v
 
 =item 2. If you are running on a machine with B<more> than 16GB RAM.
 
-  clipseqtools-preprocess all --adaptor <5_END_ADAPTOR> --fastq proteinA/reads.fastq --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rmsk data/hg19/annotation/rmsk.bed --star_genome data/hg19/STAR/index/hg19-star-sparsed2/ --phyloP_dir data/hg19/phyloP/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --threads <NUMBER_OF_PROCESSORS> -v
+  clipseqtools-preprocess all --adaptor <5_END_ADAPTOR> --fastq proteinA/reads.fastq --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rmsk data/hg19/annotation/rmsk.bed --star_genome data/hg19/STAR/index-sparsed2/ --phyloP_dir data/hg19/phyloP/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --threads <NUMBER_OF_PROCESSORS> -v
 
 =item 3. If you are running on a machine with B<less> than 16GB RAM.
 
