@@ -4,8 +4,6 @@
 
 CLIPSeqTools::Tutorial::Introduction - An introduction to I<CLIPSeqTools>
 
-
-
 =head1 INTRODUCTION
 
 I<CLIPSeqTools> is a collection of command line applications used for the analysis of CLIP-Seq (UV cross-linking and immunoprecipitation with high-throughput sequencing) data.
@@ -125,15 +123,35 @@ To process the fastq file, align the reads on the reference genome, annotate the
 
 =item 1. If you are running on a machine with B<more> than 32GB RAM.
 
-  clipseqtools-preprocess all --adaptor <5_END_ADAPTOR> --fastq proteinA/reads.fastq --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rmsk data/hg19/annotation/rmsk.bed --star_genome data/hg19/STAR/index/ --phyloP_dir data/hg19/phyloP/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --threads <NUMBER_OF_PROCESSORS> -v
+  clipseqtools-preprocess all \
+    --adaptor <5_END_ADAPTOR> \
+    --fastq proteinA/reads.fastq \
+    --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
+    --rmsk data/hg19/annotation/rmsk.bed \
+    --star_genome data/hg19/STAR/index/ \
+    --phyloP_dir data/hg19/phyloP/ \
+    --rname_sizes data/hg19/chrom.sizes \
+    --o_prefix clip/proteinA/ \
+    --threads <NUMBER_OF_PROCESSORS> \
+    -v
 
 =item 2. If you are running on a machine with B<more> than 16GB RAM.
 
-  clipseqtools-preprocess all --adaptor <5_END_ADAPTOR> --fastq proteinA/reads.fastq --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rmsk data/hg19/annotation/rmsk.bed --star_genome data/hg19/STAR/index-sparsed2/ --phyloP_dir data/hg19/phyloP/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --threads <NUMBER_OF_PROCESSORS> -v
+  clipseqtools-preprocess all \
+    --adaptor <5_END_ADAPTOR> \
+    --fastq proteinA/reads.fastq \
+    --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
+    --rmsk data/hg19/annotation/rmsk.bed \
+    --star_genome data/hg19/STAR/index-sparsed2/ \
+    --phyloP_dir data/hg19/phyloP/ \
+    --rname_sizes data/hg19/chrom.sizes \
+    --o_prefix clip/proteinA/ \
+    --threads <NUMBER_OF_PROCESSORS> \
+    -v
 
 =item 3. If you are running on a machine with B<less> than 16GB RAM.
 
-  SORRY NO LUCK HERE
+  ...sorry no luck here
 
 =back
 
@@ -145,7 +163,13 @@ When it finishes you will find all files required to run C<clipseqtools> in C<cl
 
 To run C<clipseqtools>.
 
-  clipseqtools all --database proteinA/reads.adtrim.star_Aligned.out.single.sorted.db --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA/ --plot -v
+  clipseqtools all \
+    --database proteinA/reads.adtrim.star_Aligned.out.single.sorted.db \
+    --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
+    --rname_sizes data/hg19/chrom.sizes \
+    --o_prefix clip/proteinA/ \
+    --plot \
+    -v
 
 The command above is doing many operations and is going to take some time, probably a few hours so be B<patient>.
 When it finishes you will find the result files in C<clip/proteinA/>.
@@ -157,7 +181,15 @@ Let's assume you have two libraries on which you have run C<clipseqtools>.
 For simplicity, we assume the two directories for these libraries are C<clip/proteinA/> and C<clip/protein_B/>.
 To compare the two libraries run the following command.
 
-  clipseqtools-compare all --database clip/proteinA/reads.adtrim.star_Aligned.out.single.sorted.db --res_prefix clip/proteinA/ --r_database clip/protein_B/reads.adtrim.star_Aligned.out.single.sorted.db --r_res_prefix clip/protein_B/ --rname_sizes data/hg19/chrom.sizes --o_prefix clip/proteinA_vs_B/ --plot -v
+  clipseqtools-compare all \
+    --database clip/proteinA/reads.adtrim.star_Aligned.out.single.sorted.db \
+    --res_prefix clip/proteinA/ \
+    --r_database clip/protein_B/reads.adtrim.star_Aligned.out.single.sorted.db \
+    --r_res_prefix clip/protein_B/ \
+    --rname_sizes data/hg19/chrom.sizes \
+    --o_prefix clip/proteinA_vs_B/ \
+    --plot \
+    -v
 
 The command is going to take some time so be patient. When it finishes you will find the result files for the analyses in C<clip/proteinA_vs_B/>.
 

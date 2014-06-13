@@ -4,7 +4,6 @@
 
 CLIPSeqTools::Tutorial::Details - A detailed description of I<CLIPSeqTools>
 
-
 =head1 APPLICATIONS
 
 =head2 C<clipseqtools-preprocess>
