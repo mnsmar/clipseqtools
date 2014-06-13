@@ -106,85 +106,85 @@ sub run {
 	warn "Counting reads for each annotation\n" if $self->verbose;
 	my %counts;
 
-	$counts{'total'} = $reads_rs->get_column('copy_number')->sum;
+	$counts{'total'} = $reads_rs->get_column('copy_number')->sum || 0;
 
 	$counts{'repeats'} = $reads_rs->search({
 		rmsk => {'!=', undef}
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'intergenic'} = $reads_rs->search({
 		transcript => undef,
 		rmsk => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'genic'} = $reads_rs->search({
 		transcript => {'!=', undef},
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'exonic'} = $reads_rs->search({
 		transcript => {'!=', undef},
 		exon       => {'!=', undef},
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'intronic'} = $reads_rs->search({
 		transcript => {'!=', undef},
 		exon       => undef,
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'genic-norepeat'} = $reads_rs->search({
 		transcript => {'!=', undef},
 		rmsk       => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'exonic-norepeat'} = $reads_rs->search({
 		exon => {'!=', undef},
 		rmsk => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'intronic-norepeat'} = $reads_rs->search({
 		transcript => {'!=', undef},
 		exon       => undef,
 		rmsk       => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	# Coding transcripts
 	$counts{'genic-coding-norepeat'} = $reads_rs->search({
 		coding_transcript => {'!=', undef},
 		rmsk              => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'intronic-coding-norepeat'} = $reads_rs->search({
 		coding_transcript => {'!=', undef},
 		exon              => undef,
 		rmsk              => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'exonic-coding-norepeat'} = $reads_rs->search({
 		coding_transcript => {'!=', undef},
 		exon              => {'!=', undef},
 		rmsk              => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'utr5-exonic-coding-norepeat'} = $reads_rs->search({
 		coding_transcript => {'!=', undef},
 		exon              => {'!=', undef},
 		utr5              => {'!=', undef},
 		rmsk              => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'cds-exonic-coding-norepeat'} = $reads_rs->search({
 		coding_transcript => {'!=', undef},
 		exon              => {'!=', undef},
 		cds              => {'!=', undef},
 		rmsk              => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 	$counts{'utr3-exonic-coding-norepeat'} = $reads_rs->search({
 		coding_transcript => {'!=', undef},
 		exon              => {'!=', undef},
 		utr3              => {'!=', undef},
 		rmsk              => undef
-	})->get_column('copy_number')->sum;
+	})->get_column('copy_number')->sum || 0;
 
 
 	warn "Creating output path\n" if $self->verbose;
