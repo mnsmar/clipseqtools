@@ -131,53 +131,43 @@ sub run {
 	my @coding_transcripts = grep{$_->is_coding} $transcript_collection->all_records;
 
 	warn "Creating reads collection\n" if $self->verbose;
-	my $reads_collection = $self->reads_collection;
+	my $reads_col = $self->reads_collection;
 
 	warn "Measuring reads in bins of introns/exons per transcript\n" if $self->verbose;
-	my (@exon_binned_reads, @intron_binned_reads, @exon_binned_reads_per_nt, @intron_binned_reads_per_nt);
-	my ($counted_exons, $counted_introns) = (0, 0);
+	my (%exons, %introns);
 	foreach my $transcript (@coding_transcripts) {
 		foreach my $exon (@{$transcript->exons}) {
-			my $exon_counts = count_copy_number_in_percent_of_length_of_element($exon, $reads_collection, $self->bins);
-			map{ $exon_binned_reads[$_] += $exon_counts->[$_] } 0..$self->bins-1;
-			map{ $exon_binned_reads_per_nt[$_] += $exon_counts->[$_] / ($exon->length || 1) } 0..$self->bins-1;
-			$counted_exons++;
+			next if exists $exons{$exon->location};
+			my $exon_counts = copy_number_in_bins_of_element($exon, $reads_col, $self->bins);
+			$exon->extra({counts => $exon_counts});
+			$exons{$exon->location} = $exon;
 		}
-		
+
 		foreach my $intron (@{$transcript->introns}) {
-			my $intron_counts = count_copy_number_in_percent_of_length_of_element($intron, $reads_collection, $self->bins);
-			map{ $intron_binned_reads[$_] += $intron_counts->[$_] } 0..$self->bins-1;
-			map{ $intron_binned_reads_per_nt[$_] += $intron_counts->[$_] / ($intron->length || 1) } 0..$self->bins-1;
-			$counted_introns++;
+			next if exists $introns{$intron->location};
+			my $intron_counts = copy_number_in_bins_of_element($intron, $reads_col, $self->bins);
+			$intron->extra({counts => $intron_counts});
+			$introns{$intron->location} = $intron;
 		}
 	};
-	warn "Counted exons:   $counted_exons\n" if $self->verbose;
-	warn "Counted introns: $counted_introns\n" if $self->verbose;
-
-	warn "Averaging the counts accross all transcripts\n" if $self->verbose;
-	my @exon_binned_mean_reads = map{$_/$counted_exons} @exon_binned_reads;
-	my @intron_binned_mean_reads = map{$_/$counted_introns} @intron_binned_reads;
-	my @exon_binned_mean_reads_per_nt = map{$_/$counted_exons} @exon_binned_reads_per_nt;
-	my @intron_binned_mean_reads_per_nt = map{$_/$counted_introns} @intron_binned_reads_per_nt;
-
-	warn "Normalizing by library size (RPKM)\n" if $self->verbose;
-	my $total_copy_number = $reads_collection->total_copy_number;
-	my @exon_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @exon_binned_mean_reads_per_nt;
-	my @intron_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @intron_binned_mean_reads_per_nt;
+	warn "Counted exons:   " . scalar(keys %exons)   . "\n" if $self->verbose;
+	warn "Counted introns: " . scalar(keys %introns) . "\n" if $self->verbose;
 
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
 
 	warn "Printing results\n" if $self->verbose;
 	open (my $OUT, '>', $self->o_prefix.'distribution_on_introns_exons.tab');
-	say $OUT join("\t", 'bin', 'element', 'avg_counts', 'avg_counts_per_nt', 'avg_rpkm');
-	foreach my $bin (0..$self->bins-1) {
-		say $OUT join("\t", $bin, 'exon', $exon_binned_mean_reads[$bin], $exon_binned_mean_reads_per_nt[$bin], $exon_binned_mean_percent_reads_per_nt[$bin]);
+	say $OUT join("\t", 'element', 'location', (map {'bin_' . $_} (0..$self->bins-1)));
+	foreach my $exon_loc (keys %exons) {
+		my $exon = $exons{$exon_loc};	
+		say $OUT join("\t", 'exon', $exon->location, @{$exon->extra->{counts}});
 	}
-	foreach my $bin (0..$self->bins-1) {
-		say $OUT join("\t", $bin, 'intron', $intron_binned_mean_reads[$bin], $intron_binned_mean_reads_per_nt[$bin], $intron_binned_mean_percent_reads_per_nt[$bin]);
+	foreach my $intron_loc (keys %introns) {
+		my $intron = $introns{$intron_loc};	
+		say $OUT join("\t", 'intron', $intron->location, @{$intron->extra->{counts}});
 	}
-	
+
 	if ($self->plot) {
 		warn "Creating plot\n" if $self->verbose;
 		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::distribution_on_introns_exons', 
@@ -191,18 +181,22 @@ sub run {
 #######################################################################
 ############################   Functions   ############################
 #######################################################################
-sub count_copy_number_in_percent_of_length_of_element {
-	my ($part, $reads_collection, $bins) = @_;
-	
+sub copy_number_in_bins_of_element {
+	my ($part, $reads_col, $bins) = @_;
+
 	my @counts = map{0} 0..$bins-1;
-	my $longest_record_length = $reads_collection->longest_record->length;
+	my $longest_record_length = $reads_col->longest_record->length;
 	my $margin = int($longest_record_length/2);
-	$reads_collection->foreach_contained_record_do($part->strand, $part->chromosome, $part->start-$margin, $part->stop+$margin, sub {
+	$reads_col->foreach_contained_record_do($part->strand, $part->chromosome, $part->start-$margin, $part->stop+$margin, sub {
 		my ($record) = @_;
 		
-		return 0 if !$part->overlaps($record);
+		my $record_mid = $record->mid_position;
+		return 0 if ($record_mid < $part->start or $record_mid > $part->stop);
 		
 		my $bin = int($bins * (abs($part->head_mid_distance_from($record)) / $part->length));
+		if ($bin >= $bins) {
+			warn join("\t", $part->location, $record->location, $part->head_mid_distance_from($record),$record->mid_position, $record->cigar)."\n";
+		}
 		$counts[$bin] += $record->copy_number;
 	});
 	

@@ -131,37 +131,33 @@ sub run {
 	my @coding_transcripts = grep{$_->is_coding} $transcript_collection->all_records;
 	
 	warn "Creating reads collection\n" if $self->verbose;
-	my $reads_collection = $self->reads_collection;
+	my $reads_col = $self->reads_collection;
 	
 	warn "Calculating counts in bins of genic elements per transcript\n" if $self->verbose;
-	my (@utr5_binned_reads,
-		@cds_binned_reads,
-		@utr3_binned_reads,
-		@utr5_binned_reads_per_nt,
-		@cds_binned_reads_per_nt,
-		@utr3_binned_reads_per_nt);
-	my ($counted_utr5s,
-		$counted_cdss,
-		$counted_utr3s) = (0, 0, 0);
-	foreach my $transcript (@coding_transcripts) {
-		if (defined $transcript->utr5 and $transcript->utr5->exonic_length > $self->length_thres) {
-			my $utr5_counts = count_copy_number_in_percent_of_length_of_element($transcript->utr5, $reads_collection, $self->bins);
-			map{ $utr5_binned_reads[$_] += $utr5_counts->[$_] } 0..$self->bins-1;
-			map{ $utr5_binned_reads_per_nt[$_] += $utr5_counts->[$_] / ($transcript->utr5->exonic_length || 1) } 0..$self->bins-1;
+	my ($counted_utr5s, $counted_cdss, $counted_utr3s) = (0, 0, 0);
+	my $total_copy_number = $reads_col->total_copy_number;
+	foreach my $tran (@coding_transcripts) {
+		$tran->extra({
+			utr5_counts  => [map {'NA'} (0..$self->bins-1)],
+			cds_counts   => [map {'NA'} (0..$self->bins-1)],
+			utr3_counts  => [map {'NA'} (0..$self->bins-1)],
+		});
+		
+		if (defined $tran->utr5 and $tran->utr5->exonic_length > $self->length_thres) {
+			$tran->extra->{utr5_counts} = count_copy_number_in_percent_of_length_of_element(
+				$tran->utr5, $reads_col, $self->bins);
 			$counted_utr5s++;
 		}
 		
-		if (defined $transcript->cds and $transcript->cds->exonic_length > $self->length_thres) {
-			my $cds_counts = count_copy_number_in_percent_of_length_of_element($transcript->cds, $reads_collection, $self->bins);
-			map{ $cds_binned_reads[$_]  += $cds_counts->[$_]  } 0..$self->bins-1;
-			map{ $cds_binned_reads_per_nt[$_]  += $cds_counts->[$_]  / ($transcript->cds->exonic_length  || 1)  } 0..$self->bins-1;
+		if (defined $tran->cds and $tran->cds->exonic_length > $self->length_thres) {
+			$tran->extra->{cds_counts} = count_copy_number_in_percent_of_length_of_element(
+				$tran->cds, $reads_col, $self->bins);
 			$counted_cdss++;
 		}
 		
-		if (defined $transcript->utr3 and $transcript->utr3->exonic_length > $self->length_thres) {
-			my $utr3_counts = count_copy_number_in_percent_of_length_of_element($transcript->utr3, $reads_collection, $self->bins);
-			map{ $utr3_binned_reads[$_] += $utr3_counts->[$_] } 0..$self->bins-1;
-			map{ $utr3_binned_reads_per_nt[$_] += $utr3_counts->[$_] / ($transcript->utr3->exonic_length || 1) } 0..$self->bins-1;
+		if (defined $tran->utr3 and $tran->utr3->exonic_length > $self->length_thres) {
+			$tran->extra->{utr3_counts} = count_copy_number_in_percent_of_length_of_element(
+				$tran->utr3, $reads_col, $self->bins);
 			$counted_utr3s++;
 		}
 	};
@@ -169,36 +165,24 @@ sub run {
 	warn "Counted CDSs:  $counted_cdss\n"  if $self->verbose;
 	warn "Counted UTR3s: $counted_utr3s\n" if $self->verbose;
 	
-	warn "Averaging the counts into element arrays\n" if $self->verbose;
-	my @utr5_binned_mean_reads = map{$_/$counted_utr5s} @utr5_binned_reads;
-	my @cds_binned_mean_reads = map{$_/$counted_cdss} @cds_binned_reads;
-	my @utr3_binned_mean_reads = map{$_/$counted_utr3s} @utr3_binned_reads;
-	my @utr5_binned_mean_reads_per_nt = map{$_/$counted_utr5s} @utr5_binned_reads_per_nt;
-	my @cds_binned_mean_reads_per_nt = map{$_/$counted_cdss} @cds_binned_reads_per_nt;
-	my @utr3_binned_mean_reads_per_nt = map{$_/$counted_utr3s} @utr3_binned_reads_per_nt;
-	
-	warn "Normalizing by library size (RPKM)\n" if $self->verbose;
-	my $total_copy_number = $reads_collection->total_copy_number;
-	my @utr5_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @utr5_binned_mean_reads_per_nt;
-	my @cds_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @cds_binned_mean_reads_per_nt;
-	my @utr3_binned_mean_percent_reads_per_nt = map{($_/$total_copy_number) * 10**9} @utr3_binned_mean_reads_per_nt;
-
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
 	
 	warn "Printing results\n" if $self->verbose;
 	open (my $OUT, '>', $self->o_prefix.'distribution_on_genic_elements.tab');
-	say $OUT join("\t", 'bin', 'element', 'avg_counts', 'avg_counts_per_nt', 'avg_rpkm');
-	foreach my $bin (0..$self->bins-1) {
-		say $OUT join("\t", $bin, 'utr5', $utr5_binned_mean_reads[$bin], $utr5_binned_mean_reads_per_nt[$bin], $utr5_binned_mean_percent_reads_per_nt[$bin]);
+	say $OUT join("\t", 'transcript_id', 
+	    (map {'utr5_bin_' . $_} (0..$self->bins-1)),
+	    (map {'cds_bin_'  . $_} (0..$self->bins-1)),
+	    (map {'utr3_bin_' . $_} (0..$self->bins-1))); 
+	foreach my $tran (@coding_transcripts) {
+		next if !defined $tran->extra;
+		say $OUT join("\t", $tran->id,
+			@{$tran->extra->{utr5_counts}}, 
+			@{$tran->extra->{cds_counts}},
+			@{$tran->extra->{utr3_counts}});
 	}
-	foreach my $bin (0..$self->bins-1) {
-		say $OUT join("\t", $bin, 'cds', $cds_binned_mean_reads[$bin], $cds_binned_mean_reads_per_nt[$bin], $cds_binned_mean_percent_reads_per_nt[$bin]);
-	}
-	foreach my $bin (0..$self->bins-1) {
-		say $OUT join("\t", $bin, 'utr3', $utr3_binned_mean_reads[$bin], $utr3_binned_mean_reads_per_nt[$bin], $utr3_binned_mean_percent_reads_per_nt[$bin]);
-	}
-	
+	close $OUT;
+
 	if ($self->plot) {
 		warn "Creating plot\n" if $self->verbose;
 		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::distribution_on_genic_elements', 
@@ -213,13 +197,13 @@ sub run {
 ############################   Functions   ############################
 #######################################################################
 sub count_copy_number_in_percent_of_length_of_element {
-	my ($part, $reads_collection, $bins) = @_;
+	my ($part, $reads_col, $bins) = @_;
 	
 	my @counts = map{0} 0..$bins-1;
-	my $longest_record_length = $reads_collection->longest_record->length;
+	my $longest_record_length = $reads_col->longest_record->length;
 	my $part_exonic_length = $part->exonic_length;
 	my $margin = int($longest_record_length/2);
-	$reads_collection->foreach_contained_record_do($part->strand, $part->chromosome, $part->start-$margin, $part->stop+$margin, sub {
+	$reads_col->foreach_contained_record_do($part->strand, $part->chromosome, $part->start-$margin, $part->stop+$margin, sub {
 		my ($record) = @_;
 		
 		my $relative_position_in_part = $part->relative_exonic_position($record->mid_position) // return 0;

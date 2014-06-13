@@ -99,20 +99,39 @@ sub run_R {
 	$R->run(q{library(RColorBrewer)});
 
 	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
+	$R->run(q{mypal = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
+	# Remove first column with ids 
+	$R->run(q{idata = idata[, -grep("transcript_id", colnames(idata))]});
+
+	# Calculate colSums and stdv
+	$R->run(q{idata.utr5.colSums = colSums(idata[, grep("utr5", colnames(idata))], na.rm=TRUE)});
+	$R->run(q{idata.cds.colSums = colSums(idata[, grep("cds", colnames(idata))], na.rm=TRUE)});
+	$R->run(q{idata.utr3.colSums = colSums(idata[, grep("utr3", colnames(idata))], na.rm=TRUE)});
+	
+	# Calculate normalization factor
+	$R->run(q{norm_factor = sum(idata, na.rm=TRUE)});
+
+	# Normalize
+	$R->run(q{idata.utr5.colSums.norm = idata.utr5.colSums / norm_factor});
+	$R->run(q{idata.cds.colSums.norm = idata.cds.colSums / norm_factor});
+	$R->run(q{idata.utr3.colSums.norm = idata.utr3.colSums / norm_factor});
+
+	# Calculate min/max for y axis
+	$R->run(q{max_y = max(idata.utr5.colSums.norm, idata.cds.colSums.norm, idata.utr3.colSums.norm)});
+
 	# Do plots
 	$R->run(q{pdf(figfile, width=21)});
-	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.5, cex.axis=1.5, cex.main=1.5, lwd=1.5, oma=c(0, 0, 2, 0))});
-	$R->run(q{plot(idata$bin[idata$element == 'utr5'], idata$avg_rpkm[idata$element   == 'utr5'], type="b", ylim=c(0, max(idata$avg_rpkm)),   col=mypalette[1], main="5'UTR", xlab="Bin", ylab="Average RPKM")});
-	$R->run(q{plot(idata$bin[idata$element == 'cds'],  idata$avg_rpkm[idata$element   == 'cds'],  type="b", ylim=c(0, max(idata$avg_rpkm)),   col=mypalette[2], main="CDS",   xlab="Bin", ylab="Average RPKM")});
-	$R->run(q{plot(idata$bin[idata$element == 'utr3'], idata$avg_rpkm[idata$element   == 'utr3'], type="b", ylim=c(0, max(idata$avg_rpkm)),   col=mypalette[4], main="3'UTR", xlab="Bin", ylab="Average RPKM")});
-	$R->run(q{plot(idata$bin[idata$element == 'utr5'], idata$avg_counts[idata$element == 'utr5'], type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[1], main="5'UTR", xlab="Bin", ylab="Average number of reads")});
-	$R->run(q{plot(idata$bin[idata$element == 'cds'],  idata$avg_counts[idata$element == 'cds'],  type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[2], main="CDS",   xlab="Bin", ylab="Average number of reads")});
-	$R->run(q{plot(idata$bin[idata$element == 'utr3'], idata$avg_counts[idata$element == 'utr3'], type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[4], main="3'UTR", xlab="Bin", ylab="Average number of reads")});
+	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.8, cex.axis=1.8, cex.main=1.8, lwd=1.8, oma=c(1, 1, 2, 0), mar=c(5.1,5.1,4.1,2.1))});
+	$R->run(q{plot(idata.utr5.colSums.norm, pch=19, type="b", col=mypal[1],
+		main="5'UTR", xlab="Binned exonic length", ylab="Read density", ylim=c(0, max_y))});
+	$R->run(q{plot(idata.cds.colSums.norm, pch=19, type="b", col=mypal[2],
+		main="CDS", xlab="Binned exonic length", ylab="Read density", ylim=c(0, max_y))});
+	$R->run(q{plot(idata.utr3.colSums.norm, pch=19, type="b", col=mypal[4],
+		main="3'UTR", xlab="Binned exonic length", ylab="Read density", ylim=c(0, max_y))});
 	$R->run(q{graphics.off()});
 
 	# Close R

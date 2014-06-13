@@ -99,18 +99,36 @@ sub run_R {
 	$R->run(q{library(RColorBrewer)});
 
 	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
+	$R->run(q{mypal = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
+	# Create 2 new tables for exons and introns
+	$R->run(q{exon_dat = subset(idata, idata$element == 'exon', select=-c(element, location))});
+	$R->run(q{intron_dat = subset(idata, idata$element == 'intron', select=-c(element, location))});
+
+	# Calculate normalization factor
+	$R->run(q{norm_factor = sum(exon_dat, na.rm=TRUE) + sum(intron_dat, na.rm=TRUE)});
+
+	# Calculate colSums and stdv
+	$R->run(q{exon_dat.colSums = colSums(exon_dat, na.rm=TRUE)});
+	$R->run(q{intron_dat.colSums = colSums(intron_dat, na.rm=TRUE)});
+	
+	# Normalize
+	$R->run(q{exon_dat.colSums.norm = exon_dat.colSums / norm_factor});
+	$R->run(q{intron_dat.colSums.norm = intron_dat.colSums / norm_factor});
+
+	# Calculate min/max for y axis
+	$R->run(q{max_y = max(exon_dat.colSums.norm, intron_dat.colSums.norm)});
+
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.5, cex.axis=1.5, cex.main=1.5, lwd=1.5, oma=c(0, 0, 2, 0))});
-	$R->run(q{plot(idata$bin[idata$element == 'exon'], idata$avg_rpkm[idata$element   == 'exon'], type="b", ylim=c(0, max(idata$avg_rpkm)),   col=mypalette[1], main="Exon", xlab="Bin", ylab="Average RPKM")});
-	$R->run(q{plot(idata$bin[idata$element == 'intron'],  idata$avg_rpkm[idata$element   == 'intron'],  type="b", ylim=c(0, max(idata$avg_rpkm)),   col=mypalette[2], main="Intron",   xlab="Bin", ylab="Average RPKM")});
-	$R->run(q{plot(idata$bin[idata$element == 'exon'], idata$avg_counts[idata$element == 'exon'], type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[1], main="Exon", xlab="Bin", ylab="Average number of reads")});
-	$R->run(q{plot(idata$bin[idata$element == 'intron'],  idata$avg_counts[idata$element == 'intron'],  type="b", ylim=c(0, max(idata$avg_counts)), col=mypalette[2], main="Intron",   xlab="Bin", ylab="Average number of reads")});
+	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.4, cex.axis=1.4, cex.main=1.4, lwd=1.4, oma=c(0, 1, 2, 0), mar=c(5.1,4.1,4.1,2.1))});
+	$R->run(q{plot(intron_dat.colSums.norm, pch=19, type="b", col=mypal[1],
+		main="Intron", xlab="Binned length", ylab="Read density", ylim=c(0, max_y))});
+	$R->run(q{plot(exon_dat.colSums.norm, pch=19, type="b", col=mypal[2],
+		main="Exon", xlab="Binned length", ylab="Read density", ylim=c(0, max_y))});
 	$R->run(q{graphics.off()});
 
 	# Close R
