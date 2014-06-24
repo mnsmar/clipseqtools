@@ -10,8 +10,9 @@ clipseqtools-compare all [options/parameters]
 
 Run all clipseqtools-compare analyses.
 
-Takes two libraries (one called input and one called reference) on which all single clipseqtools analyses have ran.
-Assumes that all single clipseqtools analyses used a common o_prefix for each library.
+Takes two libraries (one called input and one called reference) on which all
+single clipseqtools analyses have ran.  Assumes that all single clipseqtools
+analyses used a common o_prefix for each library.
 
 =head1 OPTIONS
 
@@ -29,11 +30,11 @@ Assumes that all single clipseqtools analyses used a common o_prefix for each li
                             Syntax: column_name="pattern"
                             e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                --filter deletion="def" 
+                                --filter deletion="def"
                                 --filter rmsk="undef" .
                                 --filter query_length=">31".
                             Operators: >, >=, <, <=, =, !=, def, undef
-    --res_prefix <Str>      results prefix of clipseqtools analysis. 
+    --res_prefix <Str>      results prefix of clipseqtools analysis.
                             Should match the o_prefix used when running
                             clipseqtools on the library.
 
@@ -48,7 +49,7 @@ Assumes that all single clipseqtools analyses used a common o_prefix for each li
     --r_password <Str>      password for database connection.
     --r_records_class <Str> type of records stored in database.
     --r_filter <Filter>     same as filter but for reference library.
-    --r_res_prefix <Str>    results prefix of clipseqtools analysis. 
+    --r_res_prefix <Str>    results prefix of clipseqtools analysis.
                             Should match the o_prefix used when running
                             clipseqtools on the reference library.
 
@@ -90,52 +91,58 @@ option 'rname_sizes' => (
 	is            => 'rw',
 	isa           => 'Str',
 	required      => 1,
-	documentation => 'file with sizes for reference alignment sequences (rnames). Must be tab delimited (chromosome\tsize) with one line per rname.',
+	documentation => 'file with sizes for reference alignment sequences '.
+						'(rnames). Must be tab delimited (chromosome\tsize) '.
+						'with one line per rname.',
 );
 
 option 'res_prefix' => (
 	is            => 'rw',
 	isa           => 'Str',
 	required      => 1,
-	documentation => 'results prefix of clipseqtools analysis. Should match the o_prefix used when running clipseqtools on the library.',
+	documentation => 'results prefix of clipseqtools analysis. Should match '.
+						'the o_prefix used when running clipseqtools on the '.
+						'library.',
 );
 
 option 'r_res_prefix' => (
 	is            => 'rw',
 	isa           => 'Str',
 	required      => 1,
-	documentation => 'results prefix of clipseqtools analysis. Should match the o_prefix used when running clipseqtools on the reference library.',
+	documentation => 'results prefix of clipseqtools analysis. Should match '.
+						'the o_prefix used when running clipseqtools on the '.
+						'reference library.',
 );
 
 
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 
+with
 	"CLIPSeqTools::Role::Option::Library" => {
-		-alias    => { validate_args => '_validate_args_for_library' },
+		-alias    => {validate_args => '_validate_args_for_library'},
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::Option::ReferenceLibrary" => {
-		-alias    => { validate_args => '_validate_args_for_reference_library' },
+		-alias    => {validate_args => '_validate_args_for_reference_library'},
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::Option::Plot" => {
-		-alias    => { validate_args => '_validate_args_for_plot' },
+		-alias    => {validate_args => '_validate_args_for_plot'},
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::Option::OutputPrefix" => {
-		-alias    => { validate_args => '_validate_args_for_output_prefix' },
+		-alias    => {validate_args => '_validate_args_for_output_prefix'},
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_library;
 	$self->_validate_args_for_reference_library;
 	$self->_validate_args_for_plot;
@@ -144,76 +151,76 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
-	
+
 	my %options;
-	
-	$options{'driver'}          = $self->driver          if defined $self->driver;
-	$options{'database'}        = $self->database        if defined $self->database;
-	$options{'table'}           = $self->table           if defined $self->table;
-	$options{'host'}            = $self->host            if defined $self->host;
-	$options{'user'}            = $self->user            if defined $self->user;
-	$options{'password'}        = $self->password        if defined $self->password;
-	$options{'records_class'}   = $self->records_class   if defined $self->records_class;
-	$options{'filter'}          = $self->filter          if defined $self->filter;
-	$options{'res_prefix'}      = $self->res_prefix      if defined $self->res_prefix;
-	$options{'r_driver'}        = $self->r_driver        if defined $self->r_driver;
-	$options{'r_database'}      = $self->r_database      if defined $self->r_database;
-	$options{'r_table'}         = $self->r_table         if defined $self->r_table;
-	$options{'r_host'}          = $self->r_host          if defined $self->r_host;
-	$options{'r_user'}          = $self->r_user          if defined $self->r_user;
-	$options{'r_password'}      = $self->r_password      if defined $self->r_password;
-	$options{'r_records_class'} = $self->r_records_class if defined $self->r_records_class;
-	$options{'r_filter'}        = $self->r_filter        if defined $self->r_filter;
-	$options{'r_res_prefix'}    = $self->r_res_prefix    if defined $self->r_res_prefix;
-	$options{'o_prefix'}        = $self->o_prefix        if defined $self->o_prefix;
-	$options{'rname_sizes'}     = $self->rname_sizes     if defined $self->rname_sizes;
-	$options{'plot'}            = $self->plot            if defined $self->plot;
-	$options{'verbose'}         = $self->verbose         if defined $self->verbose;
-	
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::libraries_overlap_stats', %options)->run();
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::libraries_relative_read_density', %options)->run();
 
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
-		table   => [$self->res_prefix.'counts.transcript.tab', $self->r_res_prefix.'counts.transcript.tab'],
-		o_table => [$self->o_prefix.'library.counts.transcript.uq.tab', $self->o_prefix.'r_library.counts.transcript.uq.tab'],
-		key_col => ['transcript_id'],
-		val_col => 'transcript_exonic_count_per_nt',
-		verbose => $self->verbose,
+	map{$options{$_} = $self->$_ if defined $self->$_} (
+		'driver', 'database', 'table', 'host', 'user', 'password',
+		'records_class', 'filter', 'res_prefix', 'r_driver', 'r_database',
+		'r_table', 'r_host', 'r_user', 'r_password', 'r_records_class',
+		'r_filter', 'r_res_prefix', 'o_prefix', 'rname_sizes', 'plot',
+		'verbose');
+
+	CLIPSeqTools::CompareApp->initialize_command_class(
+		'CLIPSeqTools::CompareApp::libraries_overlap_stats',
+		%options
 	)->run();
 
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
-		table   => [$self->res_prefix.'counts.gene.tab', $self->r_res_prefix.'counts.gene.tab'],
-		o_table => [$self->o_prefix.'library.counts.gene.uq.tab', $self->o_prefix.'r_library.counts.gene.uq.tab'],
-		key_col => ['gene_name', 'gene_location'],
-		val_col => 'gene_exonic_count_per_nt',
-		verbose => $self->verbose
+	CLIPSeqTools::CompareApp->initialize_command_class(
+		'CLIPSeqTools::CompareApp::libraries_relative_read_density',
+		%options
 	)->run();
 
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
-		table   => [$self->res_prefix.'counts.exon.tab', $self->r_res_prefix.'counts.exon.tab'],
-		o_table => [$self->o_prefix.'library.counts.exon.uq.tab', $self->o_prefix.'r_library.counts.exon.uq.tab'],
-		key_col => ['transcript_id', 'exon_location'],
-		val_col => 'exon_count_per_nt',
-		verbose => $self->verbose
-	)->run();
-
-	CLIPSeqTools::CompareApp->initialize_command_class('CLIPSeqTools::CompareApp::upper_quartile_normalization', 
-		table   => [$self->res_prefix.'counts.intron.tab', $self->r_res_prefix.'counts.intron.tab'],
-		o_table => [$self->o_prefix.'library.counts.intron.uq.tab', $self->o_prefix.'r_library.counts.intron.uq.tab'],
-		key_col => ['transcript_id', 'intron_location'],
-		val_col => 'intron_count_per_nt',
-		verbose => $self->verbose
-	)->run();
-	
-	CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::scatterplot', 
-		table1   => $self->o_prefix.'library.counts.transcript.uq.tab',
-		table2   => $self->o_prefix.'r_library.counts.transcript.uq.tab',
+	CLIPSeqTools::CompareApp->initialize_command_class(
+		'CLIPSeqTools::CompareApp::compare_counts',
+		table    => [
+			$self->res_prefix.'counts.transcript.tab',
+			$self->r_res_prefix.'counts.transcript.tab'],
 		key_col  => ['transcript_id'],
-		val_col  => 'transcript_exonic_count_per_nt_uq',
-		name1    => 'primary library',
-		name2    => 'reference library',
+		val_col  => 'transcript_exonic_count_per_nt',
+		o_prefix => $self->o_prefix.'transcript.',
+		t_name   => ['primary_lib', 'reference_lib'],
+		plot     => $self->plot,
 		verbose  => $self->verbose,
-		o_prefix => $self->o_prefix . 'library_vs_r_library.counts.transcript.uq.',
+	)->run();
+
+	CLIPSeqTools::CompareApp->initialize_command_class(
+		'CLIPSeqTools::CompareApp::compare_counts',
+		table    => [
+			$self->res_prefix.'counts.gene.tab',
+			$self->r_res_prefix.'counts.gene.tab'],
+		key_col  => ['gene_name', 'gene_location'],
+		val_col  => 'gene_exonic_count_per_nt',
+		o_prefix => $self->o_prefix.'gene.',
+		t_name   => ['primary_lib', 'reference_lib'],
+		plot     => $self->plot,
+		verbose  => $self->verbose,
+	)->run();
+
+	CLIPSeqTools::CompareApp->initialize_command_class(
+		'CLIPSeqTools::CompareApp::compare_counts',
+		table    => [
+			$self->res_prefix.'counts.exon.tab',
+			$self->r_res_prefix.'counts.exon.tab'],
+		key_col  => ['transcript_id', 'exon_location'],
+		val_col  => 'exon_count_per_nt',
+		o_prefix => $self->o_prefix.'exon.',
+		t_name   => ['primary_lib', 'reference_lib'],
+		plot     => $self->plot,
+		verbose  => $self->verbose,
+	)->run();
+
+	CLIPSeqTools::CompareApp->initialize_command_class(
+		'CLIPSeqTools::CompareApp::compare_counts',
+		table    => [
+			$self->res_prefix.'counts.intron.tab',
+			$self->r_res_prefix.'counts.intron.tab'],
+		key_col  => ['transcript_id', 'intron_location'],
+		val_col  => 'intron_count_per_nt',
+		o_prefix => $self->o_prefix.'intron.',
+		t_name   => ['primary_lib', 'reference_lib'],
+		plot     => $self->plot,
+		verbose  => $self->verbose,
 	)->run();
 }
 

@@ -1,11 +1,10 @@
 =head1 NAME
 
-CLIPSeqTools::CompareApp::upper_quartile_normalization - Do Upper Quartile
-normalization on specified columns of tables.
+CLIPSeqTools::CompareApp::compare_counts - Compare tables with counts.
 
 =head1 SYNOPSIS
 
-clipseqtools upper_quartile_normalization [options/parameters]
+clipseqtools compare_counts [options/parameters]
 
 =head1 DESCRIPTION
 
@@ -38,7 +37,7 @@ with value lower than val_thres in all tables are excluded.
 
 =cut
 
-package CLIPSeqTools::CompareApp::upper_quartile_normalization;
+package CLIPSeqTools::CompareApp::compare_counts;
 
 
 # Make it an app command
@@ -65,7 +64,7 @@ option 'table' => (
 	is            => 'rw',
 	isa           => 'ArrayRef[Str]',
 	required      => 1,
-	documentation => 'input table file/files. Use option multiple times to '.
+	documentation => 'input table files. Use option two or more times to '.
 						'give multiple files.',
 );
 
@@ -93,15 +92,27 @@ option 'val_thres' => (
 						'used for normalization.',
 );
 
-option 'o_table' => (
+option 't_name' => (
 	is            => 'rw',
 	isa           => 'ArrayRef[Str]',
 	required      => 1,
-	documentation => 'output table file/files. Use option multiple times to '.
-						'give multiple files. Must be given as many times '.
-						'as the table option.'
+	documentation => 'table name . Use option multiple times to give names '.
+						'to all tables. If not set, numbers are used for '.
+						'names',
 );
 
+#######################################################################
+##########################   Consume Roles   ##########################
+#######################################################################
+with
+	"CLIPSeqTools::Role::Option::Plot" => {
+		-alias    => { validate_args => '_validate_args_for_plot' },
+		-excludes => 'validate_args',
+	},
+	"CLIPSeqTools::Role::Option::OutputPrefix" => {
+		-alias    => { validate_args => '_validate_args_for_output_prefix' },
+		-excludes => 'validate_args',
+	};
 
 #######################################################################
 ########################   Interface Methods   ########################
@@ -109,14 +120,14 @@ option 'o_table' => (
 sub validate_args {
 	my ($self) = @_;
 
-	$self->usage_error('Input table files must be as many as output ones.')
-		if @{$self->table} != @{$self->o_table};
+	$self->_validate_args_for_plot;
+	$self->_validate_args_for_output_prefix;
 }
 
 sub run {
 	my ($self) = @_;
 
-	warn "Starting analysis: upper_quartile_normalization\n";
+	warn "Starting analysis: compare_counts\n";
 
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
@@ -124,9 +135,9 @@ sub run {
 	warn "Reading input files\n" if $self->verbose;
 	my @tables = map {Data::Table::fromFile($_)} @{$self->table};
 	die "Table sizes differ\n" if not all_tables_of_equal_size(@tables);
+	$self->t_name([(1..@tables)]) if !defined $self->t_name;
 
-	warn "Calculating number of unique records with value over threshold\n"
-		if $self->verbose;
+	warn "Searching for 25th percentile\n" if $self->verbose;
 	my $uq_idx = _quantile_idx_from_table_with_fewer(
 		$self->val_col, $self->val_thres, $self->key_col, @tables);
 
@@ -135,12 +146,35 @@ sub run {
 	_build_normalized_column_in_tables($self->val_col, $uq_idx, @tables);
 
 	warn "Writing output files\n" if $self->verbose;
-	for (my $i=0; $i<@{$self->o_table}; $i++) {
-		my (undef, $dir, undef) = File::Spec->splitpath($self->o_table->[$i]);
+	my @output_files = map {
+		$self->o_prefix . $_ . '.counts.uq.tab'} @{$self->t_name};
+	for (my $i=0; $i<@output_files; $i++) {
+		my (undef, $dir, undef) = File::Spec->splitpath($output_files[$i]);
 		make_path($dir);
-		open (my $OUT, '>', $self->o_table->[$i]);
+		open (my $OUT, '>', $output_files[$i]);
 		print $OUT $tables[$i]->tsv;
 		close $OUT;
+	}
+
+	if ($self->plot) {
+		warn "Creating plots\n" if $self->verbose;
+		for (my $i = 0; $i < @output_files; $i++) {
+			for (my $j = $i+1; $j < @output_files; $j++) {
+				CLIPSeqTools::PlotApp->initialize_command_class(
+					'CLIPSeqTools::PlotApp::scatterplot',
+					table1   => $output_files[$i],
+					table2   => $output_files[$j],
+					key_col  => $self->key_col,
+					val_col  => $self->val_col,
+					name1    => $self->t_name->[$i],
+					name2    => $self->t_name->[$j],
+					verbose  => $self->verbose,
+					o_prefix => $self->o_prefix .
+								$self->t_name->[$i].'_vs_'.$self->t_name->[$j].
+								'.counts.uq.',
+				)->run();
+			}
+		}
 	}
 }
 
