@@ -108,7 +108,7 @@ sub run_R {
 	$R->run(q{idata = read.delim(ifile)});
 
 	# Create groups of scores
-	$R->run(q{mybreaks = c(seq(-1000,1000,200))});
+	$R->run(q{mybreaks = c(-Inf, seq(0,1000,100))});
 	$R->run(q{idata$score_group = cut(idata$conservation_score, breaks=mybreaks, dig.lab=4)});
 
 	# Aggregate (sum) counts for score groups
