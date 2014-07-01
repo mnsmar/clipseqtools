@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::libraries_relative_read_density - Create plots for script libraries_relative_read_density.
+CLIPSeqTools::PlotApp::libraries_relative_read_density - Create plots for
+script libraries_relative_read_density.
 
 =head1 SYNOPSIS
 
@@ -105,10 +106,10 @@ sub run_R {
 	$R->run(q{idata = read.delim(ifile)});
 
 	# Convert counts to density
-	$R->run(q{idata$norm_counts_with_copy_number_sense     = idata$counts_with_copy_number_sense    / sum(as.numeric(idata$counts_with_copy_number_sense))});
-	$R->run(q{idata$norm_counts_no_copy_number_sense       = idata$counts_no_copy_number_sense      / sum(as.numeric(idata$counts_no_copy_number_sense))});
-	$R->run(q{idata$norm_counts_with_copy_number_antisense = idata$counts_with_copy_number_antisense/ sum(as.numeric(idata$counts_with_copy_number_antisense))});
-	$R->run(q{idata$norm_counts_no_copy_number_antisense   = idata$counts_no_copy_number_antisense  / sum(as.numeric(idata$counts_no_copy_number_antisense))});
+	$R->run(q{idata$norm_counts_with_copy_number_sense     = idata$counts_with_copy_number_sense    / (sum(as.numeric(idata$counts_with_copy_number_sense)) + 1)});
+	$R->run(q{idata$norm_counts_no_copy_number_sense       = idata$counts_no_copy_number_sense      / (sum(as.numeric(idata$counts_no_copy_number_sense)) + 1)});
+	$R->run(q{idata$norm_counts_with_copy_number_antisense = idata$counts_with_copy_number_antisense/ (sum(as.numeric(idata$counts_with_copy_number_antisense)) + 1)});
+	$R->run(q{idata$norm_counts_no_copy_number_antisense   = idata$counts_no_copy_number_antisense  / (sum(as.numeric(idata$counts_no_copy_number_antisense)) + 1)});
 
 	# Find plot y_lim
 	$R->run(q{ylimit = max(idata$norm_counts_with_copy_number_sense, idata$norm_counts_no_copy_number_sense, idata$norm_counts_with_copy_number_antisense, idata$norm_counts_no_copy_number_antisense)});
