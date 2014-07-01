@@ -193,17 +193,17 @@ sub run {
 			
 			if ($strand == 1) {
 				my $coords = [$begin, $end];
-				$counts_with_copy_number_sense     += $pdl_plus_with_copy_number->slice($coords)  * $copy_number;
-				$counts_no_copy_number_sense       += $pdl_plus_no_copy_number->slice($coords);
-				$counts_with_copy_number_antisense += $pdl_minus_with_copy_number->slice($coords) * $copy_number;
-				$counts_no_copy_number_antisense   += $pdl_minus_no_copy_number->slice($coords);
+				$counts_with_copy_number_sense     += PDL::longlong($pdl_plus_with_copy_number->slice($coords))  * $copy_number;
+				$counts_no_copy_number_sense       += PDL::longlong($pdl_plus_no_copy_number->slice($coords));
+				$counts_with_copy_number_antisense += PDL::longlong($pdl_minus_with_copy_number->slice($coords)) * $copy_number;
+				$counts_no_copy_number_antisense   += PDL::longlong($pdl_minus_no_copy_number->slice($coords));
 			}
 			elsif ($strand == -1) {
 				my $coords = [$end, $begin]; #reverse
-				$counts_with_copy_number_sense     += $pdl_minus_with_copy_number->slice($coords) * $copy_number;
-				$counts_no_copy_number_sense       += $pdl_minus_no_copy_number->slice($coords);
-				$counts_with_copy_number_antisense += $pdl_plus_with_copy_number->slice($coords)  * $copy_number;
-				$counts_no_copy_number_antisense   += $pdl_plus_no_copy_number->slice($coords);
+				$counts_with_copy_number_sense     += PDL::longlong($pdl_minus_with_copy_number->slice($coords)) * $copy_number;
+				$counts_no_copy_number_sense       += PDL::longlong($pdl_minus_no_copy_number->slice($coords));
+				$counts_with_copy_number_antisense += PDL::longlong($pdl_plus_with_copy_number->slice($coords))  * $copy_number;
+				$counts_no_copy_number_antisense   += PDL::longlong($pdl_plus_no_copy_number->slice($coords));
 			}
 			
 			return 0;
