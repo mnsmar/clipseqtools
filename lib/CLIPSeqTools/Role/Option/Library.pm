@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::Role::Option::Library - Role to enable reading a library with reads from the command line
+CLIPSeqTools::Role::Option::Library - Role to enable reading a library with
+reads from the command line
 
 =head1 SYNOPSIS
 
@@ -8,20 +9,27 @@ Role to enable reading a library with reads from the command line
 
   Defines options.
       -driver <Str>          driver for database connection (eg. mysql, SQLite).
-      -database <Str>        database name or path to database file for file based databases (eg. SQLite).
+      -database <Str>        database name or path to database file for file
+                             based databases (eg. SQLite).
       -table <Str>           database table.
       -host <Str>            hostname for database connection.
       -user <Str>            username for database connection.
       -password <Str>        password for database connection.
-      -records_class <Str>   type of records stored in database (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
+      -records_class <Str>   type of records stored in database (Default:
+                             GenOO::Data::DB::DBIC::Species::Schema::
+                             SampleResultBase::v3).
       -filter <Filter>       filter library. Option can be given multiple times.
                              Syntax: column_name="pattern"
-                               e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
-                               e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
-                             Supported operators: >, >=, <, <=, =, !=, def, undef.
+                             e.g. -filter deletion="def" -filter rmsk="undef"
+                             to keep reads with deletions and not repeat
+                             masked.  e.g.  -filter query_length=">31" -filter
+                             query_length="<=50" to keep reads longer than 31
+                             and shorter or   equal to 50.  Supported
+                             operators: >, >=, <, <=, =, !=, def, undef.
 
   Provides attributes.
-      reads_collection      reads collection that is read from the specified source.
+      reads_collection      reads collection that is read from the specified
+                            source.
 
 =cut
 
@@ -84,21 +92,15 @@ option 'password' => (
 	documentation => 'password for database connection.',
 );
 
-option 'records_class' => (
-	is            => 'rw',
-	isa           => 'Str',
-	default       => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3',
-	documentation => 'type of records stored in database.',
-);
-
 option 'filter' => (
 	is            => 'rw',
 	isa           => 'ArrayRef',
 	default       => sub { [] },
 	documentation => 'filter library. Option can be given multiple times. '.
                      'Syntax: column_name="pattern" '.
-                     'e.g. --filter deletion="def" --filter rmsk="undef" --filter query_length=">31" '.
-                     'to keep reads with deletions AND not repeats AND longer than 31. '.
+                     'e.g. --filter deletion="def" --filter rmsk="undef" '.
+                     '--filter query_length=">31" to keep reads with '.
+                     'deletions AND not repeats AND longer than 31. '.
                      'Supported operators: >, >=, <, <=, =, !=, def, undef.',
 );
 
@@ -110,6 +112,14 @@ has 'reads_collection' => (
 	is        => 'rw',
 	builder   => '_build_collection',
 	lazy      => 1,
+);
+
+has 'records_class' => (
+	is            => 'rw',
+	isa           => 'Str',
+	default       => 'GenOO::Data::DB::DBIC::Species::Schema::' .
+						'SampleResultBase::v3',
+	documentation => 'type of records stored in database.',
 );
 
 

@@ -1,27 +1,43 @@
 =head1 NAME
 
-CLIPSeqTools::Role::Option::ReferenceLibrary - Role to enable reading reference libraries with reads from the command line
+CLIPSeqTools::Role::Option::ReferenceLibrary - Role to enable reading
+reference libraries with reads from the command line
 
 =head1 SYNOPSIS
 
 Role to enable reading reference libraries with reads from the command line
 
   Defines options.
-      -r_driver <Str>          driver for database connection  for reference library(eg. mysql, SQLite).
-      -r_database <Str>        database name or path for reference library (eg. SQLite).
+      -r_driver <Str>          driver for database connection  for reference
+                               library(eg. mysql, SQLite).
+      -r_database <Str>        database name or path for reference library
+                               (eg. SQLite).
       -r_table <Str>           database table for reference library.
-      -r_host <Str>            hostname for database connection for reference library.
-      -r_user <Str>            username for database connection for reference library.
-      -r_password <Str>        password for database connection for reference library.
-      -r_records_class <Str>   type of records stored in database for reference library (Default: GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3).
-      -r_filter <Filter>       filter library. Option can be given multiple times.
+      -r_host <Str>            hostname for database connection for reference
+                               library.
+      -r_user <Str>            username for database connection for reference
+                               library.
+      -r_password <Str>        password for database connection for reference
+                               library.
+      -r_records_class <Str>   type of records stored in database for
+                               reference library (Default: GenOO::Data::DB::
+                               DBIC::Species::Schema::SampleResultBase::v3).
+      -r_filter <Filter>       filter library. Option can be given multiple
+                               times.
                                Syntax: column_name="pattern"
-                                 e.g. -filter deletion="def" -filter rmsk="undef" to keep reads with deletions and not repeat masked.
-                                 e.g. -filter query_length=">31" -filter query_length="<=50" to keep reads longer than 31 and shorter or   equal to 50.
-                               Supported operators: >, >=, <, <=, =, !=, def, undef.
+                                 e.g. -filter deletion="def"
+                                      -filter rmsk="undef"
+                                 to keep reads with deletions and not repeat
+                                 masked.
+                                 e.g. -filter query_length=">31"
+                                      -filter query_length="<=50"
+                                 to keep reads longer than 31 and shorter or
+                                 equal to 50.
+                               Supports: >, >=, <, <=, =, !=, def, undef.
 
   Provides attributes.
-      r_reads_collection      reads collection that is read from the specified source.
+      r_reads_collection      reads collection that is read from the specified
+                              source.
 
 =cut
 
@@ -90,24 +106,18 @@ option 'r_password' => (
 	cmd_tags      => ['Reference library'],
 );
 
-option 'r_records_class' => (
-	is            => 'rw',
-	isa           => 'Str',
-	default       => 'GenOO::Data::DB::DBIC::Species::Schema::SampleResultBase::v3',
-	documentation => 'type of records stored in database.',
-	cmd_tags      => ['Reference library'],
-);
-
 option 'r_filter' => (
 	is            => 'rw',
 	isa           => 'ArrayRef',
 	default       => sub { [] },
-	documentation => 'filter reference library. Option can be given multiple times. '.
-                     'Syntax: column_name="pattern" '.
-                     'e.g. --r_filter deletion="def" --r_filter rmsk="undef" --r_filter query_length=">31" '.
-                     'to keep reads with deletions AND not repeats AND longer than 31. '.
-                     'Supported operators: >, >=, <, <=, =, !=, def, undef.',
-    cmd_tags      => ['Reference library'],
+	documentation => 'filter reference library. Option can be given '.
+						'multiple times. Syntax: column_name="pattern" '.
+						'e.g. --r_filter deletion="def" '.
+						'--r_filter rmsk="undef" '.
+						'--r_filter query_length=">31" to keep reads with '.
+						'deletions AND not repeats AND longer than 31. '.
+						'Supports: >, >=, <, <=, =, !=, def, undef.',
+	cmd_tags      => ['Reference library'],
 );
 
 
@@ -119,6 +129,15 @@ has 'r_reads_collection' => (
 	is        => 'rw',
 	builder   => '_build_reference_collection',
 	lazy      => 1,
+);
+
+has 'r_records_class' => (
+	is            => 'rw',
+	isa           => 'Str',
+	default       => 'GenOO::Data::DB::DBIC::Species::Schema'.
+						'::SampleResultBase::v3',
+	documentation => 'type of records stored in database.',
+	cmd_tags      => ['Reference library'],
 );
 
 
