@@ -19,6 +19,11 @@ with value lower than val_thres in all tables are excluded.
   Input options.
     --table <Str>          input table file/files. Use option multiple
                            times to specify multiple table files.
+    --t_name <Str>         table name. Use option multiple times to give names
+                           to all the tables. The number of table names must
+                           match the number of input table files. If not set,
+                           numbers are used instead. These names will be used
+                           in the output files.
     --key_col <Str>        name for the column/columns to use as a key. It
                            must be unique for each table row. Use option
                            multiple times to specify multiple columns.
@@ -95,10 +100,11 @@ option 'val_thres' => (
 option 't_name' => (
 	is            => 'rw',
 	isa           => 'ArrayRef[Str]',
-	required      => 1,
-	documentation => 'table name . Use option multiple times to give names '.
-						'to all tables. If not set, numbers are used for '.
-						'names',
+	documentation => 'table name. Use option multiple times to give names '.
+						'to all the tables. The number of table names must '.
+						'match the number of input table files. If not set, '.
+						'numbers are used instead. These names will be used '.
+						'in the output files.',
 );
 
 #######################################################################
@@ -165,7 +171,7 @@ sub run {
 					table1   => $output_files[$i],
 					table2   => $output_files[$j],
 					key_col  => $self->key_col,
-					val_col  => $self->val_col,
+					val_col  => $self->val_col . '_uq',
 					name1    => $self->t_name->[$i],
 					name2    => $self->t_name->[$j],
 					verbose  => $self->verbose,
