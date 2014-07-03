@@ -110,7 +110,7 @@ species - human (assembly: hg19), mouse (assembly: mm9) and fly (assembly:
 dme3) on our public server.
 
 You may access these file at
-L<http://mourelatos02.med.upenn.edu/clipseqtools/>
+L<http://mourelatos03.med.upenn.edu/clipseqtools/>
 
 =head2 Prepare your working directory
 
