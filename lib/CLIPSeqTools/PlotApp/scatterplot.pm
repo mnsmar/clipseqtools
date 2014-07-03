@@ -20,7 +20,7 @@ Create scatterplot for the given column for two tables.
                            must be unique for each table row. Use option
                            multiple times to specify multiple columns.
     --val_col <Str>        name of column with values to be plotted.
-	                       The logarithm of the values is used.
+                           The logarithm of the values is used.
 
   Output
     --name1 <Str>          name to be used in plot for first table
@@ -71,7 +71,9 @@ option 'key_col' => (
 	is            => 'rw',
 	isa           => 'ArrayRef[Str]',
 	required      => 1,
-	documentation => 'name for the column/columns to use as a key. It must be unique for each table row. Use option multiple times to specify multiple columns.',
+	documentation => 'name for the column/columns to use as a key. It must '.
+						'be unique for each table row. Use option multiple '.
+						'times to specify multiple columns.',
 );
 
 option 'val_col' => (
@@ -141,18 +143,13 @@ sub run_R {
 	$R->set('ifile2', $self->table2);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
-
 	# Read table with data
 	$R->run(q{idata1 = read.delim(ifile1)});
 	$R->run(q{idata2 = read.delim(ifile2)});
 
 	# Merge tables
-	$R->run(q{mdata = merge(idata1, idata2, by=c("}. join('","', @{$self->key_col}) . q{"))});
+	$R->run(q{mdata = merge(idata1, idata2, by=c("} .
+		join('","', @{$self->key_col}) . q{"))});
 
 	# Change symbol size depending on the number of records
 	$R->run(qq{cex_value = 1});
@@ -163,13 +160,15 @@ sub run_R {
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=7)});
-	$R->run(q{par(mfrow = c(1, 1), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2)});
+	$R->run(q{par(mfrow = c(1, 1), cex.lab=1.2, cex.axis=1.2, cex.main=1.2,
+		lwd=1.2)});
 
 	my $val_col_x = $self->val_col . '.x';
 	my $val_col_y = $self->val_col . '.y';
 	my $name1 = $self->name1;
 	my $name2 = $self->name2;
-	$R->run(qq{plot(mdata\$$val_col_x, mdata\$$val_col_y, log="xy", pch=19, cex=cex_value, xlab = "$name1", ylab="$name2")});
+	$R->run(qq{plot(mdata\$$val_col_x, mdata\$$val_col_y, log="xy", pch=19,
+		cex=cex_value, xlab = "$name1", ylab="$name2")});
 	$R->run(q{graphics.off()});
 
 	# Close R

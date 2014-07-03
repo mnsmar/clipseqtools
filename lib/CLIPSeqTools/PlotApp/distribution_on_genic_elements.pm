@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::distribution_on_genic_elements - Create plots for script distribution_on_genic_elements.
+CLIPSeqTools::PlotApp::distribution_on_genic_elements - Create plots for
+script distribution_on_genic_elements.
 
 =head1 SYNOPSIS
 
@@ -95,23 +96,20 @@ sub run_R {
 	$R->set('ifile', $self->file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
-	# Prepare color palette
-	$R->run(q{mypal = brewer.pal(4, "RdYlBu")});
-
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
-	# Remove first column with ids 
+	# Remove first column with ids
 	$R->run(q{idata = idata[, -grep("transcript_id", colnames(idata))]});
 
 	# Calculate colSums and stdv
-	$R->run(q{idata.utr5.colSums = colSums(idata[, grep("utr5", colnames(idata))], na.rm=TRUE)});
-	$R->run(q{idata.cds.colSums = colSums(idata[, grep("cds", colnames(idata))], na.rm=TRUE)});
-	$R->run(q{idata.utr3.colSums = colSums(idata[, grep("utr3", colnames(idata))], na.rm=TRUE)});
-	
+	$R->run(q{idata.utr5.colSums = colSums(idata[, grep("utr5",
+		colnames(idata))], na.rm=TRUE)});
+	$R->run(q{idata.cds.colSums = colSums(idata[, grep("cds",
+		colnames(idata))], na.rm=TRUE)});
+	$R->run(q{idata.utr3.colSums = colSums(idata[, grep("utr3",
+		colnames(idata))], na.rm=TRUE)});
+
 	# Calculate normalization factor
 	$R->run(q{norm_factor = sum(idata, na.rm=TRUE)});
 
@@ -121,17 +119,22 @@ sub run_R {
 	$R->run(q{idata.utr3.colSums.norm = idata.utr3.colSums / norm_factor});
 
 	# Calculate min/max for y axis
-	$R->run(q{max_y = max(idata.utr5.colSums.norm, idata.cds.colSums.norm, idata.utr3.colSums.norm)});
+	$R->run(q{max_y = max(idata.utr5.colSums.norm, idata.cds.colSums.norm,
+		idata.utr3.colSums.norm)});
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=21)});
-	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.8, cex.axis=1.8, cex.main=1.8, lwd=1.8, oma=c(1, 1, 2, 0), mar=c(5.1,5.1,4.1,2.1))});
-	$R->run(q{plot(idata.utr5.colSums.norm, pch=19, type="b", col=mypal[1],
-		main="5'UTR", xlab="Binned exonic length", ylab="Read density", ylim=c(0, max_y))});
-	$R->run(q{plot(idata.cds.colSums.norm, pch=19, type="b", col=mypal[2],
-		main="CDS", xlab="Binned exonic length", ylab="Read density", ylim=c(0, max_y))});
-	$R->run(q{plot(idata.utr3.colSums.norm, pch=19, type="b", col=mypal[4],
-		main="3'UTR", xlab="Binned exonic length", ylab="Read density", ylim=c(0, max_y))});
+	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.8, cex.axis=1.8, cex.main=1.8,
+		lwd=1.8, oma=c(1, 1, 2, 0), mar=c(5.1,5.1,4.1,2.1))});
+	$R->run(q{plot(idata.utr5.colSums.norm, pch=19, type="b", col="darkred",
+		main="5'UTR", xlab="Binned exonic length", ylab="Read density",
+		ylim=c(0, max_y))});
+	$R->run(q{plot(idata.cds.colSums.norm, pch=19, type="b", col="orange",
+		main="CDS", xlab="Binned exonic length", ylab="Read density",
+		ylim=c(0, max_y))});
+	$R->run(q{plot(idata.utr3.colSums.norm, pch=19, type="b", col="darkblue",
+		main="3'UTR", xlab="Binned exonic length", ylab="Read density",
+		ylim=c(0, max_y))});
 	$R->run(q{graphics.off()});
 
 	# Close R

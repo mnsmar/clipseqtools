@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::conservation_distribution - Create plots for script conservation_distribution.
+CLIPSeqTools::PlotApp::conservation_distribution - Create plots for script
+conservation_distribution.
 
 =head1 SYNOPSIS
 
@@ -16,8 +17,8 @@ Create plots for script conservation_distribution.
     --file <Str>                 file with conservation distribution.
 
   Output
-    --o_prefix <Str>             output path prefix. Script will create and add
-                                 extension to path. Default: ./
+    --o_prefix <Str>             output path prefix. Script will create and
+                                 add extension to path. Default: ./
 
     -v --verbose                 print progress lines and extra information.
     -h -? --usage --help         print help message
@@ -95,44 +96,55 @@ sub run_R {
 	$R->set('ifile', $self->file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
 	# Disable scientific notation
 	$R->run(q{options(scipen=999)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
 	# Create groups of scores
 	$R->run(q{mybreaks = c(-Inf, seq(0,1000,100))});
-	$R->run(q{idata$score_group = cut(idata$conservation_score, breaks=mybreaks, dig.lab=4)});
+	$R->run(q{idata$score_group = cut(idata$conservation_score,
+		breaks=mybreaks, dig.lab=4)});
 
 	# Aggregate (sum) counts for score groups
-	$R->run(q{aggregate_counts = tapply(idata$count, idata$score_group , sum)});
-	$R->run(q{aggregate_counts_no_copy_number = tapply(idata$count_no_copy_number, idata$score_group , sum)});
+	$R->run(q{aggregate_counts = tapply(idata$count, idata$score_group, sum)});
+	$R->run(q{aggregate_counts_no_copy_number =
+		tapply(idata$count_no_copy_number, idata$score_group , sum)});
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.1, cex.main=1.2, lwd=1.2, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
+	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.1, cex.main=1.2,
+		lwd=1.2, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
 
-	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA, log="y", ylab="Number of reads (log)", main="Number of reads with given conservation score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA,
+		log="y", ylab="Number of reads",
+		main="Number of reads with given conservation score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Conservation score", line = 7, cex=1.2)});
 
-	$R->run(q{plot((aggregate_counts / sum(aggregate_counts, na.rm=TRUE)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of reads (%)", main="Percent of reads with given conservation score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot((aggregate_counts / sum(aggregate_counts, na.rm=TRUE)) *
+		100, type="b", xaxt="n", pch=19, xlab = NA,
+		ylab="Percent of reads (%)",
+		main="Percent of reads with given conservation score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Conservation score", line = 7, cex=1.2)});
 
-	$R->run(q{plot(aggregate_counts_no_copy_number, type="b", xaxt="n", pch=19, xlab = NA, log="y", ylab="Number of unique reads (log)", main="Number of unique reads with given conservation score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts_no_copy_number), labels=names(aggregate_counts_no_copy_number), las=2)});
+	$R->run(q{plot(aggregate_counts_no_copy_number, type="b", xaxt="n",
+		pch=19, xlab = NA, log="y", ylab="Number of unique reads",
+		main="Number of unique reads with given conservation score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts_no_copy_number),
+		labels=names(aggregate_counts_no_copy_number), las=2)});
 	$R->run(q{mtext(side = 1, "Conservation score", line = 7, cex=1.2)});
 
-	$R->run(q{plot((aggregate_counts_no_copy_number / sum(aggregate_counts_no_copy_number, na.rm=TRUE)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of unique reads (%)", main="Percent of reads with given conservation score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts_no_copy_number), labels=names(aggregate_counts_no_copy_number), las=2)});
+	$R->run(q{plot((aggregate_counts_no_copy_number /
+		sum(aggregate_counts_no_copy_number, na.rm=TRUE)) * 100, type="b",
+		xaxt="n", pch=19, xlab = NA, ylab="Percent of unique reads (%)",
+		main="Percent of reads with given conservation score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts_no_copy_number),
+		labels=names(aggregate_counts_no_copy_number), las=2)});
 	$R->run(q{mtext(side = 1, "Conservation score", line = 7, cex=1.2)});
 
 	$R->run(q{graphics.off()});

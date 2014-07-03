@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::nucleotide_composition - Create plots for script nucleotide_composition.
+CLIPSeqTools::PlotApp::nucleotide_composition - Create plots for script
+nucleotide_composition.
 
 =head1 SYNOPSIS
 
@@ -96,14 +97,8 @@ sub run_R {
 	$R->set('ifile', $self->file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
 	# Disable scientific notation
 	$R->run(q{options(scipen=999)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
@@ -117,13 +112,22 @@ sub run_R {
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=7)});
-	$R->run(q{par(mfrow = c(1, 1), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2, oma=c(0, 0, 0, 0), mar=c(5.1, 5.1, 4.1, 2.1))});
-	$R->run(q{plot(idata$position, idata$A_percent, type="o", col=mypalette[1], ylim=c(0,100), xlab="Position in read", ylab="Percent of nucleotides (%)", main="Nucleotide composition per read position", cex=0.5)});
-	$R->run(q{lines(idata$position, idata$C_percent, type="o", col=mypalette[2], cex=0.5)});
-	$R->run(q{lines(idata$position, idata$G_percent, type="o", col=mypalette[3], cex=0.5)});
-	$R->run(q{lines(idata$position, idata$T_percent, type="o", col=mypalette[4], cex=0.5)});
-	$R->run(q{lines(idata$position, idata$N_percent, type="o", col="black", cex=0.5)});
-	$R->run(q{legend( "topright" , c("A", "C", "G", "T", "N"), fill=c(mypalette, "black"))});
+	$R->run(q{par(mfrow = c(1, 1), cex.lab=1.2, cex.axis=1.2, cex.main=1.2,
+		lwd=1.2, oma=c(0, 0, 0, 0), mar=c(5.1, 5.1, 4.1, 2.1))});
+	$R->run(q{plot(idata$position, idata$A_percent, type="o",
+		col="darkred", ylim=c(0,100), xlab="Position in read",
+		ylab="Percent of nucleotides (%)", main="Nucleotide composition per
+		read position", cex=0.5)});
+	$R->run(q{lines(idata$position, idata$C_percent, type="o",
+		col="orange", cex=0.5)});
+	$R->run(q{lines(idata$position, idata$G_percent, type="o",
+		col="lightblue", cex=0.5)});
+	$R->run(q{lines(idata$position, idata$T_percent, type="o",
+		col="darkblue", cex=0.5)});
+	$R->run(q{lines(idata$position, idata$N_percent, type="o", col="black",
+		cex=0.5)});
+	$R->run(q{legend( "topright" , c("A", "C", "G", "T", "N"),
+		fill=c("darkred", "orange", "lightblue", "darkblue", "black"))});
 	$R->run(q{graphics.off()});
 
 	# Close R

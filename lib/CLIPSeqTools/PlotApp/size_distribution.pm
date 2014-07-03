@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::size_distribution - Create plots for script size_distribution.
+CLIPSeqTools::PlotApp::size_distribution - Create plots for script
+size_distribution.
 
 =head1 SYNOPSIS
 
@@ -96,23 +97,21 @@ sub run_R {
 	$R->set('ifile', $self->file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
 	# Disable scientific notation
 	$R->run(q{options(scipen=999)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2, oma=c(0, 0, 2, 0), mar=c(5.1, 5.1, 4.1, 2.1))});
-	$R->run(q{plot(idata$size, idata$count, type="b", pch=19, xlab="Size", ylab="Number of reads", main="Number of reads with given size")});
-	$R->run(q{plot(idata$size, (idata$count / sum(idata$count)) * 100, type="b", pch=19, xlab="Size", ylab="Percent of reads (%)", main="Percent of reads with given size")});
+	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2,
+		lwd=1.2, oma=c(0, 0, 2, 0), mar=c(5.1, 5.1, 4.1, 2.1))});
+	$R->run(q{plot(idata$size, idata$count, type="b", pch=19, xlab="Size",
+		ylab="Number of reads", main="Number of reads with given size")});
+	$R->run(q{plot(idata$size, (idata$count / sum(idata$count)) * 100,
+		type="b", pch=19, xlab="Size", ylab="Percent of reads (%)",
+		main="Percent of reads with given size")});
 	$R->run(q{graphics.off()});
 
 	# Close R

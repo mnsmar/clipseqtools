@@ -95,22 +95,27 @@ sub run_R {
 	$R->set('ifile', $self->file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(plotrix)});
-	$R->run(q{library(RColorBrewer)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
-
 	# Read table with data - Do exra calulations
 	$R->run(q{idata = read.delim(ifile)});
 	$R->run(q{idata$percent = (idata$count / idata$total) * 100});
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), mar=c(9.5, 4.1, 4.1, 2.1));});
-	$R->run(q{barp(height=idata$percent, names.arg=idata$category, col=c(rep("black",2), rep("darkgrey",3), rep("grey",3), rep("lightgrey",3), rep("lightblue",3)), staxx=TRUE, srt=45, ylim=c(0,100), ylab="Percent of total reads");});
-	$R->run(q{barp(height=idata$count, names.arg=idata$category, col=c(rep("black",2), rep("darkgrey",3), rep("grey",3), rep("lightgrey",3), rep("lightblue",3)), staxx=TRUE, srt=45, ylab="Number of reads");});
+	$R->run(q{par(mfrow = c(1, 2), mar=c(10, 4.1, 3.1, 2.1));});
+
+	$R->run(q{mypal = c(rep("black",2), rep("darkgrey",3), rep("grey",3),
+		rep("lightgrey",3), rep("lightblue",3))});
+
+	$R->run(q{x = barplot(idata$percent, names.arg=idata$category, col=mypal,
+		ylim=c(0,100), ylab="Percent of total reads", xaxt="n");});
+	$R->run(q{text(x=x, y=-max(idata$percent)/100, idata$category, xpd=TRUE,
+		srt=50, adj=c(1, 1))});
+
+	$R->run(q{x = barplot(height=idata$count, names.arg=idata$category,
+		col=mypal, ylab="Number of reads", xaxt="n");});
+	$R->run(q{text(x=x, y=-max(idata$count)/100, idata$category, xpd=TRUE,
+		srt=50, adj=c(1, 1))});
+
 	$R->run(q{graphics.off()});
 
 	# Close R

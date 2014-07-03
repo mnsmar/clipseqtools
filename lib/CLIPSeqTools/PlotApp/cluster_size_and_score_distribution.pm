@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::PlotApp::cluster_size_and_score_distribution - Create plots for script cluster_size_and_score_distribution.
+CLIPSeqTools::PlotApp::cluster_size_and_score_distribution - Create plots for
+script cluster_size_and_score_distribution.
 
 =head1 SYNOPSIS
 
@@ -17,8 +18,8 @@ Create plots for script cluster_size_and_score_distribution.
     --cluster_scores_file <Str>  file with cluster scores distribution.
 
   Output
-    --o_prefix <Str>             output path prefix. Script will create and add
-                                 extension to path. Default: ./
+    --o_prefix <Str>             output path prefix. Script will create and
+                                 add extension to path. Default: ./
 
     -v --verbose                 print progress lines and extra information.
     -h -? --usage --help         print help message
@@ -106,43 +107,54 @@ sub run_R_for_cluster_scores {
 	$R->set('ifile', $self->cluster_scores_file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
 	# Disable scientific notation
 	$R->run(q{options(scipen=999)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
 	# Create column with total number of reads in clusters of each score
-	$R->run(q{idata$contained_reads_per_score = idata$cluster_score * idata$count});
+	$R->run(q{idata$contained_reads_per_score = idata$cluster_score *
+		idata$count});
 
 	# Create groups of scores
-	$R->run(q{mybreaks = c(seq(0,5,1), seq(10,20,5), seq(40,100,20), seq(200,600,200), 1000, Inf)});
-	$R->run(q{idata$score_group = cut(idata$cluster_score, breaks=mybreaks, dig.lab=4)});
+	$R->run(q{mybreaks = c(seq(0,5,1), seq(10,20,5), seq(40,100,20),
+		seq(200,600,200), 1000, Inf)});
+	$R->run(q{idata$score_group = cut(idata$cluster_score, breaks=mybreaks,
+		dig.lab=4)});
 
 	# Aggregate (sum) counts for score groups
-	$R->run(q{aggregate_counts = tapply(idata$count, idata$score_group , sum)});
-	$R->run(q{aggregate_contained_reads_per_score = tapply(idata$contained_reads_per_score, idata$score_group , sum)});
+	$R->run(q{aggregate_counts = tapply(idata$count, idata$score_group, sum)});
+	$R->run(q{aggregate_contained_reads_per_score =
+		tapply(idata$contained_reads_per_score, idata$score_group , sum)});
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=21)});
-	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.5, cex.axis=1.5, cex.main=1.5, lwd=1.5, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
+	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.5, cex.axis=1.5, cex.main=1.5,
+		lwd=1.5, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
 
-	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA, log="y", ylab="Number of clusters (log)", main="Number of clusters with given score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA,
+		log="y", ylab="Number of clusters",
+		main="Number of clusters with given score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Cluster score", line = 7, cex=1.2)});
 
-	$R->run(q{plot((aggregate_counts / sum(aggregate_counts, na.rm=TRUE)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of clusters (%)", main="Percent of clusters with given score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot((aggregate_counts / sum(aggregate_counts, na.rm=TRUE)) *
+		100, type="b", xaxt="n", pch=19, xlab = NA, ylim=c(0,100),
+		ylab="Percent of clusters (%)",
+		main="Percent of clusters with given score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Cluster score", line = 7, cex=1.2)});
 
-	$R->run(q{plot((aggregate_contained_reads_per_score / sum(aggregate_contained_reads_per_score, na.rm=TRUE)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of reads (%)", main="Percent of reads contained in cluster of given score")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot((aggregate_contained_reads_per_score /
+		sum(aggregate_contained_reads_per_score, na.rm=TRUE)) * 100, type="b",
+		xaxt="n", pch=19, xlab = NA, ylim=c(0,100),
+		ylab="Percent of reads (%)",
+		main="Percent of reads contained in cluster of given score")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Cluster score", line = 7, cex=1.2)});
 
 	$R->run(q{graphics.off()});
@@ -163,35 +175,38 @@ sub run_R_for_cluster_sizes {
 	$R->set('ifile', $self->cluster_sizes_file);
 	$R->set('figfile', $figfile);
 
-	# Load R libraries
-	$R->run(q{library(RColorBrewer)});
-
 	# Disable scientific notation
 	$R->run(q{options(scipen=999)});
-
-	# Prepare color palette
-	$R->run(q{mypalette = brewer.pal(4, "RdYlBu")});
 
 	# Read table with data
 	$R->run(q{idata = read.delim(ifile)});
 
 	# Create groups of scores
 	$R->run(q{mybreaks = c(10, seq(50,500,50), 1000, Inf)});
-	$R->run(q{idata$size_group = cut(idata$cluster_size, breaks=mybreaks, dig.lab=4)});
+	$R->run(q{idata$size_group = cut(idata$cluster_size, breaks=mybreaks,
+		dig.lab=4)});
 
 	# Aggregate (sum) counts for size groups
-	$R->run(q{aggregate_counts = tapply(idata$count, idata$size_group , sum)});
+	$R->run(q{aggregate_counts = tapply(idata$count, idata$size_group, sum)});
 
 	# Do plots
 	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2, lwd=1.2, oma=c(0, 0, 2, 0), mar=c(8.1, 5.1, 4.1, 2.1))});
+	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2,
+		lwd=1.2, oma=c(0, 0, 2, 0), mar=c(8.1, 5.1, 4.1, 2.1))});
 
-	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA, log="y", ylab="Number of clusters (log)", main="Number of clusters with given size")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA,
+		log="y", ylab="Number of clusters",
+		main="Number of clusters with given size")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Cluster size", line = 6, cex=1.2)});
 
-	$R->run(q{plot((aggregate_counts / sum(aggregate_counts, na.rm=TRUE)) * 100, type="b", xaxt="n", pch=19, xlab = NA, ylab="Percent of clusters (%)", main="Percent of clusters with given size")});
-	$R->run(q{axis(1, at=1:length(aggregate_counts), labels=names(aggregate_counts), las=2)});
+	$R->run(q{plot((aggregate_counts / sum(aggregate_counts, na.rm=TRUE)) *
+		100, type="b", xaxt="n", pch=19, xlab = NA, ylim=c(0, 100),
+		ylab="Percent of clusters (%)",
+		main="Percent of clusters with given size")});
+	$R->run(q{axis(1, at=1:length(aggregate_counts),
+		labels=names(aggregate_counts), las=2)});
 	$R->run(q{mtext(side = 1, "Cluster size", line = 6, cex=1.2)});
 
 	$R->run(q{graphics.off()});
