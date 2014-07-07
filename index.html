@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Clipseqtools by mnsmar</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Clipseqtools</h1>
+        <h2>A suite for the analysis of CLIP-Seq datasets.</h2>
+        <a href="https://github.com/mnsmar/clipseqtools" class="button"><small>View project on</small>GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a name="clipseqtools" class="anchor" href="#clipseqtools"><span class="octicon octicon-link"></span></a>CLIPSeqTools</h1>
+
+<h2>
+<a name="summary" class="anchor" href="#summary"><span class="octicon octicon-link"></span></a>Summary</h2>
+
+<p>CLIPSeqTools is a collection of command line applications used for the analysis of CLIP-Seq (UV cross-linking and immunoprecipitation with high-throughput sequencing) data.
+It offers a wide range of analyses (eg. genome read coverage, motif enrichment, relative positioning of reads of two libraries, etc).
+The toolbox is primarily oriented for bioinfromaticians but the commands are simple enough for non experts to use.</p>
+
+<h2>
+<a name="installation" class="anchor" href="#installation"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<ul>
+<li>
+<strong>Using CPAN</strong>
+
+<ol>
+<li>If you have cpanm installed. <code>cpanm CLIPSeqTools</code>.</li>
+<li>If you do not have cpanm. See <a href="http://www.cpan.org/modules/INSTALL.html">here</a>.</li>
+</ol>
+</li>
+<li>
+<strong>Using Git</strong> - Preferred so you may contribute
+
+<ol>
+<li>Install git (<a href="http://git-scm.com/downloads">directions</a>).</li>
+<li>Install dependencies (listed below) from CPAN. <a href="http://www.cpan.org/modules/INSTALL.html">How to install CPAN modules</a>.</li>
+<li>Clone the repository on your machine
+<code>git clone https://github.com/palexiou/GenOO-CLIP.git</code>.</li>
+</ol>
+</li>
+</ul><h2>
+<a name="dependencies-maybe-not-exhaustive" class="anchor" href="#dependencies-maybe-not-exhaustive"><span class="octicon octicon-link"></span></a>Dependencies (maybe not exhaustive)</h2>
+
+<ul>
+<li>GenOO</li>
+<li>Pod::Usage</li>
+<li>Modern::Perl</li>
+<li>GenOOx::Data::File::SAMstar</li>
+<li>GenOOx::Data::File::SAMbwa</li>
+<li>DBD::SQLite</li>
+<li>MooseX::Getopt</li>
+<li>IO::Interactive</li>
+</ul><h2>
+<a name="usage-examples" class="anchor" href="#usage-examples"><span class="octicon octicon-link"></span></a>Usage examples</h2>
+
+<p>To process a fastq file, align the reads on the reference genome, annotate the alignments with genic, repeat masker and PhyloP conservation information and more.</p>
+
+<div class="highlight highlight-bash"><pre>clipseqtools-preprocess all <span class="se">\</span>
+--adaptor &lt;5_END_ADAPTOR&gt; <span class="se">\</span>
+--fastq &lt;FASTQ_FILE&gt; <span class="se">\</span>
+--gtf &lt;GTF_FILE_WITH_TRANSCRIPTS&gt; <span class="se">\</span>
+--rmsk &lt;REPEAT_MASKER_BED_FILE&gt; <span class="se">\</span>
+--star_genome &lt;STAR_INDEX_DIR&gt; <span class="se">\</span>
+--phyloP_dir &lt;PHYLOP_DTA_DIR&gt; <span class="se">\</span>
+--rname_sizes &lt;CHROMOSOME_SIZES_FILE&gt; <span class="se">\</span>
+--o_prefix &lt;OUTPUT_DIR&gt; <span class="se">\</span>
+--threads &lt;NUMBER_OF_PROCESSORS&gt; <span class="se">\</span>
+-v
+</pre></div>
+
+<p>To run all clipseqtools analyses.</p>
+
+<div class="highlight highlight-bash"><pre>clipseqtools all <span class="se">\</span>
+--database &lt;DATABASE_FILE_FROM_PREVIOUS_STEP&gt; <span class="se">\ </span>
+--gtf &lt;GTF_FILE_WITH_TRANSCRIPTS&gt; <span class="se">\</span>
+--rname_sizes &lt;CHROMOSOME_SIZES_FILE&gt; <span class="se">\</span>
+--o_prefix &lt;OUTPUT_DIR&gt; <span class="se">\</span>
+--plot <span class="se">\</span>
+-v
+</pre></div>
+
+<p>The two commands will create all the required files to run clipseqtools and
+will run all analysis producing tables and figure files in the output
+directory.</p>
+
+<h2>
+<a name="state" class="anchor" href="#state"><span class="octicon octicon-link"></span></a>State</h2>
+
+<p>The toolbox is under heavy development and functionality is added regularly.
+Consider it unstable.</p>
+
+<h2>
+<a name="copyright" class="anchor" href="#copyright"><span class="octicon octicon-link"></span></a>Copyright</h2>
+
+<p>Copyright (c) 2014 Emmanouil "Manolis" Maragkakis and Panagiotis Alexiou.</p>
+
+<h2>
+<a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>This library is free software and may be distributed under the same terms as perl itself.</p>
+
+<p>This library is distributed in the hope that it will be useful, but <strong>WITHOUT ANY WARRANTY</strong>; without even the implied warranty of merchantability or fitness for a particular purpose.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/mnsmar/clipseqtools/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/mnsmar/clipseqtools/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/mnsmar/clipseqtools"></a> is maintained by <a href="https://github.com/mnsmar">mnsmar</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
