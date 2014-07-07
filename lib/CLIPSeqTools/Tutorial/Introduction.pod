@@ -123,11 +123,12 @@ directory named C<clip> and that you work for human (hg19) species.
 
 This creates the path C<clip/data/>
 
-=item 2. Download directory C<hg19> from our public server using the link given previously
+=item 2. Download file C<hg19.tgz> from our public server using the link given previously
 
-=item 3. Put the downloaded data into the new directory C<clip/data/>.
+=item 3. Put the downloaded file into the new directory C<clip/data/> and unzip it.
 
 This creates the path C<clip/data/hg19/>
+To save disk space you can now remove file hg19.tgz
 
 =item 3. Assuming your CLIP-Seq data are for I<proteinA>, create a new directory named C<proteinA> inside C<clip/>.
 
