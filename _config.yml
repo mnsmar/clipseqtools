@@ -1,3 +1,4 @@
 name: CLIPSeqTools
 markdown: redcarpet
 pygments: true
+baseurl: /clipseqtools
