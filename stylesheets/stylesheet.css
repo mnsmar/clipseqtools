@@ -124,6 +124,10 @@ aside#sidebar p.repo-owner a {
   font-weight: bold;
 }
 
+#side-menu {
+	font-size: 140%
+}
+
 #downloads {
   margin-bottom: 40px;
 }

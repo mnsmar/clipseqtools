@@ -1,0 +1,9 @@
+name: CLIPSeqTools
+markdown: redcarpet
+pygments: true
+menus:
+    side:
+    - Home:
+        - /
+    - Tutorial:
+        - /tutorial/
