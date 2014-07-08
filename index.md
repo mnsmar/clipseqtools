@@ -1,76 +1,90 @@
 ---
 layout: default
-title: ClipSeqTools
+title: CLIPSeqTools
 ---
-
-# INTRODUCTION
 
 _CLIPSeqTools_ is a collection of command line applications used for the
 analysis of CLIP-Seq datasets. CLIP-Seq stands for UV cross-linking and
 immunoprecipitation coupled with high-throughput sequencing.
 
-_CLIPSeqTools_ offers applications for a wide range of analyses that will
-give an in depth view of the analysed dataset. Examples of such analyses are:
-genome read coverage, motif enrichment, relative positioning of reads of two
+_CLIPSeqTools_ has applications for a wide range of analyses that will give an
+in depth view of the analysed dataset. Examples of such analyses are: genome
+read coverage, motif enrichment, relative positioning of reads of two
 datasets, etc).
 
-_CLIPSeqTools_ is grouped in 4 toolboxes each of which performs a specific
-set of analyses:
+_CLIPSeqTools_ is grouped in 4 toolboxes each of which performs a specific set
+of analyses:
 
-- 1. `clipseqtools`
+1. `clipseqtools`
 
-    Application to analyse a single CLIP-Seq library.
+	Application to analyse a single CLIP-Seq library.
 
-- 2. `clipseqtools-compare`
+2. `clipseqtools-compare`
 
-    Application to compare two CLIP-Seq libraries. (Can be used after
-    `clipseqtools` is run on each dataset).
+	Application to compare two CLIP-Seq libraries. (Can be used after
+	`clipseqtools` is run on each dataset).
 
-- 3. `clipseqtools-plots`
+3. `clipseqtools-plots`
 
-    Helper application to create plots for the output of `clipseqtools` and
-    `clipseqtools-compare`.  (Note: Usually the plotting functions are called
-    from the analysis scripts themselves using the `--plot`).
+	Helper application to create plots for the output of `clipseqtools` and
+	`clipseqtools-compare`.  (Note: Usually the plotting functions are called
+	from the analysis scripts themselves using the `--plot`).
 
-- 4. `clipseqtools-preprocess`
+4. `clipseqtools-preprocess`
 
-    Application to process a FastQ file into files that are compatible with
-    `clipseqtools`. (Among other things, it aligns the reads on the reference
-    genome, annotate the alignments with genic, repeat masker and phastCons
-    conservation information).
+	Application to process a FastQ file into files that are compatible with
+	`clipseqtools`. (Among other things, it aligns the reads on the reference
+	genome, annotate the alignments with genic, repeat masker and phastCons
+	conservation information).
 
-# INSTALLATION
-
-## Prerequisites
-
-_CLIPSeqTools_ relies on a few external programs for things like the
-alignment and the plotting functionality. To successfully install and use
-_CLIPSeqTools_ you will need to have the following tools installed and
-available in the users path:
-
-- `R`
-
-    Language for statistical computing. To download R statistical package and for
-    installation instructions refer to [http://www.r-project.org/](http://www.r-project.org/)
-
-- `STAR`
-
-    For the alignment of reads on a reference genome (only if you use
-    clipseqtools-preprocess). To download STAR and for installation instructions
-    refer to [https://code.google.com/p/rna-star/](https://code.google.com/p/rna-star/)
-
-- `cutadapt`
-
-    To remove 5' end adaptor sequence from reads (only if you use clipseq-tools
-    preprocess). To download cutadapt and for installation instructions refer to
-    [https://code.google.com/p/cutadapt/](https://code.google.com/p/cutadapt/)
-
-## Installing CLIPSeqTools
+# Installation
 
 _CLIPSeqTools_ is a Perl module and should be compatible with any Unix style
 operating system with the Perl programming language installed.  Chances are
 that if you are working on a Mac or a Linux operating system you already have
 Perl installed.
+
+Although the installation is straighforward for people that have some
+experience with command line installations it can be slightly cumbersome for
+people with no such experience. For this, we suggest to contact your IT
+department or someone able to help you with the installation process.
+
+## Prerequisites
+
+_CLIPSeqTools_ relies on a few external programs for things like the alignment
+and the plotting functionality. To successfully install and use _CLIPSeqTools_
+you will need to have the following tools installed and available in the users
+path:
+
+- `R`
+
+	Language for statistical computing. To download R statistical package and
+	for installation instructions refer to
+	[http://www.r-project.org/](http://www.r-project.org/)
+
+- `cutadapt`
+
+	To remove 5' end adaptor sequence from reads (only if you use
+	clipseq-tools preprocess). To download cutadapt and for installation
+	instructions refer to
+	[https://code.google.com/p/cutadapt/](https://code.google.com/p/cutadapt/)
+
+- `STAR`
+
+	For the alignment of reads on a reference genome (only if you use
+	clipseqtools-preprocess). To download STAR and for installation
+	instructions refer to
+	[https://code.google.com/p/rna-star/](https://code.google.com/p/rna-star/)
+
+- Memory
+
+	If you plan on using `clipseqtools-preprocess` to do the alignment of
+	reads on a reference genome you will need a machine with at least 16 GB of
+	RAM. The reason is that this is the amount of memory required by the STAR
+	aligner. The amount of required memory might be smaller for smaller
+	genomes but don't take our word for it.
+
+## Installing CLIPSeqTools
 
 The simplest way to install _CLIPSeqTools_ is to use CPAN which is the a
 package manager for Perl modules.  If you are the system administrator and
@@ -90,7 +104,7 @@ Once you find yourself staring at the `cpan>` command prompt type:
 
 CPAN should take it from there and install _CLIPSeqTools_.
 
-# GETTING STARTED
+# Getting Started
 
 ## Download required files
 
@@ -99,41 +113,44 @@ properly. For the user's convenience, we provide the required files for 3
 species - human (assembly: hg19), mouse (assembly: mm9) and fly (assembly:
 dme3) on our public server.
 
-You may access these file at
-[http://mourelatos03.med.upenn.edu/clipseqtools/](http://mourelatos03.med.upenn.edu/clipseqtools/)
+You may access these file at this [link](http://mourelatos03.med.upenn.edu/clipseqtools/data/)
 
 ## Prepare your working directory
 
 To keep things simle, in the following we assume you are using a working
 directory named `clip` and that you work for human (hg19) species.
 
-- 1. Create a new directory named `data` inside `clip/`.
+1. Create a new directory named `data` inside `clip/`.
 
-    This creates the path `clip/data/`
+	This creates the path `clip/data/`
 
-- 2. Download file `hg19.tgz` from our public server using the link given previously
-- 3. Put the downloaded file into the new directory `clip/data/` and unzip it.
+2. Download file `hg19.tgz` from our public server using the link given
+previously
 
-    This creates the path `clip/data/hg19/`
-    To save disk space you can now remove file hg19.tgz
+3. Put the downloaded file into the new directory `clip/data/` and unzip it.
 
-- 3. Assuming your CLIP-Seq data are for _proteinA_, create a new directory named `proteinA` inside `clip/`.
+	This creates the path `clip/data/hg19/`.
+	To save disk space you can now remove file `hg19.tgz`.
 
-    This creates the path `clip/proteinA/`
+4. Assuming your CLIP-Seq data are for _proteinA_, create a new directory
+named `proteinA` inside `clip/`.
 
-- 4. Move/Copy the FastQ file with the CLIP-Seq reads into `clip/proteinA/` and rename it to _reads.fastq_.
+	This creates the path `clip/proteinA/`
 
-    **Important:** Unzip it, if it is zipped.
+5. Move/Copy the FastQ file with the CLIP-Seq reads into `clip/proteinA/` and
+rename it to _reads.fastq_.
 
-- 5. Open a terminal and navigate to your working directory.
+	__Important:__ Unzip it, if it is zipped.
+
+6. Open a terminal and navigate to your working directory.
 
         cd /path/to/clip/
 
-- 6. List all directories and files with the following command.
+7. List all directories and files with the following command.
 
         find .
 
-    You should have a working directory that looks like this:
+	You should now have a working directory that looks like this:
 
         clip/
         clip/data/
@@ -141,13 +158,13 @@ directory named `clip` and that you work for human (hg19) species.
         clip/proteinA/
         clip/proteinA/reads.fastq
 
-    Verify that everything is in place.
+	Verify that everything is in place.
 
-## Align and process the FastQ file with `clipseqtools-preprocess`
+## Align and process FastQ files with `clipseqtools-preprocess`
 
 To process the fastq file, align the reads on the reference genome, annotate
 the alignments with genic, repeat masker and phastCons conservation
-information run the following command substituting <PLACEHOLDER> with the
+information run the following command substituting \<PLACEHOLDER\> with the
 appropriate information.
 
 - If you are running on a machine with **more** than 32GB RAM.
@@ -175,10 +192,6 @@ appropriate information.
           --rname_sizes data/hg19/chrom.sizes \
           --o_prefix clip/proteinA/ \
           -v
-
-- If you are running on a machine with **less** than 16GB RAM.
-
-        ... sorry no luck here
 
 The command above is doing a lot of things and it's going to take quite some
 time. Most likely it will take at least a few hours, so be **patient** and **do
