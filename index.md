@@ -3,14 +3,16 @@ layout: default
 title: CLIPSeqTools
 ---
 
+# Description
+
 _CLIPSeqTools_ is a collection of command line applications used for the
 analysis of CLIP-Seq datasets. CLIP-Seq stands for UV cross-linking and
 immunoprecipitation coupled with high-throughput sequencing.
 
 _CLIPSeqTools_ has applications for a wide range of analyses that will give an
 in depth view of the analysed dataset. Examples of such analyses are: genome
-read coverage, motif enrichment, relative positioning of reads of two
-datasets, etc).
+read coverage, distibution of reads on genic elements, motif enrichment,
+relative position of reads of two datasets, differential gene counts, etc).
 
 _CLIPSeqTools_ is grouped in 4 toolboxes each of which performs a specific set
 of analyses:
@@ -111,7 +113,7 @@ CPAN should take it from there and install _CLIPSeqTools_.
 _CLIPSeqTools_ relies on certain data and annotation files to function
 properly. For the user's convenience, we provide the required files for 3
 species - human (assembly: hg19), mouse (assembly: mm9) and fly (assembly:
-dme3) on our public server.
+dm3) on our public server.
 
 You may access these file at this [link](http://mourelatos03.med.upenn.edu/clipseqtools/data/)
 
