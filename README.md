@@ -36,7 +36,7 @@ of analyses:
 
 Below you can find installation instuctions and usage examples but for the
 most up to date information please look in the project's
-[website](http://mourelatos.med.upenn.edu/clipseqtools/data/)
+[website](http://mourelatos.med.upenn.edu/clipseqtools/)
 
 # Installation
 
