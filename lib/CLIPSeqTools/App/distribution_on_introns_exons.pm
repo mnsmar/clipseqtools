@@ -1,6 +1,7 @@
 =head1 NAME
 
-CLIPSeqTools::App::distribution_on_introns_exons - Measure read distribution on exons and introns.
+CLIPSeqTools::App::distribution_on_introns_exons - Measure read distribution
+on exons and introns.
 
 =head1 SYNOPSIS
 
@@ -8,8 +9,10 @@ clipseqtools distribution_on_introns_exons [options/parameters]
 
 =head1 DESCRIPTION
 
-Measure the distribution of reads along exons and introns as part of their length.
-Split the exons and introns of coding transcripts in bins and measure the read density in each bin.
+Measure the distribution of reads along exons and introns.
+Will split the exons and introns of coding transcripts in bins and measure the
+read density in each bin. Will keep only unique introns and exons foreach
+location. The read copy number is not used in this analysis.
 
 =head1 OPTIONS
 
@@ -27,7 +30,7 @@ Split the exons and introns of coding transcripts in bins and measure the read d
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                --filter deletion="def" 
+                                --filter deletion="def"
                                 --filter rmsk="undef" .
                                 --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
@@ -72,7 +75,7 @@ use namespace::autoclean;
 option 'bins' => (
 	is            => 'rw',
 	isa           => 'Int',
-	default       => 10,
+	default       => 5,
 	documentation => 'number of bins each element is split into.',
 );
 
@@ -87,13 +90,13 @@ option 'length_thres' => (
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 
+with
 	"CLIPSeqTools::Role::Option::Library" => {
 		-alias    => { validate_args => '_validate_args_for_library' },
 		-excludes => 'validate_args',
 	},
-	"CLIPSeqTools::Role::Option::Transcripts" => {
-		-alias    => { validate_args => '_validate_args_for_transcripts' },
+	"CLIPSeqTools::Role::Option::Genes" => {
+		-alias    => { validate_args => '_validate_args_for_genes' },
 		-excludes => 'validate_args',
 	},
 	"CLIPSeqTools::Role::Option::Plot" => {
@@ -105,47 +108,52 @@ with
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_library;
-	$self->_validate_args_for_transcripts;
+	$self->_validate_args_for_genes;
 	$self->_validate_args_for_plot;
 	$self->_validate_args_for_output_prefix;
 }
 
 sub run {
 	my ($self) = @_;
-	
+
 	warn "Starting analysis: distribution_on_introns_exons\n";
-	
+
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
-	
+
 	warn "Creating transcript collection\n" if $self->verbose;
 	my $transcript_collection = $self->transcript_collection;
-	my @coding_transcripts = grep{$_->is_coding} $transcript_collection->all_records;
+	my @coding_transcripts =
+		grep{$_->is_coding} $transcript_collection->all_records;
 
 	warn "Creating reads collection\n" if $self->verbose;
 	my $reads_col = $self->reads_collection;
 
-	warn "Measuring reads in bins of introns/exons per transcript\n" if $self->verbose;
+	warn "Measuring reads in bins of introns/exons\n" if $self->verbose;
 	my (%exons, %introns);
 	foreach my $transcript (@coding_transcripts) {
 		foreach my $exon (@{$transcript->exons}) {
 			next if exists $exons{$exon->location};
-			my $exon_counts = copy_number_in_bins_of_element($exon, $reads_col, $self->bins);
+
+			my $exon_counts = copy_number_in_bins_of_element(
+				$exon, $reads_col, $self->bins);
 			$exon->extra({counts => $exon_counts});
 			$exons{$exon->location} = $exon;
 		}
 
 		foreach my $intron (@{$transcript->introns}) {
 			next if exists $introns{$intron->location};
-			my $intron_counts = copy_number_in_bins_of_element($intron, $reads_col, $self->bins);
+
+			my $intron_counts = copy_number_in_bins_of_element(
+				$intron, $reads_col, $self->bins);
 			$intron->extra({counts => $intron_counts});
 			$introns{$intron->location} = $intron;
 		}
@@ -158,19 +166,23 @@ sub run {
 
 	warn "Printing results\n" if $self->verbose;
 	open (my $OUT, '>', $self->o_prefix.'distribution_on_introns_exons.tab');
-	say $OUT join("\t", 'element', 'location', (map {'bin_' . $_} (0..$self->bins-1)));
+	say $OUT join(
+		"\t", 'element', 'location', (map {'bin_' . $_} (0..$self->bins-1)));
 	foreach my $exon_loc (keys %exons) {
-		my $exon = $exons{$exon_loc};	
-		say $OUT join("\t", 'exon', $exon->location, @{$exon->extra->{counts}});
+		my $exon = $exons{$exon_loc};
+		say $OUT join(
+			"\t", 'exon', $exon->location, @{$exon->extra->{counts}});
 	}
 	foreach my $intron_loc (keys %introns) {
-		my $intron = $introns{$intron_loc};	
-		say $OUT join("\t", 'intron', $intron->location, @{$intron->extra->{counts}});
+		my $intron = $introns{$intron_loc};
+		say $OUT join(
+			"\t", 'intron', $intron->location, @{$intron->extra->{counts}});
 	}
 
 	if ($self->plot) {
 		warn "Creating plot\n" if $self->verbose;
-		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::distribution_on_introns_exons', 
+		CLIPSeqTools::PlotApp->initialize_command_class(
+			'CLIPSeqTools::PlotApp::distribution_on_introns_exons',
 			file     => $self->o_prefix.'distribution_on_introns_exons.tab',
 			o_prefix => $self->o_prefix
 		)->run();
@@ -182,24 +194,27 @@ sub run {
 ############################   Functions   ############################
 #######################################################################
 sub copy_number_in_bins_of_element {
-	my ($part, $reads_col, $bins) = @_;
+	my ($elm, $reads_col, $bins) = @_;
 
 	my @counts = map{0} 0..$bins-1;
-	my $longest_record_length = $reads_col->longest_record->length;
-	my $margin = int($longest_record_length/2);
-	$reads_col->foreach_contained_record_do($part->strand, $part->chromosome, $part->start-$margin, $part->stop+$margin, sub {
-		my ($record) = @_;
-		
-		my $record_mid = $record->mid_position;
-		return 0 if ($record_mid < $part->start or $record_mid > $part->stop);
-		
-		my $bin = int($bins * (abs($part->head_mid_distance_from($record)) / $part->length));
-		if ($bin >= $bins) {
-			warn join("\t", $part->location, $record->location, $part->head_mid_distance_from($record),$record->mid_position, $record->cigar)."\n";
-		}
-		$counts[$bin] += $record->copy_number;
-	});
-	
+	my $max_length = $reads_col->longest_record->length;
+	my $span = int($max_length / 2);
+
+	$reads_col->foreach_contained_record_do(
+		$elm->strand, $elm->chromosome, $elm->start-$span, $elm->stop+$span,
+		sub {
+			my ($record) = @_;
+
+			my $record_mid = $record->mid_position;
+			return 0 if (
+				$record_mid < $elm->start or $record_mid > $elm->stop);
+
+			my $bin = int($bins *
+				(abs($elm->head_mid_distance_from($record)) / $elm->length));
+
+			$counts[$bin] += 1; # $record->copy_number;
+		});
+
 	return \@counts;
 }
 
