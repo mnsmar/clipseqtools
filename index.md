@@ -115,7 +115,7 @@ properly. For the user's convenience, we provide the required files for 3
 species - human (assembly: hg19), mouse (assembly: mm9) and fly (assembly:
 dm3) on our public server.
 
-You may access these file at this [link](http://mourelatos03.med.upenn.edu/clipseqtools/data/)
+You may access these file at this [link]({{ site.baseurl }}/data)
 
 ## Prepare your working directory
 
@@ -166,13 +166,13 @@ rename it to _reads.fastq_.
 
 To process the fastq file, align the reads on the reference genome, annotate
 the alignments with genic, repeat masker and phastCons conservation
-information run the following command substituting \<PLACEHOLDER\> with the
+information run the following command substituting `<PLACEHOLDER>` with the
 appropriate information.
 
 - If you are running on a machine with **more** than 32GB RAM.
 
         clipseqtools-preprocess all \
-          --adaptor <5_END_ADAPTOR> \
+          --adaptor <3_END_ADAPTOR> \
           --fastq proteinA/reads.fastq \
           --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
           --rmsk data/hg19/annotation/rmsk.bed \
@@ -185,7 +185,7 @@ appropriate information.
 - If you are running on a machine with **more** than 16GB RAM.
 
         clipseqtools-preprocess all \
-          --adaptor <5_END_ADAPTOR> \
+          --adaptor <3_END_ADAPTOR> \
           --fastq proteinA/reads.fastq \
           --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
           --rmsk data/hg19/annotation/rmsk.bed \
