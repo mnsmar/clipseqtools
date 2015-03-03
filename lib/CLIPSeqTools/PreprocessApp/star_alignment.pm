@@ -116,6 +116,10 @@ sub run {
 		'--outFileNamePrefix ' . $self->o_prefix. 'star_',
 	);
 
+	if ($self->fastq =~ /\.gz$/) {
+		$cmd .= ' ' . '--readFilesCommand zcat';
+	}
+
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
 
