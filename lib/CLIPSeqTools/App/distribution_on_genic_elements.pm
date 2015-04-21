@@ -240,7 +240,7 @@ sub count_copy_number_in_bins_of_element {
 			my $pos = $elm->relative_exonic_position($read->mid_position);
 			return 0 if !defined $pos;
 
-			$pos =	$elm_exon_length - $pos if $elm->strand == -1;
+			$pos =	$elm_exon_length - $pos - 1 if $elm->strand == -1;
 
 			my $bin = int($bins * ($pos / $elm_exon_length));
 			$counts[$bin] += 1; #$read->copy_number;
