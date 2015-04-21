@@ -104,8 +104,8 @@ sub keep_single_copy_for_multimappers {
 		if ($line !~ /^@/) {
 			my $flag = (split(/\t/, $line))[1];
 			next if $flag & 256;
-			print $OUT $line;
 		}
+		print $OUT $line;
 	}
 	close $IN;
 	close $OUT;
@@ -114,7 +114,7 @@ sub keep_single_copy_for_multimappers {
 sub sort_sam {
 	my ($self, $in_sam, $out_sam) = @_;
 
-	my $cmd = "sort -k 3,3 -k 4,4n $in_sam > $out_sam";
+	my $cmd = "(grep -P \"^@\" $in_sam && grep -P -v \"^@\" $in_sam | sort -k 3,3 -k 4,4n) > $out_sam";
 	system "$cmd";
 }
 
@@ -131,7 +131,7 @@ sub collapse_sorted_sam {
 
 		# Skip the header
 		if ($line =~ /^@/) {
-			say $line;
+			say $OUT_SAM $line;
 			next;
 		};
 
