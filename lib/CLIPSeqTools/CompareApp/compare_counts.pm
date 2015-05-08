@@ -140,7 +140,7 @@ sub run {
 
 	warn "Reading input files\n" if $self->verbose;
 	my @tables = map {Data::Table::fromFile($_)} @{$self->table};
-	die "Table sizes differ\n" if not all_tables_of_equal_size(@tables);
+	die "Error: Input table sizes differ. Aborting.\n" if not all_tables_of_equal_size(@tables);
 	$self->t_name([(1..@tables)]) if !defined $self->t_name;
 
 	warn "Searching for 25th percentile\n" if $self->verbose;
