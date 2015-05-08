@@ -119,7 +119,7 @@ You may access these file at this [link]({{ site.baseurl }}/data)
 
 ## Prepare your working directory
 
-To keep things simle, in the following we assume you are using a working
+To keep things simple, in the following we assume you are using a working
 directory named `clip` and that you work for human (hg19) species.
 
 1. Create a new directory named `data` inside `clip/`.
@@ -177,7 +177,7 @@ appropriate information.
           --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
           --rmsk data/hg19/annotation/rmsk.bed \
           --star_genome data/hg19/STAR/index/ \
-          --phyloP_dir data/hg19/phyloP/ \
+          --cons_dir data/hg19/phastCons/ \
           --rname_sizes data/hg19/chrom.sizes \
           --o_prefix clip/proteinA/ \
           -v
@@ -190,7 +190,7 @@ appropriate information.
           --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
           --rmsk data/hg19/annotation/rmsk.bed \
           --star_genome data/hg19/STAR/index-sparsed2/ \
-          --phyloP_dir data/hg19/phyloP/ \
+          --cons_dir data/hg19/phastCons/ \
           --rname_sizes data/hg19/chrom.sizes \
           --o_prefix clip/proteinA/ \
           -v
