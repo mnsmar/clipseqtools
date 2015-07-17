@@ -108,18 +108,25 @@ sub run_R {
 	$R->run(q{idata$size_group = cut(idata$gap_size, breaks=mybreaks,
 		dig.lab=4)});
 
-	# Aggregate (sum) counts for size groups
+	# Aggregate (sum) counts and percents for size groups
 	$R->run(q{aggregate_counts = tapply(idata$count, idata$size_group , sum)});
+	$R->run(q{aggregate_percents = tapply(idata$percent, idata$size_group , sum)});
 
 	# Do plots
-	$R->run(q{pdf(figfile, width=14)});
-	$R->run(q{par(mfrow = c(1, 2), cex.lab=1.2, cex.axis=1.2, cex.main=1.2,
-		lwd=1.2, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
+	$R->run(q{pdf(figfile, width=21)});
+	$R->run(q{par(mfrow = c(1, 3), cex.lab=1.6, cex.axis=1.2, cex.main=1.6,
+		lwd=1.5, oma=c(0, 0, 2, 0), mar=c(9.1, 5.1, 4.1, 2.1))});
 
 	$R->run(q{plot(aggregate_counts, type="b", xaxt="n", pch=19, xlab = NA,
-		ylab="Number of gaps", main="Number of gaps with given size")});
+		ylab="Number of reads", main="Number of reads with given gap size")});
 	$R->run(q{axis(1, at=1:length(aggregate_counts),
 		labels=names(aggregate_counts), las=2)});
+	$R->run(q{mtext(side = 1, "Gap size", line = 7)});
+
+	$R->run(q{plot(aggregate_percents, type="b", xaxt="n", pch=19, xlab = NA,
+		ylab="Percent of reads (%)", main="Percent of reads with given gap size")});
+	$R->run(q{axis(1, at=1:length(aggregate_percents),
+		labels=names(aggregate_percents), las=2)});
 	$R->run(q{mtext(side = 1, "Gap size", line = 7)});
 
 	$R->run(q{plot((aggregate_counts / sum(idata$count)) * 100, type="b",

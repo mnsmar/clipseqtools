@@ -31,7 +31,7 @@ distribution.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                --filter deletion="def" 
+                                --filter deletion="def"
                                 --filter rmsk="undef" .
                                 --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
@@ -66,7 +66,7 @@ use namespace::autoclean;
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 
+with
 	"CLIPSeqTools::Role::Option::Library" => {
 		-alias    => { validate_args => '_validate_args_for_library' },
 		-excludes => 'validate_args',
@@ -80,13 +80,13 @@ with
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_library;
 	$self->_validate_args_for_plot;
 	$self->_validate_args_for_output_prefix;
@@ -94,21 +94,22 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
-	
+
 	warn "Starting analysis: reads_long_gaps_size_distribution\n";
-	
+
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
-	
+
 	warn "Creating reads collection\n" if $self->verbose;
 	my $reads_collection = $self->reads_collection;
 	$reads_collection->schema->storage->debug(1) if $self->verbose > 1;
-	
+	my $total_cn = $reads_collection->total_copy_number;
+
 	warn "Measuring long gaps\n" if $self->verbose;
 	my %gap_size_count;
 	$reads_collection->foreach_record_do( sub {
 		my ($rec) = @_;
-		
+
 		my $cigar = $rec->cigar;
 		if ($cigar !~ /N/) {
 			$gap_size_count{0} += $rec->copy_number;
@@ -119,22 +120,23 @@ sub run {
 				$gap_size_count{$gap_length} += $rec->copy_number;
 			}
 		}
-		
+
 		return 0;
 	});
 
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
-	
+
 	warn "Printing results\n" if $self->verbose;
 	open (my $OUT1, '>', $self->o_prefix.'reads_long_gaps_size_distribution.tab');
-	say $OUT1 join("\t", 'gap_size', 'count');
-	say $OUT1 join("\t", $_, $gap_size_count{$_}) for sort {$a <=> $b} keys %gap_size_count;
+	say $OUT1 join("\t", 'gap_size', 'count', 'percent');
+	say $OUT1 join("\t", $_, $gap_size_count{$_}, ($gap_size_count{$_}/$total_cn)*100) for sort {$a <=> $b} keys %gap_size_count;
 	close $OUT1;
-	
+
 	if ($self->plot) {
 		warn "Creating plot\n" if $self->verbose;
-		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::reads_long_gaps_size_distribution', 
+		CLIPSeqTools::PlotApp->initialize_command_class(
+			'CLIPSeqTools::PlotApp::reads_long_gaps_size_distribution',
 			file     => $self->o_prefix.'reads_long_gaps_size_distribution.tab',
 			o_prefix => $self->o_prefix
 		)->run();
