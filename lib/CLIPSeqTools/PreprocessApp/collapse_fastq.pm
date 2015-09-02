@@ -104,14 +104,12 @@ sub collapse_fastq {
 
 	my $count = 0;
 	foreach my $kmer (@kmers){
-		if ($kmer =~ /\s/){next;}
-		my $class = "GenOO::Data::File::FASTQ";
-		my $fp = $class->new(file => $fastq);
+		my $fp = GenOO::Data::File::FASTQ->new(file => $fastq);
 		my %already_found = ();
 		while (my $rec = $fp->next_record) {
 			my $seq = $rec->sequence;
 			if ($seq =~ /![ATGC]/){
-				warn $seq."\n";
+				next;
 			}
 			if ($seq !~ /^$kmer/){
 				next;
@@ -125,6 +123,25 @@ sub collapse_fastq {
 			}
 		}
 	}
+	
+	#for non ATGC nucleotide reads
+	my $fp = GenOO::Data::File::FASTQ->new(file => $fastq);
+	my %already_found = ();
+	while (my $rec = $fp->next_record) {
+		my $seq = $rec->sequence;
+		unless ($seq =~ /![ATGC]/){
+			next;
+		}
+		if (exists $already_found{$seq}){
+			next;
+		}
+		else {
+			$already_found{$seq} = 1;
+			print OUT $rec->to_string."\n";
+		}
+	}
+	
+	close OUT;
 }
 
 
