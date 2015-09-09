@@ -1,21 +1,61 @@
 =head1 NAME
-CLIPSeqTools::CompareApp::join_tables -  Join multiple tables on keys
+
+CLIPSeqTools::CompareApp::join_tables - Perform inner join on tab delimited
+table files. Can be used to prepare DESeq input file from counts tables.
+
 =head1 SYNOPSIS
+
 clipseqtools-compare join_tables [options/parameters]
+
 =head1 DESCRIPTION
-Join multiple tables on keys
+
+Perform inner join on tab delimited table files.
+Joins two or more tables together based on key columns. The output table will
+have the key columns used (must have the same name in all input tables) plus
+one value column (must also have the same name in all input tables) from each
+of the input tables.  The value columns will be named based on the -name
+option in the same order as the -table option.
+
+eg. Given files with the following column structure
+
+    FileA: key_1	key_2	valuecol_1	valuecol_2
+    FileB: key_1	key_2	valuecol_1	valuecol_2
+    FileC: key_1	key_2	valuecol_1	valuecol_2
+
+if the following command is used
+
+    clipseqtools-compare join_tables \
+        --table FileA --table FileB --table FileC \
+        --key key_1 --key key_2 \
+        --value valuecol_1 \
+        --name FileA_values --name FileB_values --name FileC_values
+
+the following output file is produced
+
+    key_1	key_2	FileA_values	FileB_values	FileC_values
+
+
 =head1 OPTIONS
+
   Input.
-    --table <ArrayRef> tsv file. Use multiple times to specify multiple tables.
-    --key <ArrayRef> key column name (must be the same for all tables). If given multiple times a composite key is used.
-    --value <Str> column name (must be the same for all tables).
-    --name <ArrayRef> name of the value column in the output. Must be given as many times as the -table option.
+    --table <Str>          tab delimited file. The first line must have the
+                           column names. Use multiple times to specify
+                           multiple input tables.
+    --key <Str>            name of column that has unique identifiers for each
+                           row. Use multiple times to create a composite key.
+    --value <Str>          name of column with the values that will be joined
+                           in the output table.
+    --name <name>          name of the value column in the output. Must be
+                           given as many times as the -table option.
+
   Output
     --o_prefix <Str>       output path prefix. Script will create and add
                            extension to path. [Default: ./]
+
   Other options.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
+
 =cut
 
 package CLIPSeqTools::CompareApp::join_tables;
@@ -96,14 +136,16 @@ sub run {
 	$self->make_path_for_output_prefix();
 
 	warn "Joining Tables\n" if $self->verbose;
-	$self->join_tables($self->table, $self->key, $self->value, $self->name, $self->o_prefix.'joined.tab');
+	$self->join_tables(
+		$self->table, $self->key, $self->value, $self->name,
+		$self->o_prefix.'joined.tab');
 }
 
 sub join_tables {
-	my ($self, $table, $key, $value, $name, $out) = @_;
-	
-	open (OUT, ">", $out);
-	
+	my ($self, $table, $key, $value, $name, $outfile) = @_;
+
+	open (my $OUT, ">", $outfile);
+
 	my @tables = map {_read_table($_, $key, $value)} @{$table};
 
 	for (my $i = 0; $i < @tables; $i++) {
@@ -114,7 +156,7 @@ sub join_tables {
 # 	say OUT join("\t", "key", @{$opt->name});
 	foreach my $key (keys %{$tables[0]}) {
 		my @values = map {$_->{$key}} @tables;
-		say OUT join("\t", $key, @values);
+		say $OUT join("\t", $key, @values);
 	}
 }
 
@@ -161,4 +203,4 @@ sub _column_name_to_idx {
 	return undef;
 }
 
-1; 
+1;

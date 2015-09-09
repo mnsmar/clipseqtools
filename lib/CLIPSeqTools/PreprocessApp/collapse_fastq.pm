@@ -1,24 +1,36 @@
 =head1 NAME
-CLIPSeqTools::PreprocessApp::collapse_fastq -  Keep a single record for identical sequences
+
+CLIPSeqTools::PreprocessApp::collapse_fastq -  Keep a single record for
+identical sequences
+
 =head1 SYNOPSIS
+
 clipseqtools-preprocess collapse_fastq [options/parameters]
+
 =head1 DESCRIPTION
+
 Collapse a fastq file. Will keep only a single record for each group of
 identical sequences.
+
 =head1 OPTIONS
+
   Input.
-    --fastq <Str>        FASTQ file with sequences
-    --memsave <Int>      Memory saving factor. 0 is the fastest but uses the
-                         most memory. 1 uses ~1/4 of memory and ~x4 the time.
-                         Each step (2,3,4 etc) changes memory and time usage
-                         by a factor of 4. If this option gets used then output
-                         will be grouped by first N nucleotides. [Default : 0]
+    --fastq <Str>          FASTQ file with sequences
+    --memsave <Int>        Memory saving factor. 0 is the fastest but uses the
+                           most memory. 1 uses ~1/4 of memory and ~4x time.
+                           Each step (2, 3, 4 etc) changes memory and time
+                           by a factor of 4. If this option is used the output
+                           will be grouped by first N nucleotides.
+                           [Default: 0]
+
   Output
     --o_prefix <Str>       output path prefix. Script will create and add
                            extension to path. [Default: ./]
+
   Other options.
     -v --verbose           print progress lines and extra information.
     -h -? --usage --help   print help message
+
 =cut
 
 package CLIPSeqTools::PreprocessApp::collapse_fastq;
@@ -53,7 +65,7 @@ option 'memsave' => (
 	isa           => 'Int',
 	required      => 0,
 	default       => 0,
-	documentation => 'Memory saving factor. 0 is the fastest but uses the most memory. 1 uses ~1/4 of memory and ~x4 the time. Each step (2,3,4 etc) changes memory and time usage by a factor of 4. If this option gets used then output will be grouped by first N nucleotides.',
+	documentation => 'Memory saving factor. 0 is the fastest but uses the most memory. 1 uses ~1/4 of memory and ~4x time. Each step (2, 3, 4 etc) changes memory and time by a factor of 4. If this option is used the output will be grouped by first N nucleotides.',
 );
 
 #######################################################################
@@ -94,7 +106,7 @@ sub collapse_fastq {
 	my ($self, $fastq, $k, $out) = @_;
 	my @kmers;
 	open (OUT, ">", $out);
-	
+
 	if ($k == 0){
 		push @kmers, '.';
 	}
@@ -123,7 +135,7 @@ sub collapse_fastq {
 			}
 		}
 	}
-	
+
 	#for non ATGC nucleotide reads
 	my $fp = GenOO::Data::File::FASTQ->new(file => $fastq);
 	my %already_found = ();
@@ -140,7 +152,7 @@ sub collapse_fastq {
 			print OUT $rec->to_string."\n";
 		}
 	}
-	
+
 	close OUT;
 }
 
@@ -166,4 +178,4 @@ sub _permuteK {
  }
 
 
-1; 
+1;
