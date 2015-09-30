@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mnsmar/clipseqtools.svg?branch=master)](https://travis-ci.org/mnsmar/clipseqtools)
+
 # Description
 
 _CLIPSeqTools_ is a collection of command line applications used for the
