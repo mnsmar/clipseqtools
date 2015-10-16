@@ -26,7 +26,7 @@ Measure nucleotide composition along reads.
                            Syntax: column_name="pattern"
                            e.g. keep reads with deletions AND not repeat
                                 masked AND longer than 31
-                                --filter deletion="def" 
+                                --filter deletion="def"
                                 --filter rmsk="undef" .
                                 --filter query_length=">31".
                            Operators: >, >=, <, <=, =, !=, def, undef
@@ -62,7 +62,7 @@ use List::Util qw(sum);
 #######################################################################
 ##########################   Consume Roles   ##########################
 #######################################################################
-with 
+with
 	"CLIPSeqTools::Role::Option::Library" => {
 		-alias    => { validate_args => '_validate_args_for_library' },
 		-excludes => 'validate_args',
@@ -76,13 +76,13 @@ with
 		-excludes => 'validate_args',
 	};
 
-	
+
 #######################################################################
 ########################   Interface Methods   ########################
 #######################################################################
 sub validate_args {
 	my ($self) = @_;
-	
+
 	$self->_validate_args_for_library;
 	$self->_validate_args_for_plot;
 	$self->_validate_args_for_output_prefix;
@@ -90,47 +90,47 @@ sub validate_args {
 
 sub run {
 	my ($self) = @_;
-	
+
 	warn "Starting analysis: nucleotide_composition\n";
-	
+
 	warn "Validating arguments\n" if $self->verbose;
 	$self->validate_args();
-	
+
+	my @nts = ('A', 'C', 'G', 'T', 'N');
+
 	warn "Creating reads collection\n" if $self->verbose;
 	my $reads_collection = $self->reads_collection;
 	$reads_collection->schema->storage->debug(1) if $self->verbose > 1;
-	
-	warn "Measuring nucleotide composition along the reads\n" if $self->verbose;
+
+	warn "Measuring nucleotide composition\n" if $self->verbose;
 	my @nt_count;
-	my %existent_nts;
 	$reads_collection->foreach_record_do( sub {
 		my ($rec) = @_;
-		
+
 		my @nts = split(//, uc($rec->sequence));
 		for my $i (0..$#nts) {
 			$nt_count[$i]{$nts[$i]} += $rec->copy_number;
-			$existent_nts{$nts[$i]} = 1;
 		}
-		
+
 		return 0;
 	});
-	my @sorted_existent_nts = sort keys %existent_nts;
-	
+
 	warn "Creating output path\n" if $self->verbose;
 	$self->make_path_for_output_prefix();
-	
+
 	warn "Printing results\n" if $self->verbose;
 	open (my $OUT1, '>', $self->o_prefix.'nucleotide_composition.tab');
-	say $OUT1 join("\t", 'position', map {$_.'_count'} @sorted_existent_nts, 'total_count');
+	say $OUT1 join("\t", 'position', map {$_.'_count'} (@nts, 'total'));
 	for (my $i=0; $i<@nt_count; $i++) {
-		my @counts = map {$nt_count[$i]{$_} || 0} @sorted_existent_nts;
+		my @counts = map {$nt_count[$i]{$_} || 0} @nts;
 		say $OUT1 join("\t", $i, @counts, sum(@counts));
 	}
 	close $OUT1;
-	
+
 	if ($self->plot) {
 		warn "Creating plot\n" if $self->verbose;
-		CLIPSeqTools::PlotApp->initialize_command_class('CLIPSeqTools::PlotApp::nucleotide_composition', 
+		CLIPSeqTools::PlotApp->initialize_command_class(
+			'CLIPSeqTools::PlotApp::nucleotide_composition',
 			file     => $self->o_prefix.'nucleotide_composition.tab',
 			o_prefix => $self->o_prefix
 		)->run();
