@@ -114,7 +114,7 @@ sub keep_single_copy_for_multimappers {
 sub sort_sam {
 	my ($self, $in_sam, $out_sam) = @_;
 
-	my $cmd = "(grep -P \"^@\" $in_sam && grep -P -v \"^@\" $in_sam | sort -k 3,3 -k 4,4n) > $out_sam";
+	my $cmd = "(grep \"^@\" $in_sam && grep -v \"^@\" $in_sam | sort -k 3,3 -k 4,4n) > $out_sam";
 	system "$cmd";
 }
 
