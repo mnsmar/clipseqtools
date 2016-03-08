@@ -46,25 +46,35 @@ happening.
 2. `cut_adaptor` - Remove the adaptor sequence from the 3'end of reads using
 the _cutadapt_ program.
 
-3. `star_alignment` - Align the reads on a reference genome using the _STAR_
+3. `collapse_fastq` - Remove fastq reads that have exactly the same sequence.
+Can be used to remove possible PCR artifacts.
+
+4. `trim_fastq` - Trim a specific number of nucleotides from the start and/or
+the end of the sequence. Can be used for the removal of randomized barcodes.
+In conjuction with 'collapse_fastq' they can be used to collapse barcoded
+reads and then trim the barcode part.
+
+5. `star_alignment` - Align the reads on a reference genome using the _STAR_
 program.
 
-4. `cleanup_alignment` - Sort STAR alignments and keep only a single record
+6. `cleanup_alignment` - Sort STAR alignments and keep only a single record
 for multimappers.
 
-5. `sam_to_sqlite` - Load the SAM file with the alignments in an SQLite
+7. `sam_to_sqlite` - Load the SAM file with the alignments in an SQLite
 database.
 
-6. `annotate_with_deletions` - Annotate alignments with deletions.
+8. `annotate_with_deletions` - Annotate alignments with deletions.
 
-7. `annotate_with_file` - Annotate alignments contained within regions from a
+9. `annotate_with_file` - Annotate alignments contained within regions from a
 BED/SAM file.
 
-8. `annotate_with_genic_elements` - Annotate alignments with genic information
+10. `annotate_with_genic_elements` - Annotate alignments with genic information
 (transcripts, exons, 3'UTRs, etc).
 
-9. `annotate_with_conservation` - Annotate alignments with phastCons
+11. `annotate_with_conservation` - Annotate alignments with phastCons
 conservation scores.
+
+
 
 ### Details for database
 
@@ -235,6 +245,9 @@ A around the reads of a reference library B.
 
     **Note:** This command when called by the `all` command will compare the
     counts for genes, transcripts, exons and introns.
+
+5. `join_tables` - Combines multiple counts tables into one large table that
+can be exported.
 
 ## D) clipseqtools-plot
 
