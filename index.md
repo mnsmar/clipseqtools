@@ -205,7 +205,7 @@ run `clipseqtools` in the next step under `clip/proteinA/`.
 To run `clipseqtools`.
 
     clipseqtools all \
-      --database proteinA/reads.adtrim.star_Aligned.out.single.sorted.db \
+      --database proteinA/reads.adtrim.star_Aligned.out.single.sorted.collapsed.db \
       --gtf data/hg19/annotation/UCSC_gene_parts_genename.gtf \
       --rname_sizes data/hg19/chrom.sizes \
       --o_prefix clip/proteinA/ \
@@ -231,9 +231,9 @@ results.  For simplicity, we assume the two directories containing the
 following command.
 
     clipseqtools-compare all \
-      --database clip/proteinA/reads.adtrim.star_Aligned.out.single.sorted.db \
+      --database clip/proteinA/reads.adtrim.star_Aligned.out.single.sorted.collapsed.db \
       --res_prefix clip/proteinA/ \
-      --r_database clip/proteinB/reads.adtrim.star_Aligned.out.single.sorted.db \
+      --r_database clip/proteinB/reads.adtrim.star_Aligned.out.single.sorted.collapsed.db \
       --r_res_prefix clip/proteinB/ \
       --rname_sizes data/hg19/chrom.sizes \
       --o_prefix clip/proteinA_vs_B/ \
