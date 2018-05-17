@@ -127,6 +127,9 @@ commands run. These annotation columns are:
 - `coding_transcript` - Defined if the read is contained in a coding
   transcript and not defined otherwise.
 
+- `noncoding_transcript` - Defined if the read is contained in a non coding
+  transcript and not defined otherwise.
+
 - `exon` - Defined if the read is contained in an exon and not defined
   otherwise.
 
@@ -223,6 +226,7 @@ def, undef`.
 
 ## C) clipseqtools-compare
 
+`clipseqtools-compare` is a toolbox that can be used to compare CLIP-Seq
 datasets with each other.
 
 ### Supported commands
