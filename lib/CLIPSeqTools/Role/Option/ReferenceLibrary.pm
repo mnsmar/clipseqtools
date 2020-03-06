@@ -50,6 +50,7 @@ package CLIPSeqTools::Role::Option::ReferenceLibrary;
 #######################################################################
 use Modern::Perl;
 use MooseX::App::Role;
+use MooseX::Getopt;
 
 
 #######################################################################

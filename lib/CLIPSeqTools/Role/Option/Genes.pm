@@ -31,6 +31,7 @@ use MooseX::App::Role;
 #######################################################################
 use GenOO::GeneCollection::Factory;
 use GenOO::TranscriptCollection::Factory;
+use MooseX::Getopt;
 
 
 #######################################################################
