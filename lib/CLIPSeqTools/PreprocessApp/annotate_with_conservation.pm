@@ -136,6 +136,10 @@ sub run {
 	foreach my $rname (@rnames) {
 		warn "Reading conservation data for $rname\n" if $self->verbose;
 		my $pdl = $self->plylop_pdl_for($rname, $rname_sizes{$rname});
+		if (!defined $pdl) {
+			warn "Could not find conservation file for $rname. Skipping.\n";
+			next;
+		}
 
 		warn "Annotating records for $rname\n" if $self->verbose;
 		$reads_collection->schema->txn_do( sub {
@@ -212,7 +216,11 @@ sub plylop_pdl_for {
 
 	my @files = glob $self->cons_dir . '/' . $rname . '.*';
 	die "More than one matching files for $rname" if @files > 1;
-	my $file = $files[0]; chomp $file;
+	my $file = $files[0];
+	if (!defined $file) {
+		return;
+	}
+	chomp $file;
 	open (my $H, "gzip -dc $file |");
 
 	my ($start, $step);
